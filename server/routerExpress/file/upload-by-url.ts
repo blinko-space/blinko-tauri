@@ -13,6 +13,76 @@ router.options('/', cors({
   maxAge: 86400
 }));
 
+/**
+ * @swagger
+ * /api/file/upload-by-url:
+ *   post:
+ *     tags: 
+ *       - File
+ *     summary: Upload File by URL
+ *     operationId: uploadFileByUrl
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               url:
+ *                 type: string
+ *                 description: URL of the file to upload
+ *             required:
+ *               - url
+ *     responses:
+ *       200:
+ *         description: Upload Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 Message:
+ *                   type: string
+ *                 status:
+ *                   type: number
+ *                 path:
+ *                   type: string
+ *                 type:
+ *                   type: string
+ *                 size:
+ *                   type: number
+ *                 originalURL:
+ *                   type: string
+ *       400:
+ *         description: Bad Request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *       500:
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *     security:
+ *       - bearer: []
+ */
 router.post('/', async (req, res) => {
   try {
     const token = await getToken(req);

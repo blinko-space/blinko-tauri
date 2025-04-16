@@ -16,7 +16,75 @@ const IMAGE_PROCESSING_TIMEOUT = 30000;
 
 let activeStreams = 0;
 
-
+/**
+ * @swagger
+ * /api/file/{path}:
+ *   get:
+ *     tags: 
+ *       - File
+ *     summary: Get File from Local Storage
+ *     operationId: getFile
+ *     parameters:
+ *       - in: path
+ *         name: path
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Path to the file
+ *       - in: query
+ *         name: thumbnail
+ *         schema:
+ *           type: boolean
+ *         required: false
+ *         description: Whether to return a thumbnail (only for images)
+ *       - in: query
+ *         name: download
+ *         schema:
+ *           type: boolean
+ *         required: false
+ *         description: Whether to set Content-Disposition to attachment
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           image/*:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *           application/octet-stream:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *       404:
+ *         description: File not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *     security:
+ *       - bearer: []
+ */
 router.get(/.*/, async (req, res) => {
   const fullPath = decodeURIComponent(req.path.substring(1));
   const token = await getToken(req);

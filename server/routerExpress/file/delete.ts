@@ -4,6 +4,41 @@ import { getToken } from '../../lib/helper';
 
 const router = express.Router();
 
+/**
+ * @swagger
+ * /api/file/delete:
+ *   post:
+ *     tags: 
+ *       - File
+ *     summary: Delete File
+ *     operationId: deleteFile
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               attachment_path:
+ *                 type: string
+ *                 description: File path (example - /api/file/123.png)
+ *             required:
+ *               - attachment_path
+ *     responses:
+ *       200:
+ *         description: Delete Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 Message:
+ *                   type: string
+ *                 status:
+ *                   type: number
+ *     security:
+ *       - bearer: []
+ */
 router.post('/', async (req, res) => {
   try {
     const token = await getToken(req);

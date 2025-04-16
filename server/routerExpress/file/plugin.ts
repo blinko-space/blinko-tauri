@@ -4,7 +4,39 @@ import { join } from 'path';
 
 const router = express.Router();
 
-router.get('/*', (req, res) => {
+/**
+ * @swagger
+ * /api/plugins/{path}:
+ *   get:
+ *     tags: 
+ *       - Plugin
+ *     summary: Get Plugin File
+ *     operationId: getPluginFile
+ *     parameters:
+ *       - in: path
+ *         name: path
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Path to the plugin file
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/javascript:
+ *             schema:
+ *               type: string
+ *       404:
+ *         description: Plugin not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ */
+router.get(/.*/, (req, res) => {
   try {
     const pathArray = req.params[0].split('/').filter(Boolean);
     const filePath = join('.blinko', 'plugins', ...pathArray);

@@ -14,6 +14,57 @@ router.options('/', cors({
   maxAge: 86400
 }));
 
+/**
+ * @swagger
+ * /api/file/upload:
+ *   post:
+ *     tags: 
+ *       - File
+ *     summary: Upload File
+ *     operationId: uploadFile
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *                 description: Upload File
+ *             required:
+ *               - file
+ *     responses:
+ *       200:
+ *         description: Upload Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 Message:
+ *                   type: string
+ *                 status:
+ *                   type: number
+ *                 path:
+ *                   type: string
+ *                 type:
+ *                   type: string
+ *                 size:
+ *                   type: number
+ *       401:
+ *         description: UNAUTH
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *     security:
+ *       - bearer: []
+ */
 router.post('/', async (req, res) => {
   try {
     const token = await getToken(req);

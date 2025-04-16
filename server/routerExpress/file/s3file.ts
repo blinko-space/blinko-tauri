@@ -63,7 +63,54 @@ async function generateThumbnail(s3ClientInstance: any, config: any, fullPath: s
   }
 }
 
-router.get('/*', async (req: Request, res: Response) => {
+/**
+ * @swagger
+ * /api/s3file/{path}:
+ *   get:
+ *     tags: 
+ *       - File
+ *     summary: Get S3 File
+ *     operationId: getS3File
+ *     parameters:
+ *       - in: path
+ *         name: path
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Path to the S3 file
+ *       - in: query
+ *         name: thumbnail
+ *         schema:
+ *           type: boolean
+ *         required: false
+ *         description: Whether to return a thumbnail (only for images)
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           image/*:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *           application/octet-stream:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       404:
+ *         description: File not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                 details:
+ *                   type: string
+ *     security:
+ *       - bearer: []
+ */
+router.get(/.*/, async (req: Request, res: Response) => {
   try {
     const { s3ClientInstance, config } = await FileService.getS3Client();
     const fullPath = req.params[0];

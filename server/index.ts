@@ -3,7 +3,7 @@ import cors from 'cors';
 import { createContext } from './context';
 import { appRouter } from './routerTrpc/_app';
 import { createExpressMiddleware } from '@trpc/server/adapters/express';
-import { generateOpenApiDocument, createOpenApiExpressMiddleware } from 'trpc-to-openapi';
+import { createOpenApiExpressMiddleware } from 'trpc-to-openapi';
 import ViteExpress from 'vite-express';
 import path from 'path';
 import swaggerUi from 'swagger-ui-express';
@@ -15,6 +15,7 @@ import s3fileRouter from './routerExpress/file/s3file';
 import pluginRouter from './routerExpress/file/plugin';
 import rssRouter from './routerExpress/rss';
 import openaiRouter from './routerExpress/openai';
+import { openApiDocument } from './swagger';
 
 const app = express();
 const PORT = 1111;
@@ -53,13 +54,6 @@ async function bootstrap() {
       router: appRouter,
       createContext,
     }));
-
-    //@ts-ignore
-    const openApiDocument = generateOpenApiDocument(appRouter, {
-      title: 'Blinko API',
-      version: '1.0.0',
-      baseUrl: '/api',
-    });
 
     app.get('/api/openapi.json', (req, res) => {
       res.json(openApiDocument);
