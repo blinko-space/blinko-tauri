@@ -1,12 +1,12 @@
 import React from "react";
-import { Button, Input, Link } from "@heroui/react";
+import { Button, Input } from "@heroui/react";
 import { Icon } from '@/components/Common/Iconify/icons';
 import { RootStore } from "@/store/root";
 import { ToastPlugin } from "@/store/module/Toast/Toast";
 import { useTranslation } from "react-i18next";
 import { api } from "@/lib/trpc";
 import { GradientBackground } from "@/components/Common/GradientBackground";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 export default function Component() {
   const [isVisible, setIsVisible] = React.useState(false);
   const [isConfirmVisible, setIsConfirmVisible] = React.useState(false);
@@ -114,7 +114,7 @@ export default function Component() {
             </Button>
           </form>
           <p className="text-center text-small">
-            <Link href="/signin" size="sm">
+            <Link to="/signin">
               {t('already-have-an-account-direct-login')}
             </Link>
           </p>

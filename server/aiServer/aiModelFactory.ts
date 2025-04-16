@@ -23,7 +23,7 @@ import { deleteBlinkoTool } from './tools/deleteBlinko';
 import { rerank } from '@mastra/rag';
 import { AiBaseModelProvider } from './providers';
 import { prisma } from '@/prisma';
-import { getGlobalConfig } from '@/routers/config';
+import { getGlobalConfig } from '@/routerTrpc/config';
 
 export class AiModelFactory {
   //metadata->>'id'

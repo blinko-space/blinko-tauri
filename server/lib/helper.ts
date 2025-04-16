@@ -9,7 +9,7 @@ import { User } from "@/context";
 import { Request as ExpressRequest } from 'express';
 import { getSession } from "@auth/express";
 import CredentialsProvider from "@auth/express/providers/credentials";
-import { expressAuthParam } from "@/auth";
+import { expressAuthParam } from "@/routerExpress/auth";
 
 export const SendWebhook = async (data: any, webhookType: string, ctx: { id: string }) => {
   try {

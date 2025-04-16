@@ -11,13 +11,13 @@ import { UnstructuredLoader } from '@langchain/community/document_loaders/fs/uns
 import { BaseDocumentLoader } from '@langchain/core/document_loaders/base';
 import { FileService } from '../lib/files';
 import { Context } from '../context';
-import { CreateNotification } from '../routers/notification';
+import { CreateNotification } from '../routerTrpc/notification';
 import { NotificationType } from '@shared/lib/prismaZodType';
 import { CoreMessage } from '@mastra/core';
 import { MDocument } from '@mastra/rag';
 import { embedMany } from 'ai';
 import { RebuildEmbeddingJob } from '../jobs/rebuildEmbeddingJob';
-import { userCaller } from '../routers/_app';
+import { userCaller } from '../routerTrpc/_app';
 import { LibSQLVector } from './vector';
 import { getAllPathTags } from '@/lib/helper';
 

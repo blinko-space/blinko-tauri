@@ -1,7 +1,7 @@
 import { BaseScheduleJob } from "./baseScheduleJob";
 import { prisma } from "../prisma";
 import { NotificationType } from "@shared/lib/prismaZodType";
-import { CreateNotification } from "../routers/notification";
+import { CreateNotification } from "../routerTrpc/notification";
 import { AiModelFactory } from "@/aiServer/aiModelFactory";
 import { AiService } from "@/aiServer";
 

@@ -1,6 +1,6 @@
 import { Icon } from '@/components/Common/Iconify/icons';
 import { observer } from 'mobx-react-lite';
-import { Button, Link, ScrollShadow } from '@heroui/react';
+import { Button, ScrollShadow } from '@heroui/react';
 import { RootStore } from '@/store';
 import { BaseStore } from '@/store/baseStore';
 import { SideBarItem } from './index';
@@ -10,7 +10,8 @@ import { UserAvatarDropdown } from '../Common/UserAvatarDropdown';
 import { TagListPanel } from '../Common/TagListPanel';
 import { useEffect } from 'react';
 import { BlinkoStore } from '@/store/blinkoStore';
-import { useLocation, useSearchParams } from 'react-router-dom';
+import { useLocation, useSearchParams, Link } from 'react-router-dom';
+
 interface SidebarProps {
   onItemClick?: () => void;
 }
@@ -81,16 +82,15 @@ export const Sidebar = observer(({ onItemClick }: SidebarProps) => {
             .map((i) => (
               <Link
                 key={i.title}
-                href={i.href}
-                onPress={() => {
+                to={i.href}
+                onClick={() => {
                   base.currentRouter = i;
                   onItemClick?.();
                 }}
+                className={`flex items-center gap-2 group ${SideBarItem} ${base.isSideBarActive(routerInfo, i) ? '!bg-primary  !text-primary-foreground' : ''}`}
               >
-                <div className={`flex items-center gap-2 group ${SideBarItem} ${base.isSideBarActive(routerInfo, i) ? '!bg-primary  !text-primary-foreground' : ''}`}>
-                  <Icon className={`${base.isSidebarCollapsed ? 'mx-auto' : ''}`} icon={i.icon} width="20" height="20" />
-                  {!base.isSidebarCollapsed && <span className="transition-all">{t(i.title)}</span>}
-                </div>
+                <Icon className={`${base.isSidebarCollapsed ? 'mx-auto' : ''}`} icon={i.icon} width="20" height="20" />
+                {!base.isSidebarCollapsed && <span className="transition-all">{t(i.title)}</span>}
               </Link>
             ))}
           {!base.isSidebarCollapsed && blinkoStore.tagList.value?.listTags.length != 0 && blinkoStore.tagList.value?.listTags && <TagListPanel />}

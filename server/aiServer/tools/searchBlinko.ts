@@ -1,4 +1,4 @@
-import { userCaller } from '@/routers/_app';
+import { userCaller } from '@/routerTrpc/_app';
 import { NoteType } from '@shared/lib/types';
 import { createTool } from '@mastra/core';
 import { z } from 'zod';

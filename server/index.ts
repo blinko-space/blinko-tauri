@@ -1,20 +1,23 @@
 import express from 'express';
 import cors from 'cors';
 import { createContext } from './context';
-import { appRouter } from './routers/_app';
+import { appRouter } from './routerTrpc/_app';
 import { createExpressMiddleware } from '@trpc/server/adapters/express';
 import { generateOpenApiDocument, createOpenApiExpressMiddleware } from 'trpc-to-openapi';
 import ViteExpress from 'vite-express';
 import path from 'path';
-import { setupAuth } from './auth';
-process.env.USE_EXPRESS = 'true';
+import { setupAuth } from './routerExpress/auth';
+import fileRouter from './routerExpress/file/file';
+import uploadRouter from './routerExpress/file/upload';
+import deleteRouter from './routerExpress/file/delete';
 
 const app = express();
 const PORT = 1111;
 const blinkoFrontendAppROOT = path.resolve(__dirname, '../app');
+
 ViteExpress.config({
   viteConfigFile: path.resolve(blinkoFrontendAppROOT, 'vite.config.ts'),
-  inlineViteConfig:{
+  inlineViteConfig: {
     root: blinkoFrontendAppROOT,
   }
 })
@@ -30,6 +33,10 @@ async function bootstrap() {
       router: appRouter,
       createContext,
     }));
+
+    app.use('/api/file', fileRouter);
+    app.use('/api/file/upload', uploadRouter);
+    app.use('/api/file/delete', deleteRouter);
 
     // OpenAPI
     app.use('/api', createOpenApiExpressMiddleware({

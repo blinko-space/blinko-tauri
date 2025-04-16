@@ -1,5 +1,5 @@
 import { generateOpenApiDocument } from 'trpc-to-openapi';
-import { appRouter } from './routers/_app';
+import { appRouter } from './routerTrpc/_app';
 
 const fileApiPaths = {
   '/file/upload': {

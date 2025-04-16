@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Badge, Link } from '@heroui/react';
+import { Button, Badge } from '@heroui/react';
 import { Icon } from '@/components/Common/Iconify/icons';
 import { UserStore } from '@/store/user';
 import { observer } from 'mobx-react-lite';
@@ -23,7 +23,7 @@ import { ToastPlugin } from '@/store/module/Toast/Toast';
 import { BarSearchInput } from './BarSearchInput';
 import { BlinkoNotification } from '@/components/BlinkoNotification';
 import { AiStore } from '@/store/aiStore';
-import { useLocation, useSearchParams, useNavigate } from 'react-router-dom';
+import { useLocation, useSearchParams, Link } from 'react-router-dom';
 
 export const SideBarItem = 'p-2 flex flex-row items-center cursor-pointer gap-2 hover:bg-hover rounded-xl transition-all';
 
@@ -151,7 +151,7 @@ export const CommonLayout = observer(({ children, header }: { children?: React.R
                 <BarSearchInput isPc={isPc} />
                 <FilterPop />
                 {!blinkoStore.config.value?.isCloseDailyReview && <Badge size="sm" className="shrink-0" content={blinkoStore.dailyReviewNoteList.value?.length} color="warning">
-                  <Link href="/review">
+                  <Link to="/review">
                     <Button
                       as="a"
                       className="mt-[2px]"

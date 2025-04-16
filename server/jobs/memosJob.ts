@@ -1,8 +1,8 @@
 import sqlite3 from 'sqlite3';
 import { prisma } from '../prisma';
-import { userCaller } from '../routers/_app';
+import { userCaller } from '../routerTrpc/_app';
 import { FileService } from '../lib/files';
-import { getGlobalConfig } from '../routers/config';
+import { getGlobalConfig } from '../routerTrpc/config';
 import { Context } from '../context';
 import { resetSequences } from '@/lib/helper';
 import { ProgressResult } from '@shared/lib/types';

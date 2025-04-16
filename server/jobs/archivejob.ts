@@ -1,6 +1,6 @@
 import { ARCHIVE_BLINKO_TASK_NAME } from "@shared/lib/constant";
 import { prisma } from "../prisma";
-import { adminCaller } from "../routers/_app";
+import { adminCaller } from "../routerTrpc/_app";
 import { NoteType } from "../../shared/lib/types";
 import { BaseScheduleJob } from "./baseScheduleJob";
 

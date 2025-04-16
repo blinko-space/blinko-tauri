@@ -1,11 +1,9 @@
-import type { FastifyRequest, FastifyReply } from 'fastify';
-import requestIp from 'request-ip';
 import Bowser from 'bowser';
 import { getToken } from "@/lib/helper";
-import { JWT } from "next-auth/jwt";
 import { CreateFastifyContextOptions } from '@trpc/server/adapters/fastify';
+import jwt from 'jsonwebtoken';
 
-export interface User extends JWT {
+export interface User extends jwt.JwtPayload {
   name: string;
   sub: string;
   role: string;

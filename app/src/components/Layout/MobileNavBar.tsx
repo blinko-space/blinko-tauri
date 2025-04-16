@@ -7,8 +7,7 @@ import { SideBarItem } from "./index";
 import { useTranslation } from "react-i18next";
 import { useSwiper } from "@/lib/hooks";
 import { motion } from "framer-motion";
-import { Link } from '@heroui/react';
-import { useLocation, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 
 interface MobileNavBarProps {
   onItemClick?: () => void;
@@ -49,9 +48,8 @@ export const MobileNavBar = observer(({ onItemClick }: MobileNavBarProps) => {
         <Link
           className="flex-1"
           key={i.title}
-          href={i.href}
-          // shallow={i.shallow}
-          onPress={() => {
+          to={i.href}
+          onClick={() => {
             base.currentRouter = i;
             onItemClick?.();
           }}

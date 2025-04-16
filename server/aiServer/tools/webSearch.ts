@@ -1,7 +1,7 @@
 import { createTool } from '@mastra/core';
 import { z } from 'zod';
 import { tavily } from '@tavily/core';
-import { getGlobalConfig } from '@/routers/config';
+import { getGlobalConfig } from '@/routerTrpc/config';
 
 export const webSearchTool = createTool({
   id: 'web-search-tool',

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Input, Checkbox, Link, Image, Divider } from "@heroui/react";
+import { Button, Input, Checkbox, Image, Divider } from "@heroui/react";
 import { Icon } from '@/components/Common/Iconify/icons';
 import { RootStore } from "@/store";
 import { ToastPlugin } from "@/store/module/Toast/Toast";
@@ -15,6 +15,7 @@ import { GradientBackground } from "@/components/Common/GradientBackground";
 import { signIn } from "@/components/Auth/auth-client";
 import { useNavigate } from "react-router-dom";
 import { useSession } from '@/components/Auth/auth-context';
+import { Link } from 'react-router-dom';
 
 type OAuthProvider = {
   id: string;
@@ -229,7 +230,7 @@ export default function Component() {
           {
             canRegister && <p className="text-center text-small">
               {t('need-to-create-an-account')}&nbsp;
-              <Link href="/signup" size="sm" >
+              <Link to="/signup">
                 {t('sign-up')}
               </Link>
             </p>

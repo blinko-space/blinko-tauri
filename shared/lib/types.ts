@@ -1,4 +1,4 @@
-import { RouterOutput } from "../../server/routers/_app";
+import { RouterOutput } from "../../server/routerTrpc/_app";
 import { z } from "zod";
 
 export type Note = Partial<NonNullable<RouterOutput['notes']['list'][0]>>
