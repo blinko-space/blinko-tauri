@@ -1,0 +1,34 @@
+import type { FastifyRequest, FastifyReply } from 'fastify';
+import requestIp from 'request-ip';
+import Bowser from 'bowser';
+import { getToken } from "@/lib/helper";
+import { JWT } from "next-auth/jwt";
+import { CreateFastifyContextOptions } from '@trpc/server/adapters/fastify';
+
+export interface User extends JWT {
+  name: string;
+  sub: string;
+  role: string;
+  id: string;
+  exp: number;
+  iat: number;
+  ip?: string;
+  userAgent?: any;
+  permissions?: string[];
+}
+
+export async function createContext({
+  req,
+  res,
+}: CreateFastifyContextOptions) {
+  const token = await getToken(req) as User;
+  console.log(token, 'token')
+  const ua = req.headers['user-agent'];
+  const userAgent = ua ? Bowser.parse(ua) : null;
+  if (!token?.sub) {
+    return { userAgent } as User;
+  }
+  return { ...token, id: token.sub, ip: '0.0.0.0', userAgent }
+}
+
+export type Context = Awaited<ReturnType<typeof createContext>>;

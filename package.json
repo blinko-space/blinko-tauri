@@ -1,0 +1,42 @@
+{
+  "name": "blinko-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "packageManager": "bun@1.2.8",
+  "workspaces": [
+    "app",
+    "server"
+  ],
+  "scripts": {
+    "dev": "cd app && bun run tauri dev",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "dev:backend": "dotenv turbo run dev --filter=@blinko/backend",
+    "dev:frontend": "dotenv turbo run dev --filter=@blinko/frontend",
+    "postinstall": "turbo run prisma:generate --filter=@blinko/backend",
+    "setup": "bun install",
+    "prisma:generate": "cd prisma && prisma generate",
+    "prisma:migrate:dev": "cd prisma && prisma migrate dev",
+    "prisma:migrate:deploy": "cd prisma && prisma migrate deploy",
+    "prisma:studio": "cd prisma && prisma studio"
+  },
+  "devDependencies": {
+    "@types/lru-cache": "^7.10.10",
+    "concurrently": "^9.1.2",
+    "eslint": "^8.56.0",
+    "prettier": "^3.2.5",
+    "turbo": "latest",
+    "typescript": "^5.1.6"
+  },
+  "engines": {
+    "bun": ">=1.0.0",
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "lru-cache": "^11.1.0",
+    "qrcode.react": "^4.2.0",
+    "wait-on": "^8.0.3"
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": [
+    ".env"
+  ],
+  "globalEnv": [
+    "NODE_ENV",
+    "DATABASE_URL",
+    "PORT",
+    "BACKEND_PORT",
+    "FRONTEND_PORT",
+    "NEXTAUTH_SECRET",
+    "NEXTAUTH_URL",
+    "S3_ENDPOINT",
+    "S3_REGION",
+    "S3_BUCKET",
+    "S3_ACCESS_KEY",
+    "S3_SECRET_KEY",
+    "UPLOAD_PATH"
+  ],
+  "tasks": {
+    "prisma:generate": {
+      "inputs": [
+        ".env"
+      ],
+      "cache": false,
+      "outputs": [
+        "node_modules/.prisma/**"
+      ]
+    },
+    "build": {
+      "inputs": [
+        ".env"
+      ],
+      "dependsOn": [
+        "^build",
+        "prisma:generate"
+      ],
+      "outputs": [
+        "dist/**"
+      ]
+    },
+    "dev": {
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env"
+      ],
+      "cache": false,
+      "persistent": true
+    },
+    "start": {
+      "dependsOn": [
+        "build"
+      ]
+    },
+    "lint": {},
+    "test": {
+      "dependsOn": [
+        "build"
+      ]
+    }
+  }
+}
