@@ -38,7 +38,7 @@ router.post('/', async (req, res) => {
     const buffer = Buffer.from(await response.arrayBuffer());
 
     const urlPath = new URL(url).pathname;
-    const originalName = path.basename(urlPath).replace(/\s+/g, "_"),
+    const originalName = path.basename(urlPath).replace(/\s+/g, "_");
     const filePath = await FileService.uploadFile({
       buffer,
       originalName,
