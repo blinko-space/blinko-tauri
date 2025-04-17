@@ -232,7 +232,7 @@ export const BasicSetting = observer(() => {
             />
 
             <Icon
-              className="cursor-pointer hover:rotate-180 transition-all"
+              className="cursor-pointer hover:rotate-180 !transition-all"
               onClick={async () => {
                 await PromiseCall(api.users.regenToken.mutate())
                 user.userInfo.call(user.userInfo.value?.id ?? 0)

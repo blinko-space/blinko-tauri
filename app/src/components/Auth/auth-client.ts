@@ -1,4 +1,5 @@
 import { Session } from './auth-context';
+import { eventBus } from '@/lib/event';
 
 type SignInOptions = {
   redirect?: boolean;
@@ -38,7 +39,8 @@ export async function getSession(): Promise<Session | null> {
   try {
     const response = await fetch('/api/auth/session');
     if (response.ok) {
-      return await response.json();
+      const data = await response.json();
+      return data;
     }
     return null;
   } catch (error) {
@@ -65,24 +67,24 @@ export async function signIn(
     // Handle credentials sign in
     if (provider === 'credentials') {
       const csrfToken = await getCsrfToken();
-      
+
       // Prepare form parameters
       const params = new URLSearchParams();
       params.append('csrfToken', csrfToken);
       params.append('callbackUrl', callbackUrl);
-      
+
       params.append('redirect', redirect ? 'true' : 'false');
-      
+
       Object.entries(options).forEach(([key, value]) => {
         if (value !== undefined && key !== 'callbackUrl' && key !== 'redirect') {
           params.append(key, String(value));
         }
       });
-      
+
       // Add json=true to get JSON response back
       params.append('json', 'true');
-      
-      
+
+
       const response = await fetch('/api/auth/callback/credentials', {
         method: 'POST',
         headers: {
@@ -91,7 +93,7 @@ export async function signIn(
         body: params.toString(),
         credentials: 'include'
       });
-      
+
       console.log('Response status:', response.status);
 
       let data;
@@ -101,12 +103,17 @@ export async function signIn(
         console.error('Failed to parse response:', error);
         data = { error: 'SignIn failed' };
       }
-      
+
+      const newSession = await getSession();
+      if (newSession) {
+        eventBus.emit('user:session', newSession);
+      }
+
       if (redirect && response.ok) {
         window.location.href = callbackUrl;
         return undefined;
       }
-      
+
       return {
         ok: response.ok || response.status === 302,
         error: data.error,
@@ -115,13 +122,13 @@ export async function signIn(
         requiresTwoFactor: data.requiresTwoFactor
       };
     }
-    
+
     // Handle OAuth sign in
     if (redirect) {
       window.location.href = `/api/auth/signin/${provider}?callbackUrl=${encodeURIComponent(callbackUrl)}`;
       return undefined;
     }
-    
+
     // OAuth doesn't support non-redirect mode, return an error
     return {
       ok: false,
@@ -149,22 +156,24 @@ export async function signIn(
 export async function signOut(options: { redirect?: boolean; callbackUrl?: string } = {}): Promise<{ url: string }> {
   const callbackUrl = options.callbackUrl || '/';
   const redirect = options.redirect !== false;
-  
+
   try {
     const csrfToken = await getCsrfToken();
-    const response = await fetch('/api/auth/signout', {
+    await fetch('/api/auth/signout', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ csrfToken, callbackUrl }),
     });
+
+    eventBus.emit('user:session', null);
     
     if (redirect) {
       window.location.href = callbackUrl;
       return { url: callbackUrl };
     }
-    
+
     return { url: callbackUrl };
   } catch (error) {
     console.error('SignOut error:', error);

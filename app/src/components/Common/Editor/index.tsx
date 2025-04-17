@@ -107,7 +107,7 @@ const Editor = observer(({ content, onChange, onSend, isSendLoading, originFiles
     <div {...getRootProps()} className={isDragAccept ? 'border-2 border-green-500 border-dashed' : ''}>
       <Card
         shadow='none'
-        className={`p-2 relative border-2 border-border transition-all overflow-visible 
+        className={`p-2 relative border-2 border-border !transition-all overflow-visible 
         ${store.isFullscreen ? 'fixed inset-0 z-[9999] m-0 rounded-none border-none bg-background' : ''}`}
         ref={el => {
           if (el) {

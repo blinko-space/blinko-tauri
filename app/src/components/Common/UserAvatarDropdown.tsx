@@ -7,7 +7,7 @@ import { UserStore } from '@/store/user';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from 'next-themes';
 import { useNavigate } from 'react-router-dom';
-// import { signOut } from 'next-auth/react';
+import { signOut } from '../Auth/auth-client';
 
 interface UserAvatarDropdownProps {
   onItemClick?: () => void;
@@ -59,7 +59,7 @@ export const UserAvatarDropdown = observer(({ onItemClick, collapsed = false }: 
             className="font-bold text-danger"
             startContent={<Icon icon="hugeicons:logout-05" width="20" height="20" />}
             onPress={() => {
-              // signOut({ callbackUrl: '/' });
+              signOut({ callbackUrl: '/signin' });
               onItemClick?.();
             }}
           >

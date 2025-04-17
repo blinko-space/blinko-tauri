@@ -80,7 +80,7 @@ export const AIWriteButton = observer(() => {
               endContent={
                 ai.isLoading ?
                   <Icon icon="mingcute:loading-line" width="16" height="16" /> :
-                  <SendIcon onClick={localStore.handleSubmit} className='cursor-pointer primary-foreground group-hover:rotate-[-35deg] transition-all' />
+                  <SendIcon onClick={localStore.handleSubmit} className='cursor-pointer primary-foreground group-hover:rotate-[-35deg] !transition-all' />
               }
             />
 

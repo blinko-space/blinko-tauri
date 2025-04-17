@@ -289,7 +289,7 @@ export const AiSetting = observer(() => {
                 isIconOnly
                 onPress={() => store.fetchModels()}
               >
-                <Icon className='hover:rotate-180 transition-all' icon="fluent:arrow-sync-12-filled" width={18} height={18} />
+                <Icon className='hover:rotate-180 !transition-all' icon="fluent:arrow-sync-12-filled" width={18} height={18} />
               </Button>
             </div>
           }
@@ -528,7 +528,7 @@ export const AiSetting = observer(() => {
                   isIconOnly
                   onPress={() => store.fetchModels()}
                 >
-                  <Icon className='hover:rotate-180 transition-all' icon="fluent:arrow-sync-12-filled" width={18} height={18} />
+                  <Icon className='hover:rotate-180 !transition-all' icon="fluent:arrow-sync-12-filled" width={18} height={18} />
                 </Button>
               }
             </div>
@@ -824,7 +824,7 @@ export const AiSetting = observer(() => {
                 isIconOnly
                 onPress={() => store.fetchModels()}
               >
-                <Icon className='hover:rotate-180 transition-all' icon="fluent:arrow-sync-12-filled" width={18} height={18} />
+                <Icon className='hover:rotate-180 !transition-all' icon="fluent:arrow-sync-12-filled" width={18} height={18} />
               </Button>
             </div>
           }

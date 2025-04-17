@@ -152,7 +152,7 @@ export const ListItem: React.FC<ListItemProps> = ({ children, content, onChange,
         className='flex items-start gap-1 -ml-[15px] cursor-pointer justify-center'
         onClick={handleToggle}
       >
-        <div className='w-[20px] h-[20px] flex-shrink-0 mt-[3px] hover:opacity-80 transition-all'>
+        <div className='w-[20px] h-[20px] flex-shrink-0 mt-[3px] hover:opacity-80 !transition-all'>
           <Icon 
             className='text-[#EAB308]' 
             icon={getIcon()} 

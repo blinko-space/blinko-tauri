@@ -86,7 +86,7 @@ const App = observer(() => {
               blinko.randomReviewNoteList.call({ limit: 30 });
             }}
           >
-            <Icon icon="fluent:arrow-sync-24-filled" width="16" height="16" className="hover:rotate-180 transition-all" />
+            <Icon icon="fluent:arrow-sync-24-filled" width="16" height="16" className="hover:rotate-180 !transition-all" />
           </Button>
         )}
       </div>

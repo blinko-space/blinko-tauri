@@ -30,7 +30,7 @@ export const SendButton = observer(({ store, isSendLoading }: Props) => {
         {(store.files?.some(i => i.uploadPromise?.loading?.value) || isSendLoading) ? (
           <Icon icon="eos-icons:three-dots-loading" width="24" height="24" className='text-[#F5A524]'/>
         ) : (
-          <SendIcon className='primary-foreground !text-primary-foreground group-hover:rotate-[-35deg] transition-all' />
+          <SendIcon className='primary-foreground !text-primary-foreground group-hover:rotate-[-35deg] !transition-all' />
         )}
       </div>
     </div>

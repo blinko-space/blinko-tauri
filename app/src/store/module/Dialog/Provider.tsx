@@ -11,11 +11,11 @@ import { CancelIcon } from "@/components/Common/Icons";
 const CloseButton = ({ onClose }: { onClose: () => void }) => (
   <div
     onClick={onClose}
-    className={`cursor-pointer hover:scale-110 transition-all absolute 
+    className={`cursor-pointer hover:scale-110 !transition-all absolute 
     md:top-[-12px] md:right-[-12px] top-[-25px] right-[calc(50%-17.5px)] bg-[#FFCC00] border-2 border-[#d9ae02] z-[2002] text-black p-2 rounded-full 
     !w-[35px] !h-[35px] flex items-center justify-center`}
   >
-    <CancelIcon className='primary-foreground group-hover:rotate-[180deg] transition-all' />
+    <CancelIcon className='primary-foreground group-hover:rotate-[180deg] !transition-all' />
   </div>
 );
 

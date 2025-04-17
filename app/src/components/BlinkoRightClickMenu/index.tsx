@@ -408,7 +408,7 @@ export const LeftCickMenu = observer(({ onTrigger, className }: { onTrigger: () 
 
   return <Dropdown onOpenChange={e => onTrigger()}>
     <DropdownTrigger >
-      <div onClick={onTrigger} className={`${className} text-desc hover:text-primary cursor-pointer hover:scale-1.3 transition-all`}>
+      <div onClick={onTrigger} className={`${className} text-desc hover:text-primary cursor-pointer hover:scale-1.3 !transition-all`}>
         <Icon icon="fluent:more-vertical-16-regular" width="16" height="16" />
       </div>
     </DropdownTrigger>

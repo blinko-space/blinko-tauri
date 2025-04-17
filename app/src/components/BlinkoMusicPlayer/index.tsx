@@ -122,7 +122,7 @@ export const BlinkoMusicPlayer = observer(() => {
               </>
             )}
 
-            <div className={`relative flex items-center  ${isCompact ? 'p-2 gap-4' : 'p-4 gap-2'} transition-all duration-500 ease-in-out`}>
+            <div className={`relative flex items-center  ${isCompact ? 'p-2 gap-4' : 'p-4 gap-2'} !transition-all duration-500 ease-in-out`}>
               <motion.div
                 animate={{
                   width: isCompact ? 26 : 50,
@@ -245,7 +245,7 @@ export const BlinkoMusicPlayer = observer(() => {
                     {formatTime(musicManager.currentTime)}
                   </motion.span>
                   <div
-                    className={`flex-1 transition-all duration-300`}
+                    className={`flex-1 !transition-all duration-300`}
                     style={{
                       height: isCompact ? '2px' : '4px',
                       background: 'rgba(255, 255, 255, 0.2)',

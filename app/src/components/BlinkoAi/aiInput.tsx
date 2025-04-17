@@ -146,7 +146,7 @@ export const AiInput = observer(({ onSubmit, className }: AiInputProps) => {
           maxRows={40}
           placeholder={t('search-blinko-content-or-help-create')}
         />
-        <div className="absolute bottom-3 right-0 w-full px-2 gap-1 flex justify-center items-center transition-all">
+        <div className="absolute bottom-3 right-0 w-full px-2 gap-1 flex justify-center items-center !transition-all">
           <>
             {cardIcons.map(
               (icon, index) =>
@@ -226,10 +226,10 @@ export const AiInput = observer(({ onSubmit, className }: AiInputProps) => {
                   ease: 'linear',
                 }}
               >
-                <Icon icon="uil:spinner-alt" width="24" height="24" className="text-primary-foreground group-hover:translate-y-[-1px] transition-all" />
+                <Icon icon="uil:spinner-alt" width="24" height="24" className="text-primary-foreground group-hover:translate-y-[-1px] !transition-all" />
               </motion.div>
             ) : (
-              <Icon icon="uil:arrow-up" width="24" height="24" className="text-primary-foreground group-hover:translate-y-[-1px] transition-all" />
+              <Icon icon="uil:arrow-up" width="24" height="24" className="text-primary-foreground group-hover:translate-y-[-1px] !transition-all" />
             )}
           </div>
         </div>

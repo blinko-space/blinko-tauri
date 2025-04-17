@@ -40,7 +40,7 @@ export const Sidebar = observer(({ onItemClick }: SidebarProps) => {
     <div
       style={{ width: isPc ? `${base.sideBarWidth}px` : '100%' }}
       className={`flex h-full flex-1 flex-col p-4 relative bg-background 
-        ${!base.isDragging ? 'transition-all duration-300' : 'transition-none'} 
+        ${!base.isDragging ? '!transition-all duration-300' : 'transition-none'} 
         group/sidebar`}
     >
       {!base.isSidebarCollapsed && (
@@ -90,7 +90,7 @@ export const Sidebar = observer(({ onItemClick }: SidebarProps) => {
                 className={`flex items-center gap-2 group ${SideBarItem} ${base.isSideBarActive(routerInfo, i) ? '!bg-primary  !text-primary-foreground' : ''}`}
               >
                 <Icon className={`${base.isSidebarCollapsed ? 'mx-auto' : ''}`} icon={i.icon} width="20" height="20" />
-                {!base.isSidebarCollapsed && <span className="transition-all">{t(i.title)}</span>}
+                {!base.isSidebarCollapsed && <span className="!transition-all">{t(i.title)}</span>}
               </Link>
             ))}
           {!base.isSidebarCollapsed && blinkoStore.tagList.value?.listTags.length != 0 && blinkoStore.tagList.value?.listTags && <TagListPanel />}

@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { eventBus } from '@/lib/event';
 
 // Session state type
 interface SessionContextType {
@@ -49,6 +50,7 @@ export function SessionProvider({
   const update = async (newSession?: Session | null) => {
     if (newSession !== undefined) {
       setSession(newSession);
+      eventBus.emit('user:session', newSession);
       return newSession;
     }
     
@@ -59,10 +61,12 @@ export function SessionProvider({
         const data = await response.json();
         setSession(data);
         setLoading(false);
+        eventBus.emit('user:session', data);
         return data;
       } else {
         setSession(null);
         setLoading(false);
+        eventBus.emit('user:session', null);
         
         const currentPath = window.location.pathname;
         if (currentPath !== '/signin' && 
@@ -80,6 +84,7 @@ export function SessionProvider({
       console.error('Failed to fetch session:', error);
       setSession(null);
       setLoading(false);
+      eventBus.emit('user:session', null);
       return null;
     }
   };
@@ -88,6 +93,8 @@ export function SessionProvider({
   useEffect(() => {
     if (initialSession === null) {
       update();
+    } else {
+      eventBus.emit('user:session', initialSession);
     }
 
     // Set up periodic refresh

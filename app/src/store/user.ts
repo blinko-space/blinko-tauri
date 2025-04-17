@@ -1,5 +1,5 @@
-  // import { User } from 'next-auth';
-  // import { useSession } from 'next-auth/react';
+// import { User } from 'next-auth';
+// import { useSession } from 'next-auth/react';
 import { useEffect } from 'react';
 import { RootStore } from './root';
 import { Store } from './standard/base';
@@ -158,7 +158,7 @@ export class UserStore implements Store {
         }
       }
     };
-    
+
     handleFeatureRoute('ai', 'useAI', {
       title: "AI",
       href: '/ai',
@@ -227,6 +227,33 @@ export class UserStore implements Store {
     }
   }
 
+  handleSession(session: any, successCallback: () => void) {
+    const location = window.location;
+
+    if (session && session.user) {
+      this.ready({
+        id: session.user.id ?? '',
+        name: session.user.name ?? '',
+        nickname: session.user.nickname ?? '',
+        image: session.user.image ?? '',
+        role: session.user.role ?? '',
+      });
+
+      if (location.pathname === '/signin' || location.pathname === '/signup') {
+        window.location.href = '/';
+      }
+    } else {
+      this.clear();
+
+      const pathname = location.pathname;
+      if (pathname !== '/signin' &&
+        pathname !== '/signup' &&
+        !pathname.includes('/share')) {
+        window.location.href = '/signin';
+      }
+    }
+  }
+
   use() {
     const { t, i18n } = useTranslation()
     const { setTheme, theme } = useTheme()
@@ -238,26 +265,31 @@ export class UserStore implements Store {
     }, []);
 
     useEffect(() => {
-      // if (!this.isLogin) {
-      //   this.checkSession.call().then(isLoggedIn => {
-      //     if (isLoggedIn) {
-      //       this.initializeSettings(setTheme, i18n);
-      //       this.userInfo.call(Number(this.id));
-      //       this.canRegister.call();
-      //     } else {
-      //       const pathname = location.pathname;
-      //       if (pathname !== '/signin' && 
-      //           pathname !== '/signup' && 
-      //           !pathname.includes('/share')) {
-      //         navigate('/signin');
-      //       }
-      //     }
-      //   });
-      // }
+      if (!this.isLogin) {
+        this.checkSession.call();
+      }
+
+      eventBus.on('user:session', (session) => {
+        this.handleSession(session, () => {
+          this.initializeSettings(setTheme, i18n);
+          this.userInfo.call(Number(this.id));
+          this.canRegister.call();
+        });
+      });
+
+      return () => {
+        eventBus.off('user:session', (session) => {
+          this.handleSession(session, () => {
+            this.initializeSettings(setTheme, i18n);
+            this.userInfo.call(Number(this.id));
+            this.canRegister.call();
+          });
+        });
+      };
     }, []);
 
     useEffect(() => {
-      eventBus.on('user:signout', () => {
+      const handleSignout = () => {
         const pathname = location.pathname;
         if (pathname === '/signup' || pathname.includes('/share')) {
           return
@@ -266,7 +298,13 @@ export class UserStore implements Store {
         localStorage.removeItem('password')
         RootStore.Get(UserStore).clear()
         navigate('/signin')
-      })
+      }
+
+      eventBus.on('user:signout', handleSignout)
+
+      return () => {
+        eventBus.off('user:signout', handleSignout)
+      }
     }, []);
   }
 }

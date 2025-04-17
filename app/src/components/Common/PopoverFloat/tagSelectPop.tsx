@@ -124,7 +124,7 @@ const TagSelect = observer(() => {
         <div
           key={i}
           data-index={index}
-          className={`cursor-pointer hover:bg-hover transition-all px-2 py-1 rounded-lg
+          className={`cursor-pointer hover:bg-hover !transition-all px-2 py-1 rounded-lg
             ${index === store.selectedIndex ? 'bg-hover' : ''}`}
           onClick={e => {
             store.hidden()

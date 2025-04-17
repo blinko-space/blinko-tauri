@@ -106,7 +106,7 @@ interface ResourceCardProps {
 }
 
 const getCardClassName = (isDragging?: boolean, isDraggingOver?: boolean) => {
-  const baseClasses = 'mb-2 p-4 hover:bg-hover bg-background transition-all duration-200';
+  const baseClasses = 'mb-2 p-4 hover:bg-hover bg-background !transition-all duration-200';
 
   if (isDraggingOver) {
     return `${baseClasses} relative overflow-visible ring-2 ring-primary/30 bg-primary/10`;

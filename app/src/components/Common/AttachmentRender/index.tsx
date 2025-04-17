@@ -40,7 +40,7 @@ const AttachmentsRender = observer((props: IProps) => {
         {files?.filter(i => i.previewType == 'video').map((file, index) => (
           <div
             key={`${file.name}-${index}`}
-            className='group relative flex p-2 items-center gap-2 cursor-pointer transition-all rounded-2xl'
+            className='group relative flex p-2 items-center gap-2 cursor-pointer !transition-all rounded-2xl'
           >
             <video
               onDoubleClick={(e) => e.stopPropagation()}
@@ -71,7 +71,7 @@ const AttachmentsRender = observer((props: IProps) => {
         renderItem={(file) => (
           <div 
             className={`relative mt-2 flex p-2 items-center gap-2 cursor-pointer 
-              bg-sencondbackground hover:bg-hover transition-all rounded-md group
+              bg-sencondbackground hover:bg-hover !transition-all rounded-md group
               ${!preview ? 'min-w-[200px] flex-shrink-0' : 'w-full'}`}
             onClick={() => {
               if (preview) {

@@ -134,7 +134,7 @@ export const CardBlogBox = ({ blinkoItem, isExpanded }: BlogContentProps) => {
                   );
                 });
                 return uniquePaths.map((path) => (
-                  <div key={path} className='text-desc text-xs blinko-tag whitespace-nowrap font-bold hover:opacity-80 transition-all cursor-pointer' onClick={(e) => {
+                  <div key={path} className='text-desc text-xs blinko-tag whitespace-nowrap font-bold hover:opacity-80 !transition-all cursor-pointer' onClick={(e) => {
                     e.stopPropagation()
                     navigate(`/?path=all&searchText=${encodeURIComponent("#" + path)}`)
                     RootStore.Get(BlinkoStore).forceQuery++

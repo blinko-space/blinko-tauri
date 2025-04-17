@@ -34,10 +34,10 @@ const HighlightTags = observer(({ text, }: { text: any }) => {
       const processedParts = parts.map((part, index) => {
         if (part.startsWith('#') && part.length > 1 && part.match(helper.regex.isContainHashTag)) {
           const isShareMode = location.pathname.includes('share')
-          if (isShareMode) return <span key={`${lineIndex}-${index}`} className={`w-fit select-none blinko-tag px-1 font-bold cursor-pointer hover:opacity-80 transition-all`}>{part + " "}</span>
+          if (isShareMode) return <span key={`${lineIndex}-${index}`} className={`w-fit select-none blinko-tag px-1 font-bold cursor-pointer hover:opacity-80 !transition-all`}>{part + " "}</span>
           return (
             <span key={`${lineIndex}-${index}`}
-              className={`select-none blinko-tag px-1 font-bold cursor-pointer hover:opacity-80 transition-all ${isShareMode ? 'pointer-events-none' : ''}`}
+              className={`select-none blinko-tag px-1 font-bold cursor-pointer hover:opacity-80 !transition-all ${isShareMode ? 'pointer-events-none' : ''}`}
               onClick={async () => {
                 if (isShareMode) return;
                 navigate(`/?path=all&searchText=${encodeURIComponent(part)}`);

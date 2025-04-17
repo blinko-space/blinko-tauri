@@ -202,7 +202,7 @@ export const AudioRender = observer(({ files, preview = false }: Props) => {
                   ease: "easeInOut"
                 }}
               >
-                <div className={`group relative flex items-center gap-3 p-2 md:p-3 cursor-pointer transition-all rounded-xl ${getBackgroundStyle(metadata?.coverUrl)}`}>
+                <div className={`group relative flex items-center gap-3 p-2 md:p-3 cursor-pointer !transition-all rounded-xl ${getBackgroundStyle(metadata?.coverUrl)}`}>
                   {metadata?.coverUrl && (
                     <>
                       <div
@@ -232,7 +232,7 @@ export const AudioRender = observer(({ files, preview = false }: Props) => {
                           <Icon icon="ph:music-notes" className="w-6 h-6 text-gray-400" />
                         </div>
                       )}
-                      <div className="absolute inset-0 flex items-center justify-center hover:bg-black/20 rounded-md transition-all pointer-events-none">
+                      <div className="absolute inset-0 flex items-center justify-center hover:bg-black/20 rounded-md !transition-all pointer-events-none">
                         <Icon
                           icon={isCurrentPlaying(file.name) ? "ph:pause-fill" : "ph:play-fill"}
                           className="w-6 h-6 text-white drop-shadow-lg"
@@ -294,7 +294,7 @@ export const AudioRender = observer(({ files, preview = false }: Props) => {
                                     progressRefs.current[file.name] = el;
                                   }
                                 }}
-                                className={`absolute h-full rounded-full transition-all duration-100 ${metadata?.coverUrl ? 'bg-white' : 'bg-primary'
+                                className={`absolute h-full rounded-full !transition-all duration-100 ${metadata?.coverUrl ? 'bg-white' : 'bg-primary'
                                   }`}
                               />
                             </div>

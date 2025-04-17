@@ -15,7 +15,7 @@ export const LoadingAndEmpty = ({ isLoading, isEmpty, emptyMessage, className, i
   return (
     <div className={`text-ignore flex flex-col items-center justify-center gap-1 w-full ${className}`}>
       <Icon
-        className={`text-ignore mt-2 mb-[-5px] transition-all ${isLoading ? 'h-[30px]' : 'h-0'}`}
+        className={`text-ignore mt-2 mb-[-5px] !transition-all ${isLoading ? 'h-[30px]' : 'h-0'}`}
         icon="eos-icons:three-dots-loading"
         width="40"
         height="40"
