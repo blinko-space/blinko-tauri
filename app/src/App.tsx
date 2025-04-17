@@ -33,7 +33,6 @@ const OAuthCallbackPage = lazy(() => import('./pages/oauth-callback'));
 const DetailPage = lazy(() => import('./pages/detail'));
 const ShareIndexPage = lazy(() => import('./pages/share'));
 const ShareDetailPage = lazy(() => import('./pages/share/[id]'));
-const OfflinePage = lazy(() => import('./pages/_offline'));
 
 const ProtectedRoute = ({ children }) => {
   const navigate = useNavigate();
@@ -98,7 +97,6 @@ function AppRoutes() {
         <Route path="/detail/*" element={<ProtectedRoute><DetailPage /></ProtectedRoute>} />
         <Route path="/share" element={<ShareIndexPage />} />
         <Route path="/share/:id" element={<ShareDetailPage />} />
-        <Route path="/_offline" element={<OfflinePage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Suspense>
