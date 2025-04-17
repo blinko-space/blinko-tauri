@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "cd ../server && bun index.ts",
+    "dev": "cd ../server && bun --watch index.ts",
     "build": "tsc && vite build",
     "tauri:dev": "tauri dev",
     "tauri:android:dev": "tauri android dev" 

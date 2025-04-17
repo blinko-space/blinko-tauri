@@ -2,8 +2,8 @@ import { z } from 'zod';
 import { router, publicProcedure } from '../middleware';
 import packageJson from '../../package.json';
 import { cache } from '@shared/lib/cache';
-// import { unfurl } from 'unfurl.js';
-// import { Metadata } from 'unfurl.js/dist/types';
+import { unfurl } from 'unfurl.js';
+import { Metadata } from 'unfurl.js/dist/types';
 import pLimit from 'p-limit';
 import * as mm from 'music-metadata';
 import { UPLOAD_FILE_PATH } from '@shared/lib/constant';
@@ -69,9 +69,20 @@ export const publicRouter = router({
                 },
               },
             });
+            if ('error' in res && res.error) {
+              console.error('Failed to get latest version:', res.message || 'Invalid response');
+              return '';
+            }
+            
+            if (!res.data || !res.data.tag_name) {
+              console.error('Failed to get latest version: Missing tag_name in response');
+              return '';
+            }
+            
             const latestVersion = res.data.tag_name.replace('v', '');
             return latestVersion;
           } catch (error) {
+            console.error('Failed to get latest version:', error instanceof Error ? error.message : String(error));
             return '';
           }
         },
@@ -95,21 +106,20 @@ export const publicRouter = router({
       return cache.wrap(
         input.url,
         async () => {
-          return null
           try {
             const timeoutPromise = new Promise((_, reject) => {
               setTimeout(() => reject(console.error('timeout')), 5000);
             });
-            // const fetchPromise = limit(async () => {
-            //   const result: Metadata = await unfurl(input.url);
-            //   return {
-            //     title: result?.title ?? '',
-            //     favicon: result?.favicon ?? '',
-            //     description: result?.description ?? '',
-            //   };
-            // });
-            // const result: any = await Promise.race([fetchPromise, timeoutPromise]);
-            // return result;
+            const fetchPromise = limit(async () => {
+              const result: Metadata = await unfurl(input.url);
+              return {
+                title: result?.title ?? '',
+                favicon: result?.favicon ?? '',
+                description: result?.description ?? '',
+              };
+            });
+            const result: any = await Promise.race([fetchPromise, timeoutPromise]);
+            return result;
             return null
           } catch (error) {
             console.error('Link preview error:', error);
@@ -343,10 +353,20 @@ export const publicRouter = router({
                 },
               },
             });
-            console.log('response', response.data);
+            
+            if ('error' in response && response.error) {
+              console.error('Failed to fetch hub site list:', response.message || 'Invalid response');
+              return [];
+            }
+            
+            if (!response.data || !response.data.sites) {
+              console.error('Failed to fetch hub site list: Missing sites in response');
+              return [];
+            }
+            
             return response.data.sites;
           } catch (error) {
-            console.error('Failed to fetch hub site list:', error);
+            console.error('Failed to fetch hub site list:', error instanceof Error ? error.message : String(error));
             return [];
           }
         },
@@ -386,6 +406,21 @@ export const publicRouter = router({
 
         const endTime = Date.now();
         const responseTime = endTime - startTime;
+
+        if ('error' in response && response.error) {
+          console.log(`[Server] Proxy test failed: ${response.message}`);
+          return {
+            success: false,
+            message: response.message || 'Failed to connect through proxy',
+            responseTime,
+            statusCode: response.status,
+            error: response.message,
+            errorDetails: {
+              proxyInfo: response.proxyInfo || {},
+              url: response.url
+            }
+          };
+        }
 
         console.log(`[Server] Proxy test success: ${response.status} in ${responseTime}ms`);
 

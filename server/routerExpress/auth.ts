@@ -16,21 +16,16 @@ import { getGlobalConfig } from "../routerTrpc/config";
 import { prisma } from "../prisma";
 import { getNextAuthSecret, getSessionToken } from "../lib/helper";
 import { verifyPassword } from "@prisma/seed";
+import { cache } from "../../shared/lib/cache";
+
+// Cache TTL in milliseconds (20 seconds)
+const CACHE_TTL = 20 * 1000;
 
 async function verify2FACode(userId: string, userRole: string, userName: string, twoFactorCode: string) {
   const now = Math.floor(Date.now() / 1000);
   const thirtyDays = 30 * 24 * 60 * 60;
 
-  const config = await getGlobalConfig({
-    ctx: {
-      id: userId,
-      role: userRole as 'superadmin' | 'user',
-      name: userName,
-      sub: userId,
-      exp: now + thirtyDays,
-      iat: now
-    }
-  });
+  const config = await getUserConfig(userId, userRole, userName);
 
   const isValidToken = authenticator.verify({
     token: twoFactorCode,
@@ -45,85 +40,118 @@ async function verify2FACode(userId: string, userRole: string, userName: string,
 }
 
 async function getUserConfig(userId: string, userRole: string, userName: string) {
-  const now = Math.floor(Date.now() / 1000);
-  const thirtyDays = 30 * 24 * 60 * 60;
+  const cacheKey = `user_config_${userId}`;
+  
+  return await cache.wrap(cacheKey, async () => {
+    const now = Math.floor(Date.now() / 1000);
+    const thirtyDays = 30 * 24 * 60 * 60;
 
-  return await getGlobalConfig({
-    ctx: {
-      id: userId,
-      role: userRole as 'superadmin' | 'user',
-      name: userName,
-      sub: userId,
-      exp: now + thirtyDays,
-      iat: now
-    }
-  });
+    return await getGlobalConfig({
+      ctx: {
+        id: userId,
+        role: userRole as 'superadmin' | 'user',
+        name: userName,
+        sub: userId,
+        exp: now + thirtyDays,
+        iat: now
+      }
+    });
+  }, { ttl: CACHE_TTL });
 }
 
 async function getProviderConfigList() {
-  try {
-    const config = await getGlobalConfig({ useAdmin: true });
-    const providers = config.oauth2Providers || [];
+  const cacheKey = 'oauth_providers_list';
+  
+  return await cache.wrap(cacheKey, async () => {
+    try {
+      const config = await getGlobalConfig({ useAdmin: true });
+      const providers = config.oauth2Providers || [];
 
-    return providers.map(provider => {
-      switch (provider.id) {
-        case 'github':
-          return GitHubProvider({
-            clientId: provider.clientId,
-            clientSecret: provider.clientSecret,
-          });
-        case 'google':
-          return GoogleProvider({
-            clientId: provider.clientId,
-            clientSecret: provider.clientSecret,
-          });
-        case 'facebook':
-          return FacebookProvider({
-            clientId: provider.clientId,
-            clientSecret: provider.clientSecret,
-          });
-        case 'twitter':
-          return TwitterProvider({
-            clientId: provider.clientId,
-            clientSecret: provider.clientSecret,
-          });
-        case 'discord':
-          return DiscordProvider({
-            clientId: provider.clientId,
-            clientSecret: provider.clientSecret,
-          });
-        case 'spotify':
-          return SpotifyProvider({
-            clientId: provider.clientId,
-            clientSecret: provider.clientSecret,
-          });
-        case 'apple':
-          return AppleProvider({
-            clientId: provider.clientId,
-            clientSecret: provider.clientSecret,
-          });
-        case 'slack':
-          return SlackProvider({
-            clientId: provider.clientId,
-            clientSecret: provider.clientSecret,
-          });
-        case 'twitch':
-          return TwitchProvider({
-            clientId: provider.clientId,
-            clientSecret: provider.clientSecret,
-          });
-        case 'line':
-          return LineProvider({
-            clientId: provider.clientId,
-            clientSecret: provider.clientSecret,
-          });
-        default:
-          if (provider.wellKnown) {
+      return providers.map(provider => {
+        switch (provider.id) {
+          case 'github':
+            return GitHubProvider({
+              clientId: provider.clientId,
+              clientSecret: provider.clientSecret,
+            });
+          case 'google':
+            return GoogleProvider({
+              clientId: provider.clientId,
+              clientSecret: provider.clientSecret,
+            });
+          case 'facebook':
+            return FacebookProvider({
+              clientId: provider.clientId,
+              clientSecret: provider.clientSecret,
+            });
+          case 'twitter':
+            return TwitterProvider({
+              clientId: provider.clientId,
+              clientSecret: provider.clientSecret,
+            });
+          case 'discord':
+            return DiscordProvider({
+              clientId: provider.clientId,
+              clientSecret: provider.clientSecret,
+            });
+          case 'spotify':
+            return SpotifyProvider({
+              clientId: provider.clientId,
+              clientSecret: provider.clientSecret,
+            });
+          case 'apple':
+            return AppleProvider({
+              clientId: provider.clientId,
+              clientSecret: provider.clientSecret,
+            });
+          case 'slack':
+            return SlackProvider({
+              clientId: provider.clientId,
+              clientSecret: provider.clientSecret,
+            });
+          case 'twitch':
+            return TwitchProvider({
+              clientId: provider.clientId,
+              clientSecret: provider.clientSecret,
+            });
+          case 'line':
+            return LineProvider({
+              clientId: provider.clientId,
+              clientSecret: provider.clientSecret,
+            });
+          default:
+            if (provider.wellKnown) {
+              return {
+                id: provider.id,
+                name: provider.name,
+                type: "oauth",
+                wellKnown: provider.wellKnown,
+                clientId: provider.clientId,
+                clientSecret: provider.clientSecret,
+                profile(profile: any) {
+                  return {
+                    id: profile?.id ?? (profile?.sub ?? (profile?.sid ?? '')),
+                    name: profile.name || profile.login,
+                    email: profile.email,
+                    image: profile.avatar_url || profile.picture
+                  };
+                }
+              } as OAuthConfig<any>;
+            }
             return {
               id: provider.id,
               name: provider.name,
               type: "oauth",
-              wellKnown: provider.wellKnown,
+              authorization: {
+                url: provider.authorizationUrl!,
+                params: { scope: provider.scope }
+              },
+              token: {
+                url: provider.tokenUrl!,
+              },
+              userinfo: {
+                url: provider.userinfoUrl!,
+              },
               clientId: provider.clientId,
               clientSecret: provider.clientSecret,
               profile(profile: any) {
@@ -135,38 +163,42 @@ async function getProviderConfigList() {
                 };
               }
             } as OAuthConfig<any>;
-          }
-          return {
-            id: provider.id,
-            name: provider.name,
-            type: "oauth",
-            authorization: {
-              url: provider.authorizationUrl!,
-              params: { scope: provider.scope }
-            },
-            token: {
-              url: provider.tokenUrl!,
-            },
-            userinfo: {
-              url: provider.userinfoUrl!,
-            },
-            clientId: provider.clientId,
-            clientSecret: provider.clientSecret,
-            profile(profile: any) {
-              return {
-                id: profile?.id ?? (profile?.sub ?? (profile?.sid ?? '')),
-                name: profile.name || profile.login,
-                email: profile.email,
-                image: profile.avatar_url || profile.picture
-              };
-            }
-          } as OAuthConfig<any>;
+        }
+      });
+    } catch (error) {
+      console.error("Failed to load OAuth providers:", error);
+      return [];
+    }
+  }, { ttl: CACHE_TTL });
+}
+
+// Function to fetch user by name with cache
+async function getUserByName(username: string) {
+  const cacheKey = `user_by_name_${username}`;
+  
+  return await cache.wrap(cacheKey, async () => {
+    return await prisma.accounts.findMany({
+      where: { name: username },
+      select: {
+        name: true,
+        nickname: true,
+        id: true,
+        role: true,
+        password: true,
       }
     });
-  } catch (error) {
-    console.error("Failed to load OAuth providers:", error);
-    return [];
-  }
+  }, { ttl: CACHE_TTL });
+}
+
+// Function to fetch user by ID with cache
+async function getUserById(id: number) {
+  const cacheKey = `user_by_id_${id}`;
+  
+  return await cache.wrap(cacheKey, async () => {
+    return await prisma.accounts.findUnique({
+      where: { id },
+    });
+  }, { ttl: CACHE_TTL });
 }
 
 export const expressAuthParam = async () => {
@@ -233,16 +265,8 @@ export const expressAuthParam = async () => {
               throw new Error("Missing required credentials");
             }
 
-            const users = await prisma.accounts.findMany({
-              where: { name: credentials.username as string },
-              select: {
-                name: true,
-                nickname: true,
-                id: true,
-                role: true,
-                password: true,
-              }
-            });
+            const users = await getUserByName(credentials.username as string);
+            
             if (users.length === 0) {
               throw new Error("user not found");
             }
@@ -318,12 +342,16 @@ export const expressAuthParam = async () => {
         let userName = user.id ?? user.name ?? '';
         if (account?.type === 'oauth') {
           try {
-            const existingUser = await prisma.accounts.findFirst({
-              where: {
-                name: userName,
-                loginType: 'oauth'
-              }
-            });
+            const cacheKey = `oauth_user_${userName}`;
+            
+            const existingUser = await cache.wrap(cacheKey, async () => {
+              return await prisma.accounts.findFirst({
+                where: {
+                  name: userName,
+                  loginType: 'oauth'
+                }
+              });
+            }, { ttl: CACHE_TTL });
 
             if (!existingUser) {
               const newUser = await prisma.accounts.create({
@@ -335,6 +363,9 @@ export const expressAuthParam = async () => {
                   loginType: 'oauth',
                 }
               });
+              // Invalidate cache after creating new user
+              cache.set(`user_by_id_${newUser.id}`, null);
+              
               user.id = newUser.id.toString();
               // @ts-ignore
               user.name = userName;
@@ -345,20 +376,18 @@ export const expressAuthParam = async () => {
             } else {
               let realUser = existingUser;
               if (existingUser.linkAccountId) {
-                realUser = (await prisma.accounts.findFirst({ where: { id: existingUser.linkAccountId } }))!
+                realUser = await cache.wrap(`linked_account_${existingUser.linkAccountId}`, async () => {
+                  return (await prisma.accounts.findFirst({ where: { id: existingUser.linkAccountId! } }))!;
+                }, { ttl: CACHE_TTL });
+                
                 userName = realUser.name;
               }
 
-              const config = await getGlobalConfig({
-                ctx: {
-                  id: realUser.id.toString(),
-                  role: realUser.role as 'superadmin' | 'user',
-                  name: userName,
-                  sub: realUser.id.toString(),
-                  exp: 0,
-                  iat: 0
-                }
-              });
+              const config = await getUserConfig(
+                realUser.id.toString(),
+                realUser.role,
+                userName
+              );
 
               if (config.twoFactorEnabled) {
                 // @ts-ignore
@@ -372,6 +401,10 @@ export const expressAuthParam = async () => {
                   updatedAt: new Date()
                 }
               });
+              
+              // Invalidate related cache entries
+              cache.set(`user_by_id_${existingUser.id}`, null);
+              cache.set(`oauth_user_${userName}`, null);
 
               // @ts-ignore
               user.id = realUser.id.toString();
@@ -390,7 +423,6 @@ export const expressAuthParam = async () => {
         return true;
       },
       async jwt({ token, user }) {
-        console.log(token, 'jwt token')
         if (user) {
           // @ts-ignore
           if (user.requiresTwoFactor) {
@@ -420,9 +452,7 @@ export const expressAuthParam = async () => {
         return baseUrl;
       },
       async session({ session, token }) {
-        const user = await prisma.accounts.findUnique({
-          where: { id: Number(token.id) },
-        });
+        const user = await getUserById(Number(token.id));
 
         if (!user) {
           throw new Error('User no longer exists');

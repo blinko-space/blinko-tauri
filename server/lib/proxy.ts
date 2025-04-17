@@ -56,7 +56,23 @@ export async function createAxiosWithProxy(options?: { ctx?: Context; useAdmin?:
   // create axios instance with better defaults for proxied connections
   const axiosInstance = axios.create({
     ...baseConfig,
+    // 添加默认超时
+    timeout: baseConfig.timeout || 30000,
+    // 禁止自动错误转换
+    validateStatus: function (status) {
+      return true; // 永远不拒绝响应
+    }
   });
+
+  axiosInstance.interceptors.request.use(
+    (config) => {
+      return config;
+    },
+    (error) => {
+      console.error('[Server] Axios request error:', error);
+      return Promise.reject(error instanceof Error ? error : new Error(String(error)));
+    }
+  );
 
   // if enabled http proxy, set proxy
   if (globalConfig.isUseHttpProxy && globalConfig.httpProxyHost) {
@@ -111,34 +127,62 @@ export async function createAxiosWithProxy(options?: { ctx?: Context; useAdmin?:
   }
 
   axiosInstance.interceptors.response.use(
-    (response) => response,
-    (error) => {
-      let errorMessage = 'Unknown error';
-      if (error.code) {
-        errorMessage = `${error.code}`;
-
-        if (error.code === 'ECONNRESET') {
-          errorMessage += ': The connection was reset. This may be due to a proxy configuration issue or network problem.';
-        } else if (error.code === 'ECONNREFUSED') {
-          errorMessage += ': The connection was refused. Please check if the proxy server is running and accessible.';
-        } else if (error.code === 'ENOTFOUND') {
-          errorMessage += ': Host not found. Please check your proxy host settings.';
-        } else if (error.code === 'ETIMEDOUT') {
-          errorMessage += ': Connection timed out. The proxy server took too long to respond.';
-        }
-      }
-
-      if (error.response) {
-        console.error(`[Server] Proxy response status: ${error.response.status}`);
-      }
-      error.proxyInfo = {
-        message: errorMessage,
-        host: globalConfig.httpProxyHost,
-        port: globalConfig.httpProxyPort,
-      };
-
-      return Promise.reject(error);
+    (response) => {
+      return response;
     },
+    (error) => {
+      try {
+        let errorMessage = 'Unknown error';
+        let statusCode = 500;
+        let errorCode = '';
+        let errorDetails = {};
+
+        const safeError = error instanceof Error ? error : new Error(String(error));
+        
+        if (error.response) {
+          statusCode = error.response.status;
+          console.error(`[Server] Proxy response status: ${statusCode}`);
+        }
+
+        if (error.code) {
+          errorCode = error.code;
+          errorMessage = `${errorCode}`;
+
+          if (errorCode === 'ECONNRESET') {
+            errorMessage += ': The connection was reset. This may be due to a proxy configuration issue or network problem.';
+          } else if (errorCode === 'ECONNREFUSED') {
+            errorMessage += ': The connection was refused. Please check if the proxy server is running and accessible.';
+          } else if (errorCode === 'ENOTFOUND') {
+            errorMessage += ': Host not found. Please check your proxy host settings.';
+          } else if (errorCode === 'ETIMEDOUT') {
+            errorMessage += ': Connection timed out. The proxy server took too long to respond.';
+          }
+        }
+
+        errorDetails = {
+          message: errorMessage,
+          status: statusCode,
+          code: errorCode || 'UNKNOWN_ERROR',
+          url: error.config?.url || 'unknown'
+        };
+
+        const proxyInfo = {
+          message: errorMessage,
+          host: globalConfig.httpProxyHost,
+          port: globalConfig.httpProxyPort,
+        };
+
+        return Promise.reject(Object.assign(safeError, {
+          status: statusCode,
+          code: errorCode,
+          details: errorDetails,
+          proxyInfo
+        }));
+      } catch (handlerError) {
+        console.error('[Server] Error in error handler:', handlerError);
+        return Promise.reject(error instanceof Error ? error : new Error('Failed to process network request'));
+      }
+    }
   );
 
   console.log(`[Server] Axios instance created with proxy: ${globalConfig.isUseHttpProxy ? 'enabled' : 'disabled'}`);
@@ -153,9 +197,22 @@ export async function getWithProxy(
     config?: AxiosRequestConfig;
   },
 ) {
-  const { ctx, useAdmin, config = {} } = options || {};
-  const axiosInstance = await createAxiosWithProxy({ ctx, useAdmin });
-  return axiosInstance.get(url, config);
+  try {
+    const { ctx, useAdmin, config = {} } = options || {};
+    const axiosInstance = await createAxiosWithProxy({ ctx, useAdmin });
+    return await axiosInstance.get(url, config);
+  } catch (error) {
+    console.error(`[Server] getWithProxy error for URL ${url}:`, error);
+    return {
+      error: true,
+      data: null,
+      status: error.response?.status || 500,
+      statusText: error.response?.statusText || 'Error',
+      message: error.message || 'Unknown error',
+      proxyInfo: error.proxyInfo || {},
+      url
+    };
+  }
 }
 
 export async function postWithProxy(
@@ -167,9 +224,22 @@ export async function postWithProxy(
     config?: AxiosRequestConfig;
   },
 ) {
-  const { ctx, useAdmin, config = {} } = options || {};
-  const axiosInstance = await createAxiosWithProxy({ ctx, useAdmin });
-  return axiosInstance.post(url, data, config);
+  try {
+    const { ctx, useAdmin, config = {} } = options || {};
+    const axiosInstance = await createAxiosWithProxy({ ctx, useAdmin });
+    return await axiosInstance.post(url, data, config);
+  } catch (error) {
+    console.error(`[Server] postWithProxy error for URL ${url}:`, error);
+    return {
+      error: true,
+      data: null,
+      status: error.response?.status || 500,
+      statusText: error.response?.statusText || 'Error',
+      message: error.message || 'Unknown error',
+      proxyInfo: error.proxyInfo || {},
+      url
+    };
+  }
 }
 
 export async function getProxyUrl(options?: { ctx?: Context; useAdmin?: boolean }): Promise<string | null> {

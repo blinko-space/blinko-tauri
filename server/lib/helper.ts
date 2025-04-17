@@ -3,12 +3,10 @@ import { authenticator } from 'otplib';
 import crypto from 'crypto';
 import { Feed } from "feed";
 import jwt from 'jsonwebtoken';
-import { getToken as getNextAuthToken } from 'next-auth/jwt';
 import { prisma } from "@/prisma";
 import { User } from "@/context";
 import { Request as ExpressRequest } from 'express';
 import { getSession } from "@auth/express";
-import CredentialsProvider from "@auth/express/providers/credentials";
 import { expressAuthParam } from "@/routerExpress/auth";
 
 export const SendWebhook = async (data: any, webhookType: string, ctx: { id: string }) => {
@@ -158,6 +156,8 @@ export const getToken = async (req: ExpressRequest) => {
         id: session.user?.id as string,
         name: session.user?.name as string,
         sub: session.user?.id as string,
+        //@ts-ignore
+        role: session.user?.role as string || 'user',
         exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 99999), 
         iat: Math.floor(Date.now() / 1000)
       } as User;
@@ -167,7 +167,9 @@ export const getToken = async (req: ExpressRequest) => {
       const sessionToken = req.cookies['authjs.session-token'];
       if (sessionToken) {
         try {
-          return jwt.verify(sessionToken, secret) as User;
+          const tokenData = jwt.verify(sessionToken, secret) as User;
+          if (!tokenData.role) tokenData.role = 'user';
+          return tokenData;
         } catch (error) {
           console.error('Session token verification failed:', error);
         }
@@ -179,7 +181,9 @@ export const getToken = async (req: ExpressRequest) => {
       if (authHeader && authHeader.startsWith('Bearer ')) {
         const token = authHeader.substring(7);
         try {
-          return jwt.verify(token, secret) as User;
+          const tokenData = jwt.verify(token, secret) as User;
+          if (!tokenData.role) tokenData.role = 'user';
+          return tokenData;
         } catch (error) {
           console.error('Bearer token verification failed:', error);
         }

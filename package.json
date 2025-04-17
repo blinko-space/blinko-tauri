@@ -37,6 +37,7 @@
     "dotenv": "^16.5.0",
     "lru-cache": "^11.1.0",
     "qrcode.react": "^4.2.0",
+    "unfurl.js": "^6.4.0",
     "wait-on": "^8.0.3"
   }
 }
