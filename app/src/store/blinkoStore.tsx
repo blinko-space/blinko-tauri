@@ -429,6 +429,7 @@ export class BlinkoStore implements Store {
   use() {
     useEffect(() => {
       if (RootStore.Get(UserStore).id) {
+        console.log('firstLoad', RootStore.Get(UserStore).id)
         this.firstLoad()
       }
     }, [RootStore.Get(UserStore).id])

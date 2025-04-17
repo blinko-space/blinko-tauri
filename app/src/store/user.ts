@@ -12,8 +12,10 @@ import { BaseStore } from './baseStore';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from 'next-themes';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { getSession } from '@/components/Auth/auth-client';
-
+import { getSession, Session } from '@/components/Auth/auth-client';
+import { DialogStore } from './module/Dialog';
+import { ShowTwoFactorModal } from '@/components/Common/TwoFactorModal';
+import { ToastPlugin } from './module/Toast/Toast';
 
 export class UserStore implements Store {
   sid = 'user';
@@ -78,17 +80,7 @@ export class UserStore implements Store {
     function: async () => {
       try {
         const session = await getSession();
-        if (session && session.user) {
-          this.ready({
-            id: session.user.id ?? '',
-            name: session.user.name ?? '',
-            nickname: session.user.nickname ?? '',
-            image: session.user.image ?? '',
-            role: session.user.role ?? '',
-          });
-          return true;
-        }
-        return false;
+        return session !== null;
       } catch (error) {
         console.error('Failed to check session:', error);
         return false;
@@ -96,10 +88,19 @@ export class UserStore implements Store {
     }
   });
 
-  // Create session data object from UserStore
+  handleTwoFactorAuth = async (twoFactorCode: string) => {
+    try {
+      eventBus.emit('user:twoFactorSubmit', twoFactorCode);
+      return true;
+    } catch (error) {
+      console.error('Failed to handle 2FA:', error);
+      return false;
+    }
+  };
+
   getSessionData() {
     if (!this.isLogin) return null;
-    
+
     return {
       user: {
         id: this.id,
@@ -115,11 +116,11 @@ export class UserStore implements Store {
 
   setData(args: Partial<UserStore>) {
     Object.assign(this, args);
-    // Emit state update event
     eventBus.emit('user:ready', this);
   }
 
   ready(args: Partial<UserStore>) {
+    console.log('ready!!!!!!', args);
     this.setData(args);
   }
 
@@ -131,7 +132,6 @@ export class UserStore implements Store {
     this.role = ''
     this.isSetup = false
     this.requiresTwoFactor = false
-    // Emit state clear event
     eventBus.emit('user:clear', this);
   }
 
@@ -251,12 +251,11 @@ export class UserStore implements Store {
     }
   }
 
-  handleSession(session: any, successCallback: () => void) {
+  handleSession(session: Session | null, successCallback?: () => void) {
     const location = window.location;
     console.log('handleSession', session);
-    
+
     if (session && session.user) {
-      // Update user information
       const userData: Partial<UserStore> = {
         id: session.user.id ?? '0',
         name: session.user.name ?? '',
@@ -264,20 +263,19 @@ export class UserStore implements Store {
         role: session.user.role ?? '',
         requiresTwoFactor: !!session.requiresTwoFactor
       };
-      
-      // Optional properties, avoid overwriting existing values
+
       if (session.user.image) {
         userData.image = session.user.image;
       }
-      
       this.ready(userData);
 
-      // Only redirect when on login page and 2FA is not required
-      if (!session.requiresTwoFactor && 
-          (location.pathname === '/signin' || location.pathname === '/signup')) {
+      if (session.requiresTwoFactor) {
+        this.showTwoFactorDialog();
+      }
+      else if (location.pathname === '/signin' || location.pathname === '/signup') {
         window.location.href = '/';
       }
-      
+
       if (successCallback) {
         successCallback();
       }
@@ -285,16 +283,30 @@ export class UserStore implements Store {
       console.log('clearing user session');
       this.clear();
 
-      // Only redirect to login page when not logged in and not on login-related pages
       const pathname = location.pathname;
       const isInitialLoad = !this.isSetup;
-      
+
       if (pathname !== '/signin' &&
-          pathname !== '/signup' &&
-          !pathname.includes('/share') &&
-          !isInitialLoad) {
+        pathname !== '/signup' &&
+        !pathname.includes('/share') &&
+        !isInitialLoad) {
         window.location.href = '/signin';
       }
+    }
+  }
+
+  showTwoFactorDialog() {
+    if (this.requiresTwoFactor) {
+      console.log('Showing 2FA modal due to requiresTwoFactor flag');
+
+      ShowTwoFactorModal(async (code) => {
+        try {
+          eventBus.emit('user:twoFactorSubmit', code);
+        } catch (error) {
+          console.error('2FA verification failed:', error);
+          RootStore.Get(ToastPlugin).error('verification-failed');
+        }
+      }, false);
     }
   }
 
@@ -312,19 +324,30 @@ export class UserStore implements Store {
       eventBus.on('user:session', (session) => {
         this.handleSession(session, () => {
           this.initializeSettings(setTheme, i18n);
-          this.userInfo.call(Number(session.user.id ?? '0'));
-          this.canRegister.call();
+          if (session?.user?.id) {
+            this.userInfo.call(Number(session.user.id));
+            this.canRegister.call();
+          }
         });
       });
 
+      eventBus.on('user:twoFactorResult', (result) => {
+        if (result.success) {
+          RootStore.Get(DialogStore).close();
+          this.checkSession.call();
+          if (!this.requiresTwoFactor) {
+            navigate('/');
+          }
+        } else {
+          RootStore.Get(ToastPlugin).error('verification-failed');
+        }
+      });
+
+      this.checkSession.call();
+
       return () => {
-        eventBus.off('user:session', (session) => {
-          this.handleSession(session, () => {
-            this.initializeSettings(setTheme, i18n);
-            this.userInfo.call(Number(session.user.id));
-            this.canRegister.call();
-          });
-        });
+        eventBus.off('user:session', this.handleSession);
+        eventBus.off('user:twoFactorResult', () => { });
       };
     }, []);
 

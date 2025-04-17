@@ -154,7 +154,6 @@ export const AiSetting = observer(() => {
   }));
 
   useEffect(() => {
-    console.log('blinko.config.value', blinko.config.value);
     store.apiEndPoint = blinko.config.value?.aiApiEndpoint!;
     store.apiVersion = blinko.config.value?.aiApiVersion!;
     store.apiKey = blinko.config.value?.aiApiKey!;

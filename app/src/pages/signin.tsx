@@ -6,16 +6,14 @@ import { ToastPlugin } from "@/store/module/Toast/Toast";
 import { useTranslation } from "react-i18next";
 import { StorageState } from "@/store/standard/StorageState";
 import { UserStore } from "@/store/user";
-import { ShowTwoFactorModal } from "@/components/Common/TwoFactorModal";
-import { DialogStore } from "@/store/module/Dialog";
 import { PromiseState } from "@/store/standard/PromiseState";
 import { useTheme } from "next-themes";
 import { api } from "@/lib/trpc";
 import { GradientBackground } from "@/components/Common/GradientBackground";
-import { signIn } from "@/components/Auth/auth-client";
+import { signIn, getSession } from "@/components/Auth/auth-client";
 import { useNavigate } from "react-router-dom";
-import { useSession } from '@/components/Auth/auth-context';
 import { Link } from 'react-router-dom';
+import { eventBus } from "@/lib/event";
 
 type OAuthProvider = {
   id: string;
@@ -33,17 +31,13 @@ export default function Component() {
   const { t } = useTranslation()
   const [loadingProvider, setLoadingProvider] = useState<string>('');
   const navigate = useNavigate();
-  const { data: session, status } = useSession();
-
+  const userStore = RootStore.Get(UserStore);
+  
   useEffect(() => {
     api.public.oauthProviders.query().then(providers => {
       setProviders(providers)
     })
   }, [])
-
-  useEffect(() => {
-    console.log('Current session state:', session, 'Status:', status);
-  }, [session, status]);
 
   const SignIn = new PromiseState({
     function: async () => {
@@ -56,38 +50,52 @@ export default function Component() {
         });
         console.log('SignIn response:', res);
         
+        // 检查是否需要双因素验证
         if (res?.requiresTwoFactor) {
-          console.log('2FA required, showing modal');
-          await useSession().update();
+          console.log('2FA required, will be handled by UserStore');
+          // 会话更新和2FA弹窗将由UserStore自动处理
+          await getSession();
         }
         
         return res;
       } catch (error) {
         console.error('SignIn error:', error);
-        return { ok: false, error: 'Failed to sign in' };
+        return { ok: false, error: '登录失败' };
       }
     }
   });
-  
-  const SignInTwoFactor = new PromiseState({
-    function: async (code: string) => {
-      try {
-        const res = await signIn('credentials', {
-          username: user ?? userStorage.value,
-          password: password ?? passwordStorage.value,
-          callbackUrl: '/',
-          redirect: false,
-          twoFactorCode: code,
-          isSecondStep: 'true',
-        });
-        console.log('2FA response:', res);
-        return res;
-      } catch (error) {
-        console.error('2FA error:', error);
-        return { ok: false, error: 'Failed to verify 2FA code' };
+
+  // 双因素认证处理函数
+  const handleTwoFactorAuth = async (code: string) => {
+    try {
+      const res = await signIn('credentials', {
+        username: user ?? userStorage.value,
+        password: password ?? passwordStorage.value,
+        callbackUrl: '/',
+        redirect: false,
+        twoFactorCode: code,
+        isSecondStep: 'true',
+      });
+      console.log('2FA response:', res);
+      
+      if (res && res.ok) {
+        // 发送成功的2FA结果事件
+        eventBus.emit('user:twoFactorResult', { success: true });
+        // 重新获取会话以更新状态
+        await getSession();
+      } else {
+        // 发送失败的2FA结果事件
+        eventBus.emit('user:twoFactorResult', { success: false, error: res?.error });
       }
+      
+      return res;
+    } catch (error) {
+      console.error('2FA error:', error);
+      // 发送失败的2FA结果事件
+      eventBus.emit('user:twoFactorResult', { success: false, error: '验证失败' });
+      return { ok: false, error: '验证码验证失败' };
     }
-  });
+  };
 
   const userStorage = new StorageState({ key: 'username' })
   const passwordStorage = new StorageState({ key: 'password' })
@@ -107,33 +115,26 @@ export default function Component() {
     }
   }, [])
 
-  // Handle two-factor authentication
+  // 监听双因素认证提交事件
   useEffect(() => {
-    const userStore = RootStore.Get(UserStore);
+    const handleTwoFactorSubmit = (code: string) => {
+      handleTwoFactorAuth(code);
+    };
     
-    if (session?.requiresTwoFactor || userStore.requiresTwoFactor) {
-      console.log('Showing 2FA modal due to requiresTwoFactor flag');
-      ShowTwoFactorModal(async (code) => {
-        try {
-          const twoFactorRes = await SignInTwoFactor.call(code);
-          if (twoFactorRes && twoFactorRes.ok) {
-            RootStore.Get(DialogStore).close();
-            await useSession().update();
-            if (!userStore.requiresTwoFactor) {
-              navigate('/');
-            }
-          } else {
-            RootStore.Get(ToastPlugin).error(t('verification-failed'));
-          }
-        } catch (error) {
-          console.error('2FA verification failed:', error);
-          RootStore.Get(ToastPlugin).error(t('verification-failed'));
-        }
-      }, SignInTwoFactor.loading.value);
-    } else if (session?.user && status === 'authenticated' && !userStore.requiresTwoFactor) {
+    eventBus.on('user:twoFactorSubmit', handleTwoFactorSubmit);
+    
+    return () => {
+      eventBus.off('user:twoFactorSubmit', handleTwoFactorSubmit);
+    };
+  }, [user, password]);
+
+  // 监听用户状态变化
+  useEffect(() => {
+    // 如果用户已登录且不需要双因素认证
+    if (userStore.isLogin && !userStore.requiresTwoFactor) {
       navigate('/');
     }
-  }, [session, status, navigate]);
+  }, [userStore.isLogin, userStore.requiresTwoFactor, navigate]);
 
   const login = async () => {
     try {

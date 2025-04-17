@@ -16,7 +16,7 @@ import { LoadingPage } from '@/components/Common/LoadingPage';
 import { PluginManagerStore } from '@/store/plugin/pluginManagerStore';
 import { RootStore } from '@/store';
 import { UserStore } from '@/store/user';
-import { SessionProvider, useSession } from '@/components/Auth/auth-context';
+import { getSession } from '@/components/Auth/auth-client';
 
 const HomePage = lazy(() => import('./pages/index'));
 const SignInPage = lazy(() => import('./pages/signin'));
@@ -38,30 +38,24 @@ const ProtectedRoute = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isChecking, setIsChecking] = useState(true);
-  const { data: session, status } = useSession();
+  const userStore = RootStore.Get(UserStore);
 
   useEffect(() => {
     const checkAuth = async () => {
-      const userStore = RootStore.Get(UserStore);
-
       const publicRoutes = ['/signin', '/signup', '/share', '/_offline'];
       const isPublicRoute = publicRoutes.some(route =>
         location.pathname === route || location.pathname.startsWith('/share/')
       );
 
-      if (status === 'unauthenticated' && !isPublicRoute) {
-        console.log('no session, redirect to signin');
-        navigate('/signin', { replace: true });
-      } else if (status === 'authenticated' && !userStore.isLogin) {
-        console.log('has session, but userStore not initialized');
-        if (session?.user) {
-          userStore.ready({
-            id: session.user.id ?? '',
-            name: session.user.name ?? '',
-            nickname: session.user.nickname ?? '',
-            image: session.user.image ?? '',
-            role: session.user.role ?? '',
-          });
+      // 如果用户未登录且不在公共路由上，重定向到登录页
+      if (!userStore.isLogin && !isPublicRoute) {
+        // 尝试获取会话，可能用户有有效会话但userStore未更新
+        const session = await getSession();
+        
+        // 如果获取会话后仍未登录，则重定向
+        if (!userStore.isLogin) {
+          console.log('无有效会话，重定向到登录页');
+          navigate('/signin', { replace: true });
         }
       }
 
@@ -69,9 +63,9 @@ const ProtectedRoute = ({ children }) => {
     };
 
     checkAuth();
-  }, [navigate, location, status, session]);
+  }, [navigate, location, userStore.isLogin]);
 
-  if (status === 'loading' || isChecking) {
+  if (isChecking) {
     return <LoadingPage />;
   }
 
@@ -132,17 +126,15 @@ function App() {
         }}
       />
       <BrowserRouter>
-        <SessionProvider>
-          <HeroUIProvider>
-            <ThemeProvider attribute="class" enableSystem={false}>
-              <AppProvider />
-              <CommonLayout>
-                <AppRoutes />
-                <BlinkoMultiSelectPop />
-              </CommonLayout>
-            </ThemeProvider>
-          </HeroUIProvider>
-        </SessionProvider>
+        <HeroUIProvider>
+          <ThemeProvider attribute="class" enableSystem={false}>
+            <AppProvider />
+            <CommonLayout>
+              <AppRoutes />
+              <BlinkoMultiSelectPop />
+            </CommonLayout>
+          </ThemeProvider>
+        </HeroUIProvider>
         <BlinkoMusicPlayer />
       </BrowserRouter>
     </>

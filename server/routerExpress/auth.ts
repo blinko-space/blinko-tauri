@@ -19,7 +19,7 @@ import { verifyPassword } from "@prisma/seed";
 import { cache } from "../../shared/lib/cache";
 
 // Cache TTL in milliseconds (20 seconds)
-const CACHE_TTL = 20 * 1000;
+const CACHE_TTL = 1 * 1000;
 
 async function verify2FACode(userId: string, userRole: string, userName: string, twoFactorCode: string) {
   const now = Math.floor(Date.now() / 1000);

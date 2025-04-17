@@ -1,5 +1,19 @@
-import { Session } from './auth-context';
+// import { Session } from './auth-context';
 import { eventBus } from '@/lib/event';
+
+export interface Session {
+  user?: {
+    name?: string;
+    email?: string;
+    image?: string;
+    id?: string;
+    role?: string;
+    nickname?: string;
+  };
+  expires: string;
+  requiresTwoFactor?: boolean;
+  [key: string]: any;
+}
 
 type SignInOptions = {
   redirect?: boolean;
@@ -40,6 +54,7 @@ export async function getSession(): Promise<Session | null> {
     const response = await fetch('/api/auth/session');
     if (response.ok) {
       const data = await response.json();
+      eventBus.emit('user:session', data);
       return data;
     }
     return null;
@@ -107,14 +122,12 @@ export async function signIn(
       if (data.requiresTwoFactor) {
         console.log('Server indicated 2FA is required');
         
-        // Create temporary session object with requiresTwoFactor flag
         const tempSession = {
           user: { id: data.id },
           expires: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
           requiresTwoFactor: true
         };
         
-        // Immediately broadcast the event requiring 2FA verification
         eventBus.emit('user:session', tempSession);
         
         return {
