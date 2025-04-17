@@ -41,6 +41,10 @@ export default function Component() {
     })
   }, [])
 
+  useEffect(() => {
+    console.log('Current session state:', session, 'Status:', status);
+  }, [session, status]);
+
   const SignIn = new PromiseState({
     function: async () => {
       try {
@@ -51,6 +55,12 @@ export default function Component() {
           redirect: false,
         });
         console.log('SignIn response:', res);
+        
+        if (res?.requiresTwoFactor) {
+          console.log('2FA required, showing modal');
+          await useSession().update();
+        }
+        
         return res;
       } catch (error) {
         console.error('SignIn error:', error);
@@ -97,19 +107,30 @@ export default function Component() {
     }
   }, [])
 
-  // 处理两步验证
+  // Handle two-factor authentication
   useEffect(() => {
-    if (session?.requiresTwoFactor) {
+    const userStore = RootStore.Get(UserStore);
+    
+    if (session?.requiresTwoFactor || userStore.requiresTwoFactor) {
+      console.log('Showing 2FA modal due to requiresTwoFactor flag');
       ShowTwoFactorModal(async (code) => {
         try {
           const twoFactorRes = await SignInTwoFactor.call(code);
-          RootStore.Get(DialogStore).close();
+          if (twoFactorRes && twoFactorRes.ok) {
+            RootStore.Get(DialogStore).close();
+            await useSession().update();
+            if (!userStore.requiresTwoFactor) {
+              navigate('/');
+            }
+          } else {
+            RootStore.Get(ToastPlugin).error(t('verification-failed'));
+          }
         } catch (error) {
           console.error('2FA verification failed:', error);
           RootStore.Get(ToastPlugin).error(t('verification-failed'));
         }
       }, SignInTwoFactor.loading.value);
-    } else if (session?.user && status === 'authenticated') {
+    } else if (session?.user && status === 'authenticated' && !userStore.requiresTwoFactor) {
       navigate('/');
     }
   }, [session, status, navigate]);

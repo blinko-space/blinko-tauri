@@ -20,7 +20,6 @@ export async function createContext({
   res,
 }: CreateFastifyContextOptions) {
   const token = await getToken(req) as User;
-  console.log(token, 'token')
   const ua = req.headers['user-agent'];
   const userAgent = ua ? Bowser.parse(ua) : null;
   if (!token?.sub) {

@@ -138,6 +138,10 @@ async function bootstrap() {
     // Enable CORS
     app.use(cors());
 
+    // Add body parsers for JSON and form data
+    app.use(express.json({ limit: '50mb' }));
+    app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
     // Setup authentication and API routes
     await setupAuth(app);
     await setupApiRoutes(app);

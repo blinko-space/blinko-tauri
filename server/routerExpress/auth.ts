@@ -435,11 +435,12 @@ export const expressAuthParam = async () => {
           token.role = user.role;
           // @ts-ignore
           token.id = user.id;
-        }
-
-        // @ts-ignore
-        if (token.requiresTwoFactor && user?.twoFactorVerified) {
-          token.twoFactorVerified = true;
+          
+          // @ts-ignore
+          if (user.twoFactorVerified) {
+            token.requiresTwoFactor = false;
+            token.twoFactorVerified = true;
+          }
         }
 
         return token;

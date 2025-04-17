@@ -168,8 +168,10 @@ export const userRouter = router({
       role: z.string()
     }))
     .query(async ({ input, ctx }) => {
+      console.log('detail', input, ctx);
       const user = await prisma.accounts.findFirst({ where: { id: input.id ?? Number(ctx.id) } })
-      if (user?.id !== Number(ctx.id) && user?.role !== 'superadmin') {
+      console.log('user', user);
+      if (Number(user?.id) !== Number(ctx.id) && user?.role !== 'superadmin') {
         throw new TRPCError({ code: 'UNAUTHORIZED', message: 'You are not allowed to access this user' })
       }
       const isLinked = await prisma.accounts.findFirst({ where: { linkAccountId: input.id } })
@@ -269,7 +271,9 @@ export const userRouter = router({
     .mutation(async ({ ctx }) => {
       const user = await prisma.accounts.findFirst({ where: { id: Number(ctx.id) } })
       if (user) {
-        await prisma.accounts.update({ where: { id: user.id }, data: { apiToken: await genToken({ id: user.id, name: user.name ?? '', role: user.role }) } })
+        const token = await genToken({ id: user.id, name: user.name ?? '', role: user.role })
+        console.log('token', token);
+        await prisma.accounts.update({ where: { id: user.id }, data: { apiToken: token } })
         return true
       } else {
         return false

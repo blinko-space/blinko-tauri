@@ -31,6 +31,7 @@ export function TwoFactorModal({ onConfirm, isLoading }: TwoFactorModalProps) {
 
 
 export const ShowTwoFactorModal = (onConfirm: (code: string) => void, isLoading: boolean) => {
+  console.log('ShowTwoFactorModal', onConfirm, isLoading);
   RootStore.Get(DialogStore).setData({
     isOpen: true,
     size: 'lg',

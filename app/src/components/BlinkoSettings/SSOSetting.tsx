@@ -149,9 +149,6 @@ const UpdateSSOProvider = observer(({ provider }: { provider?: z.infer<typeof ZO
 
   return <div className="flex flex-col gap-4">
     <Select
-      label={t('provider-template')}
-      placeholder={t('select-provider-template')}
-      labelPlacement="outside"
       variant="bordered"
       selectedKeys={[store.template]}
       onChange={e => handleTemplateChange(e.target.value)}

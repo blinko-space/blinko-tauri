@@ -46,8 +46,20 @@ router.post('/chat/completions', async (req, res) => {
     const withRAG = !!config.embeddingModel;
     const withTools = !!config.tavilyApiKey;
     const withOnline = !!config.tavilyApiKey;
+    console.log('req.body', req.body);
+    if (!req.body || typeof req.body !== 'object') {
+      return res.status(400).json({
+        error: { message: 'Invalid request body' }
+      });
+    }
 
-    const { messages, stream = false, model } = req.body;
+    const { messages = [], stream = false, model = '' } = req.body;
+
+    if (!Array.isArray(messages)) {
+      return res.status(400).json({
+        error: { message: 'Messages must be an array' }
+      });
+    }
 
     const conversations = messages.map(msg => ({
       role: msg.role,

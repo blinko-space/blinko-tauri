@@ -84,7 +84,6 @@ export async function signIn(
       // Add json=true to get JSON response back
       params.append('json', 'true');
 
-
       const response = await fetch('/api/auth/callback/credentials', {
         method: 'POST',
         headers: {
@@ -104,9 +103,39 @@ export async function signIn(
         data = { error: 'SignIn failed' };
       }
 
-      const newSession = await getSession();
-      if (newSession) {
-        eventBus.emit('user:session', newSession);
+      // Check if 2FA verification is required
+      if (data.requiresTwoFactor) {
+        console.log('Server indicated 2FA is required');
+        
+        // Create temporary session object with requiresTwoFactor flag
+        const tempSession = {
+          user: { id: data.id },
+          expires: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+          requiresTwoFactor: true
+        };
+        
+        // Immediately broadcast the event requiring 2FA verification
+        eventBus.emit('user:session', tempSession);
+        
+        return {
+          ok: true,
+          error: undefined,
+          status: response.status,
+          url: callbackUrl,
+          requiresTwoFactor: true
+        };
+      }
+
+      if (options.isSecondStep === 'true' && response.ok) {
+        const newSession = await getSession();
+        if (newSession) {
+          eventBus.emit('user:session', newSession);
+        }
+      } else {
+        const newSession = await getSession();
+        if (newSession) {
+          eventBus.emit('user:session', newSession);
+        }
       }
 
       if (redirect && response.ok) {

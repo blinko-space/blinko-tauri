@@ -60,7 +60,6 @@ export const demoAuthMiddleware = t.middleware(async ({ ctx, next }) => {
 });
 
 export const superAdminAuthMiddleware = t.middleware(async ({ ctx, next }) => {
-  console.log('superAdminAuthMiddleware', ctx);
   if (ctx.role !== 'superadmin') {
     throw new TRPCError({
       code: "FORBIDDEN",

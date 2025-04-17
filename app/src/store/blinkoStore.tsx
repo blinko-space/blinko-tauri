@@ -336,7 +336,8 @@ export class BlinkoStore implements Store {
 
   config = new PromiseState({
     function: async () => {
-      return await api.config.list.query()
+      const res = await api.config.list.query()
+      return res
     }
   })
 
@@ -427,7 +428,9 @@ export class BlinkoStore implements Store {
 
   use() {
     useEffect(() => {
-      this.firstLoad()
+      if (RootStore.Get(UserStore).id) {
+        this.firstLoad()
+      }
     }, [RootStore.Get(UserStore).id])
 
     useEffect(() => {

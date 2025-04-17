@@ -1,11 +1,13 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
 import { eventBus } from '@/lib/event';
+import { RootStore } from '@/store';
+import { UserStore } from '@/store/user';
 
 // Session state type
 interface SessionContextType {
   data: Session | null;
   status: 'loading' | 'authenticated' | 'unauthenticated';
-  update: (data?: Session | null) => Promise<Session | null>;
+  update: () => Promise<Session | null>;
 }
 
 // Session type
@@ -33,92 +35,89 @@ const SessionContext = createContext<SessionContextType>({
 // SessionProvider component props
 interface SessionProviderProps {
   children: ReactNode;
-  session?: Session | null;
-  refetchInterval?: number;
 }
 
 // SessionProvider component
-export function SessionProvider({ 
-  children, 
-  session: initialSession = null, 
-  refetchInterval = 0 
-}: SessionProviderProps) {
-  const [session, setSession] = useState<Session | null>(initialSession);
-  const [loading, setLoading] = useState<boolean>(initialSession === null);
-
-  // Session update function
-  const update = async (newSession?: Session | null) => {
-    if (newSession !== undefined) {
-      setSession(newSession);
-      eventBus.emit('user:session', newSession);
-      return newSession;
+export function SessionProvider({ children }: SessionProviderProps) {
+  const userStore = RootStore.Get(UserStore);
+  const [status, setStatus] = useState<'loading' | 'authenticated' | 'unauthenticated'>(
+    userStore.isLogin ? 'authenticated' : 'loading'
+  );
+  
+  // 创建会话数据对象
+  const getSessionData = useCallback((): Session | null => {
+    if (!userStore.isLogin) return null;
+    
+    return {
+      user: {
+        id: userStore.id,
+        name: userStore.name,
+        nickname: userStore.nickname,
+        image: userStore.image,
+        role: userStore.role
+      },
+      expires: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+      requiresTwoFactor: userStore.requiresTwoFactor
+    };
+  }, [userStore.id, userStore.name, userStore.isLogin, userStore.requiresTwoFactor]);
+  
+  // 监听UserStore状态变化
+  useEffect(() => {
+    const handleUserChange = () => {
+      setStatus(userStore.isLogin ? 'authenticated' : 'unauthenticated');
+    };
+    
+    eventBus.on('user:ready', handleUserChange);
+    eventBus.on('user:clear', handleUserChange);
+    
+    // 初始状态检查
+    if (userStore.isLogin) {
+      setStatus('authenticated');
+    } else {
+      // 从服务器获取一次初始状态
+      fetch('/api/auth/session')
+        .then(res => res.ok ? res.json() : null)
+        .then(data => {
+          if (data && data.user) {
+            // 通过事件系统更新UserStore
+            eventBus.emit('user:session', data);
+          }
+          setStatus(userStore.isLogin ? 'authenticated' : 'unauthenticated');
+        })
+        .catch(() => {
+          setStatus('unauthenticated');
+        });
     }
     
-    // If no new session is provided, fetch from server
+    return () => {
+      eventBus.off('user:ready', handleUserChange);
+      eventBus.off('user:clear', handleUserChange);
+    };
+  }, [userStore]);
+  
+  // 更新会话状态的函数
+  const update = async (): Promise<Session | null> => {
     try {
       const response = await fetch('/api/auth/session');
       if (response.ok) {
         const data = await response.json();
-        setSession(data);
-        setLoading(false);
+        // 通过事件系统更新UserStore
         eventBus.emit('user:session', data);
         return data;
-      } else {
-        setSession(null);
-        setLoading(false);
-        eventBus.emit('user:session', null);
-        
-        const currentPath = window.location.pathname;
-        if (currentPath !== '/signin' && 
-            currentPath !== '/signup' && 
-            !currentPath.includes('/share')) {
-          const eventBus = (window as any).eventBus;
-          if (eventBus) {
-            eventBus.emit('user:signout');
-          }
-        }
-        
-        return null;
       }
+      return null;
     } catch (error) {
       console.error('Failed to fetch session:', error);
-      setSession(null);
-      setLoading(false);
-      eventBus.emit('user:session', null);
       return null;
     }
   };
-
-  // Initial loading and periodic refresh
-  useEffect(() => {
-    if (initialSession === null) {
-      update();
-    } else {
-      eventBus.emit('user:session', initialSession);
-    }
-
-    // Set up periodic refresh
-    if (refetchInterval > 0) {
-      const intervalId = setInterval(() => {
-        update();
-      }, refetchInterval * 1000);
-
-      return () => clearInterval(intervalId);
-    }
-  }, [refetchInterval]);
-
-  const status = loading 
-    ? 'loading' 
-    : session 
-      ? 'authenticated' 
-      : 'unauthenticated';
   
   const value: SessionContextType = {
-    data: session,
-    status: status as 'loading' | 'authenticated' | 'unauthenticated',
-    update,
+    data: getSessionData(),
+    status,
+    update
   };
-
+  
   return (
     <SessionContext.Provider value={value}>
       {children}

@@ -132,7 +132,7 @@ function App() {
         }}
       />
       <BrowserRouter>
-        <SessionProvider refetchInterval={60}>
+        <SessionProvider>
           <HeroUIProvider>
             <ThemeProvider attribute="class" enableSystem={false}>
               <AppProvider />

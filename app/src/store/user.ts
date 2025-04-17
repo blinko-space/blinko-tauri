@@ -14,6 +14,7 @@ import { useTheme } from 'next-themes';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { getSession } from '@/components/Auth/auth-client';
 
+
 export class UserStore implements Store {
   sid = 'user';
   constructor() {
@@ -30,6 +31,7 @@ export class UserStore implements Store {
   themeInitialized: boolean = false;
   isHubInitialized: boolean = false;
   isUseAIInitialized: boolean = false;
+  requiresTwoFactor: boolean = false;
 
   wait() {
     return new Promise<UserStore>((res, rej) => {
@@ -88,14 +90,33 @@ export class UserStore implements Store {
         }
         return false;
       } catch (error) {
-        console.error('检查会话失败:', error);
+        console.error('Failed to check session:', error);
         return false;
       }
     }
   });
 
+  // Create session data object from UserStore
+  getSessionData() {
+    if (!this.isLogin) return null;
+    
+    return {
+      user: {
+        id: this.id,
+        name: this.name,
+        nickname: this.nickname,
+        image: this.image,
+        role: this.role
+      },
+      expires: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+      requiresTwoFactor: this.requiresTwoFactor
+    };
+  }
+
   setData(args: Partial<UserStore>) {
     Object.assign(this, args);
+    // Emit state update event
+    eventBus.emit('user:ready', this);
   }
 
   ready(args: Partial<UserStore>) {
@@ -109,6 +130,9 @@ export class UserStore implements Store {
     this.image = ''
     this.role = ''
     this.isSetup = false
+    this.requiresTwoFactor = false
+    // Emit state clear event
+    eventBus.emit('user:clear', this);
   }
 
   updatePWAColor(theme: string) {
@@ -229,34 +253,54 @@ export class UserStore implements Store {
 
   handleSession(session: any, successCallback: () => void) {
     const location = window.location;
-
+    console.log('handleSession', session);
+    
     if (session && session.user) {
-      this.ready({
-        id: session.user.id ?? '',
+      // Update user information
+      const userData: Partial<UserStore> = {
+        id: session.user.id ?? '0',
         name: session.user.name ?? '',
         nickname: session.user.nickname ?? '',
-        image: session.user.image ?? '',
         role: session.user.role ?? '',
-      });
+        requiresTwoFactor: !!session.requiresTwoFactor
+      };
+      
+      // Optional properties, avoid overwriting existing values
+      if (session.user.image) {
+        userData.image = session.user.image;
+      }
+      
+      this.ready(userData);
 
-      if (location.pathname === '/signin' || location.pathname === '/signup') {
+      // Only redirect when on login page and 2FA is not required
+      if (!session.requiresTwoFactor && 
+          (location.pathname === '/signin' || location.pathname === '/signup')) {
         window.location.href = '/';
       }
+      
+      if (successCallback) {
+        successCallback();
+      }
     } else {
+      console.log('clearing user session');
       this.clear();
 
+      // Only redirect to login page when not logged in and not on login-related pages
       const pathname = location.pathname;
+      const isInitialLoad = !this.isSetup;
+      
       if (pathname !== '/signin' &&
-        pathname !== '/signup' &&
-        !pathname.includes('/share')) {
+          pathname !== '/signup' &&
+          !pathname.includes('/share') &&
+          !isInitialLoad) {
         window.location.href = '/signin';
       }
     }
   }
 
   use() {
-    const { t, i18n } = useTranslation()
-    const { setTheme, theme } = useTheme()
+    const { i18n } = useTranslation()
+    const { setTheme } = useTheme()
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -265,14 +309,10 @@ export class UserStore implements Store {
     }, []);
 
     useEffect(() => {
-      if (!this.isLogin) {
-        this.checkSession.call();
-      }
-
       eventBus.on('user:session', (session) => {
         this.handleSession(session, () => {
           this.initializeSettings(setTheme, i18n);
-          this.userInfo.call(Number(this.id));
+          this.userInfo.call(Number(session.user.id ?? '0'));
           this.canRegister.call();
         });
       });
@@ -281,7 +321,7 @@ export class UserStore implements Store {
         eventBus.off('user:session', (session) => {
           this.handleSession(session, () => {
             this.initializeSettings(setTheme, i18n);
-            this.userInfo.call(Number(this.id));
+            this.userInfo.call(Number(session.user.id));
             this.canRegister.call();
           });
         });

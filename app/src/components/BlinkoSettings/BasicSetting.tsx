@@ -7,7 +7,6 @@ import { useTranslation } from "react-i18next";
 import { DialogStore } from "@/store/module/Dialog";
 import { UpdateUserInfo, UpdateUserPassword } from "../Common/UpdateUserInfo";
 import { Item } from "./Item";
-// import { signOut } from "next-auth/react";
 import { Copy } from "../Common/Copy";
 import { MarkdownRender } from "../Common/MarkdownRender";
 import { PromiseCall, PromiseState } from "@/store/standard/PromiseState";
@@ -23,6 +22,7 @@ import { showTipsDialog } from "../Common/TipsDialog";
 import { DialogStandaloneStore } from "@/store/module/DialogStandalone";
 import { UploadFileWrapper } from "../Common/UploadFile";
 import Avatar from "boring-avatars";
+import { signOut } from "../Auth/auth-client";
 
 export const BasicSetting = observer(() => {
   const user = RootStore.Get(UserStore)
@@ -97,7 +97,7 @@ export const BasicSetting = observer(() => {
                     id: user.userInfo.value?.id,
                     image: filePath
                   }));
-                  user.userInfo.call(user.userInfo.value?.id);
+                  user.userInfo.call(Number(user.id))
                 }}
               >
                 {user.userInfo.value?.image ? (
@@ -235,7 +235,8 @@ export const BasicSetting = observer(() => {
               className="cursor-pointer hover:rotate-180 !transition-all"
               onClick={async () => {
                 await PromiseCall(api.users.regenToken.mutate())
-                user.userInfo.call(user.userInfo.value?.id ?? 0)
+                console.log('user.id', user.id);
+                user.userInfo.call(Number(user.id))
               }}
               icon="fluent:arrow-sync-12-filled"
               width="20"
@@ -353,7 +354,7 @@ export const BasicSetting = observer(() => {
         rightContent={
           <Tooltip placement="bottom" content={t('logout')}>
             <Button isIconOnly startContent={<Icon icon="hugeicons:logout-05" width="20" height="20" />} color='danger' onPress={async () => {
-              // await signOut({ redirect: false })
+              await signOut({ callbackUrl: '/signin' })
               eventBus.emit('user:signout')
             }}></Button>
           </Tooltip>
