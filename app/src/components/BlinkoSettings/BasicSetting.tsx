@@ -148,7 +148,7 @@ export const BasicSetting = observer(() => {
 
             {
               user.userInfo?.value?.isLinked &&
-              <Button color="danger" variant="flat" isIconOnly startContent={<Icon icon="lsicon:unlink-filled" width="20" height="20" />} size='sm'
+              <Button color="danger" variant="flat" isIconOnly startContent={<Icon icon="hugeicons:unlink-03" width="20" height="20" />} size='sm'
                 onPress={e => {
                   showTipsDialog({
                     title: t('unlink-account'),

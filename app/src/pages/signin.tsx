@@ -10,7 +10,7 @@ import { PromiseState } from "@/store/standard/PromiseState";
 import { useTheme } from "next-themes";
 import { api } from "@/lib/trpc";
 import { GradientBackground } from "@/components/Common/GradientBackground";
-import { signIn, getSession } from "@/components/Auth/auth-client";
+import { signIn } from "@/components/Auth/auth-client";
 import { useNavigate } from "react-router-dom";
 import { Link } from 'react-router-dom';
 import { eventBus } from "@/lib/event";
@@ -25,19 +25,19 @@ export default function Component() {
   const [isVisible, setIsVisible] = React.useState(false);
   const [user, setUser] = React.useState("");
   const [password, setPassword] = React.useState("");
-  const [canRegister, setCanRegister] = useState(false)
-  const [providers, setProviders] = useState<OAuthProvider[]>([])
-  const { theme } = useTheme()
-  const { t } = useTranslation()
+  const [canRegister, setCanRegister] = useState(false);
+  const [providers, setProviders] = useState<OAuthProvider[]>([]);
   const [loadingProvider, setLoadingProvider] = useState<string>('');
+  const { theme } = useTheme();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const userStore = RootStore.Get(UserStore);
-  
+
   useEffect(() => {
     api.public.oauthProviders.query().then(providers => {
-      setProviders(providers)
-    })
-  }, [])
+      setProviders(providers);
+    });
+  }, []);
 
   const SignIn = new PromiseState({
     function: async () => {
@@ -48,93 +48,45 @@ export default function Component() {
           callbackUrl: '/',
           redirect: false,
         });
-        console.log('SignIn response:', res);
-        
-        // 检查是否需要双因素验证
+
         if (res?.requiresTwoFactor) {
-          console.log('2FA required, will be handled by UserStore');
-          // 会话更新和2FA弹窗将由UserStore自动处理
-          await getSession();
+          return res;
         }
-        
+
+        if (res?.ok) {
+          navigate('/');
+        }
+
+        if(res?.error) {
+          RootStore.Get(ToastPlugin).error(res.error);
+        }
+
         return res;
       } catch (error) {
         console.error('SignIn error:', error);
-        return { ok: false, error: '登录失败' };
+        return { ok: false, error: 'Login failed' };
       }
     }
   });
 
-  // 双因素认证处理函数
-  const handleTwoFactorAuth = async (code: string) => {
-    try {
-      const res = await signIn('credentials', {
-        username: user ?? userStorage.value,
-        password: password ?? passwordStorage.value,
-        callbackUrl: '/',
-        redirect: false,
-        twoFactorCode: code,
-        isSecondStep: 'true',
-      });
-      console.log('2FA response:', res);
-      
-      if (res && res.ok) {
-        // 发送成功的2FA结果事件
-        eventBus.emit('user:twoFactorResult', { success: true });
-        // 重新获取会话以更新状态
-        await getSession();
-      } else {
-        // 发送失败的2FA结果事件
-        eventBus.emit('user:twoFactorResult', { success: false, error: res?.error });
-      }
-      
-      return res;
-    } catch (error) {
-      console.error('2FA error:', error);
-      // 发送失败的2FA结果事件
-      eventBus.emit('user:twoFactorResult', { success: false, error: '验证失败' });
-      return { ok: false, error: '验证码验证失败' };
-    }
-  };
-
-  const userStorage = new StorageState({ key: 'username' })
-  const passwordStorage = new StorageState({ key: 'password' })
+  const userStorage = new StorageState({ key: 'username' });
+  const passwordStorage = new StorageState({ key: 'password' });
 
   useEffect(() => {
     try {
       RootStore.Get(UserStore).canRegister.call().then(v => {
-        setCanRegister(v ?? false)
-      })
+        setCanRegister(v ?? false);
+      });
       if (userStorage.value) {
-        setUser(userStorage.value)
+        setUser(userStorage.value);
       }
       if (passwordStorage.value) {
-        setPassword(passwordStorage.value)
+        setPassword(passwordStorage.value);
       }
     } catch (error) {
+      console.error('Storage error:', error);
     }
-  }, [])
-
-  // 监听双因素认证提交事件
-  useEffect(() => {
-    const handleTwoFactorSubmit = (code: string) => {
-      handleTwoFactorAuth(code);
-    };
-    
-    eventBus.on('user:twoFactorSubmit', handleTwoFactorSubmit);
-    
-    return () => {
-      eventBus.off('user:twoFactorSubmit', handleTwoFactorSubmit);
-    };
-  }, [user, password]);
-
-  // 监听用户状态变化
-  useEffect(() => {
-    // 如果用户已登录且不需要双因素认证
-    if (userStore.isLogin && !userStore.requiresTwoFactor) {
-      navigate('/');
-    }
-  }, [userStore.isLogin, userStore.requiresTwoFactor, navigate]);
+  }, []);
 
   const login = async () => {
     try {
@@ -142,23 +94,8 @@ export default function Component() {
       userStorage.setValue(user);
       passwordStorage.setValue(password);
     } catch (error) {
-      console.log('Login error:', error);
+      console.error('Login error:', error);
       RootStore.Get(ToastPlugin).error(t('login-failed'));
-    }
-  }
-
-  const handleOAuthLogin = async (providerId: string) => {
-    try {
-      setLoadingProvider(providerId);
-      await signIn(providerId, {
-        callbackUrl: '/oauth-callback',
-        redirect: true
-      });
-    } catch (error) {
-      console.error('login failed:', error);
-      RootStore.Get(ToastPlugin).error(t('login-failed'));
-    } finally {
-      setLoadingProvider('');
     }
   };
 
@@ -181,7 +118,10 @@ export default function Component() {
                     variant="bordered"
                     startContent={provider.icon && <Icon icon={provider.icon} className="text-xl" />}
                     isLoading={loadingProvider === provider.id}
-                    onPress={() => handleOAuthLogin(provider.id)}
+                    onPress={() => {
+                      setLoadingProvider(provider.id);
+                      window.location.href = `/api/auth/${provider.id}`;
+                    }}
                   >
                     {t('sign-in-with-provider', { provider: provider.name })}
                   </Button>
@@ -230,7 +170,7 @@ export default function Component() {
               value={password}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
-                  login()
+                  login();
                 }
               }}
               onChange={e => setPassword(e.target.value?.trim())}
@@ -243,20 +183,19 @@ export default function Component() {
             <Button
               color="primary"
               isLoading={SignIn.loading.value}
-              onPress={async e => {
-                login()
-              }}>
+              onPress={login}
+            >
               {t('sign-in')}
             </Button>
           </form>
-          {
-            canRegister && <p className="text-center text-small">
+          {canRegister && (
+            <p className="text-center text-small">
               {t('need-to-create-an-account')}&nbsp;
               <Link to="/signup">
                 {t('sign-up')}
               </Link>
             </p>
-          }
+          )}
         </div>
       </div>
     </GradientBackground>

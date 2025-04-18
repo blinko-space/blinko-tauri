@@ -1,7 +1,7 @@
 import express from 'express';
 import path from 'path';
 import { FileService } from '../../lib/files';
-import { getToken } from '../../lib/helper';
+import { getTokenFromRequest } from '../../lib/helper';
 import cors from 'cors';
 
 const router = express.Router();
@@ -85,7 +85,7 @@ router.options('/', cors({
  */
 router.post('/', async (req, res) => {
   try {
-    const token = await getToken(req);
+    const token = await getTokenFromRequest(req);
     if (!token) {
       return res.status(401).json({ error: "Unauthorized" });
     }

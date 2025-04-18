@@ -1,7 +1,23 @@
 // import { Session } from './auth-context';
 import { eventBus } from '@/lib/event';
+import { RootStore } from '@/store';
+import { UserStore } from '@/store/user';
 
-export interface Session {
+let navigateFunction: ((path: string) => void) | null = null;
+
+export function setNavigate(navigate: (path: string) => void) {
+  navigateFunction = navigate;
+}
+
+export function navigate(path: string) {
+  if (navigateFunction) {
+    navigateFunction(path);
+  } else {
+    window.location.href = path;
+  }
+}
+
+export interface TokenData {
   user?: {
     name?: string;
     email?: string;
@@ -10,8 +26,9 @@ export interface Session {
     role?: string;
     nickname?: string;
   };
-  expires: string;
+  expires?: string;
   requiresTwoFactor?: boolean;
+  csrfToken?: string;
   [key: string]: any;
 }
 
@@ -27,157 +44,155 @@ type SignInResponse = {
   status: number;
   url?: string;
   requiresTwoFactor?: boolean;
+  userId?: number;
+  csrfToken?: string;
 };
 
 /**
- * Get CSRF token
+ * Get current session data
  */
-export async function getCsrfToken(): Promise<string> {
+export async function getTokenData(): Promise<TokenData | null> {
   try {
-    const response = await fetch('/api/auth/csrf');
+    const response = await fetch('/api/auth/profile', {
+      credentials: 'include',
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      eventBus.emit('user:token', data);
+      return data;
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Failed to get session data:', error);
+    return null;
+  }
+}
+
+/**
+ * 获取CSRF Token
+ */
+export async function getCsrfToken(): Promise<string | null> {
+  try {
+    const response = await fetch('/api/auth/csrf-token', {
+      credentials: 'include',
+    });
+    
     if (response.ok) {
       const data = await response.json();
       return data.csrfToken;
     }
-    return '';
+    return null;
   } catch (error) {
     console.error('Failed to get CSRF token:', error);
-    return '';
-  }
-}
-
-/**
- * Get current session
- */
-export async function getSession(): Promise<Session | null> {
-  try {
-    const response = await fetch('/api/auth/session');
-    if (response.ok) {
-      const data = await response.json();
-      eventBus.emit('user:session', data);
-      return data;
-    }
-    return null;
-  } catch (error) {
-    console.error('Failed to get session:', error);
     return null;
   }
 }
 
 /**
- * Sign in function, supports credentials and OAuth
- * @param provider Authentication provider ID
- * @param options Sign in options
+ * Sign in function
  */
 export async function signIn(
   provider: string,
   options: SignInOptions = {}
 ): Promise<SignInResponse | undefined> {
-  // Default callback URL
-  const callbackUrl = options.callbackUrl || '/';
-  // Redirect is enabled by default
-  const redirect = options.redirect !== false;
-
   try {
-    // Handle credentials sign in
     if (provider === 'credentials') {
       const csrfToken = await getCsrfToken();
-
-      // Prepare form parameters
-      const params = new URLSearchParams();
-      params.append('csrfToken', csrfToken);
-      params.append('callbackUrl', callbackUrl);
-
-      params.append('redirect', redirect ? 'true' : 'false');
-
-      Object.entries(options).forEach(([key, value]) => {
-        if (value !== undefined && key !== 'callbackUrl' && key !== 'redirect') {
-          params.append(key, String(value));
-        }
-      });
-
-      // Add json=true to get JSON response back
-      params.append('json', 'true');
-
-      const response = await fetch('/api/auth/callback/credentials', {
+      
+      const response = await fetch('/api/auth/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+        credentials: 'include', 
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': csrfToken || '',
         },
-        body: params.toString(),
-        credentials: 'include'
+        body: JSON.stringify({
+          username: options.username,
+          password: options.password,
+        }),
       });
 
-      console.log('Response status:', response.status);
+      const data = await response.json();
 
-      let data;
-      try {
-        data = await response.json();
-      } catch (error) {
-        console.error('Failed to parse response:', error);
-        data = { error: 'SignIn failed' };
-      }
-
-      // Check if 2FA verification is required
       if (data.requiresTwoFactor) {
-        console.log('Server indicated 2FA is required');
-        
-        const tempSession = {
-          user: { id: data.id },
-          expires: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-          requiresTwoFactor: true
-        };
-        
-        eventBus.emit('user:session', tempSession);
+        eventBus.emit('user:showTwoFactor', { userId: data.userId });
         
         return {
           ok: true,
-          error: undefined,
+          requiresTwoFactor: true,
+          userId: data.userId,
           status: response.status,
-          url: callbackUrl,
-          requiresTwoFactor: true
         };
       }
 
-      if (options.isSecondStep === 'true' && response.ok) {
-        const newSession = await getSession();
-        if (newSession) {
-          eventBus.emit('user:session', newSession);
+      if (response.ok) {
+        eventBus.emit('user:token', data);
+        
+        if (options.redirect) {
+          navigate(options.callbackUrl || '/');
+          return undefined;
         }
-      } else {
-        const newSession = await getSession();
-        if (newSession) {
-          eventBus.emit('user:session', newSession);
-        }
-      }
-
-      if (redirect && response.ok) {
-        window.location.href = callbackUrl;
-        return undefined;
+        
+        return { 
+          ok: true, 
+          status: response.status,
+          csrfToken: data.csrfToken,
+        };
       }
 
       return {
-        ok: response.ok || response.status === 302,
+        ok: false,
         error: data.error,
         status: response.status,
-        url: callbackUrl,
-        requiresTwoFactor: data.requiresTwoFactor
       };
     }
 
-    // Handle OAuth sign in
-    if (redirect) {
-      window.location.href = `/api/auth/signin/${provider}?callbackUrl=${encodeURIComponent(callbackUrl)}`;
-      return undefined;
+    if (provider === 'oauth-2fa') {
+      const csrfToken = await getCsrfToken();
+      
+      const response = await fetch('/api/auth/verify-2fa', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': csrfToken || '',
+        },
+        body: JSON.stringify({
+          userId: options.userId,
+          code: options.twoFactorCode,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        eventBus.emit('user:token', data);
+        
+        if (options.redirect) {
+          navigate(options.callbackUrl || '/');
+          return undefined;
+        }
+        
+        return { 
+          ok: true, 
+          status: response.status,
+          csrfToken: data.csrfToken,
+        };
+      }
+
+      return {
+        ok: false,
+        error: data.error,
+        status: response.status,
+      };
     }
 
-    // OAuth doesn't support non-redirect mode, return an error
     return {
       ok: false,
-      error: 'OAuth providers require redirect',
+      error: 'Unsupported provider',
       status: 400,
-      url: callbackUrl,
-      requiresTwoFactor: false
     };
   } catch (error) {
     console.error('SignIn error:', error);
@@ -185,40 +200,36 @@ export async function signIn(
       ok: false,
       error: error instanceof Error ? error.message : 'Unknown error',
       status: 500,
-      url: callbackUrl,
-      requiresTwoFactor: false
     };
   }
 }
 
 /**
  * Sign out function
- * @param options Sign out options
  */
 export async function signOut(options: { redirect?: boolean; callbackUrl?: string } = {}): Promise<{ url: string }> {
-  const callbackUrl = options.callbackUrl || '/';
-  const redirect = options.redirect !== false;
-
   try {
-    const csrfToken = await getCsrfToken();
-    await fetch('/api/auth/signout', {
+    const userStore = RootStore.Get(UserStore);
+    const csrfToken = userStore.tokenData.value?.csrfToken;
+    
+    await fetch('/api/auth/logout', {
       method: 'POST',
+      credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
+        'X-CSRF-Token': csrfToken || '',
       },
-      body: JSON.stringify({ csrfToken, callbackUrl }),
     });
 
-    eventBus.emit('user:session', null);
+    eventBus.emit('user:token', null);
     
-    if (redirect) {
-      window.location.href = callbackUrl;
-      return { url: callbackUrl };
+    if (options.redirect) {
+      navigate(options.callbackUrl || '/');
     }
 
-    return { url: callbackUrl };
+    return { url: options.callbackUrl || '/' };
   } catch (error) {
     console.error('SignOut error:', error);
-    return { url: callbackUrl };
+    return { url: options.callbackUrl || '/' };
   }
-} 
+}

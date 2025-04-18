@@ -6,8 +6,6 @@ import jwt from 'jsonwebtoken';
 import { prisma } from "@/prisma";
 import { User } from "@/context";
 import { Request as ExpressRequest } from 'express';
-import { getSession } from "@auth/express";
-import { expressAuthParam } from "@/routerExpress/auth";
 
 export const SendWebhook = async (data: any, webhookType: string, ctx: { id: string }) => {
   try {
@@ -114,8 +112,8 @@ export async function generateFeed(userId: number, origin: string, rows: number 
 let isLoading = false
 
 export const getNextAuthSecret = async () => {
-  const configKey = 'NEXTAUTH_SECRET';
-  let secret = process.env.NEXTAUTH_SECRET;
+  const configKey = 'JWT_SECRET';
+  let secret = process.env.JWT_SECRET;
   if (isLoading) {
     return secret!
   }
@@ -141,59 +139,61 @@ export const getNextAuthSecret = async () => {
   return secret;
 }
 
-export const getSessionToken = async (req: ExpressRequest) => {
-  const session = await getSession(req, await expressAuthParam());
-  return session;
-}
-
-export const getToken = async (req: ExpressRequest) => {
+export const generateToken = async (user: any, twoFactorVerified = false) => {
   const secret = await getNextAuthSecret();
-  
+  return jwt.sign(
+    {
+      sub: user.id,
+      name: user.name,
+      role: user.role || 'user',
+      twoFactorVerified,
+      exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 30), 
+      iat: Math.floor(Date.now() / 1000)
+    },
+    secret,
+    { algorithm: 'HS256' }
+  );
+};
+
+export const verifyToken = async (token: string) => {
+  const secret = await getNextAuthSecret();
   try {
-    const session = await getSessionToken(req);
-    if (session) {
+    const decoded = jwt.verify(token, secret) as User;
+    return decoded;
+  } catch (error) {
+    console.error('Token verification failed:', error);
+    return null;
+  }
+};
+
+export const getTokenFromRequest = async (req: ExpressRequest) => {
+  try {
+    if (req.session && req.isAuthenticated && req.isAuthenticated() && req.user) {
+      const user = req.user;
       return {
-        id: session.user?.id as string,
-        name: session.user?.name as string,
-        sub: session.user?.id as string,
-        //@ts-ignore
-        role: session.user?.role as string || 'user',
-        exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 99999), 
-        iat: Math.floor(Date.now() / 1000)
+        id: user.id.toString(),
+        sub: user.id.toString(),
+        name: user.name,
+        role: user.role || 'user',
+        exp: Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60 * 1000,
+        iat: Math.floor(Date.now() / 1000),
       } as User;
-    }
-    
-    if (req.cookies && typeof req.cookies === 'object') {
-      const sessionToken = req.cookies['authjs.session-token'];
-      if (sessionToken) {
-        try {
-          const tokenData = jwt.verify(sessionToken, secret) as User;
-          if (!tokenData.role) tokenData.role = 'user';
-          return tokenData;
-        } catch (error) {
-          console.error('Session token verification failed:', error);
-        }
-      }
     }
     
     if (req.headers && typeof req.headers === 'object') {
       const authHeader = req.headers.authorization;
       if (authHeader && authHeader.startsWith('Bearer ')) {
         const token = authHeader.substring(7);
-        try {
-          const tokenData = jwt.verify(token, secret) as User;
-          if (!tokenData.role) tokenData.role = 'user';
-          return tokenData;
-        } catch (error) {
-          console.error('Bearer token verification failed:', error);
-        }
+        const tokenData = await verifyToken(token);
+        if (tokenData) return tokenData;
       }
     }
+    
+    return null;
   } catch (error) {
-    console.error('Auth session retrieval error:', error);
+    console.error('Token retrieval error:', error);
+    return null;
   }
-  
-  return null;
 }
 
 export const getAllPathTags = async () => {
@@ -277,4 +277,28 @@ export const resetSequences = async () => {
   await prisma.$executeRaw`SELECT setval('"tagsToNote_id_seq"', (SELECT MAX(id) FROM "tagsToNote") + 1);`;
   await prisma.$executeRaw`SELECT setval('attachments_id_seq', (SELECT MAX(id) FROM "attachments") + 1);`;
 }
+
+export const getUserFromSession = (req: any) => {
+  if (req && req.isAuthenticated && req.isAuthenticated() && req.user) {
+    const user = req.user;
+    return {
+      id: user.id.toString(),
+      sub: user.id.toString(),
+      name: user.name,
+      role: user.role || 'user',
+      exp: Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60 * 1000,
+      iat: Math.floor(Date.now() / 1000),
+    };
+  }
+  return null;
+};
+
+export const getUserFromRequest = async (req: any) => {
+  const sessionUser = getUserFromSession(req);
+  if (sessionUser) {
+    return sessionUser;
+  }
+  
+  return await getTokenFromRequest(req);
+};
 

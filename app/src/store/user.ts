@@ -12,44 +12,68 @@ import { BaseStore } from './baseStore';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from 'next-themes';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { getSession, Session } from '@/components/Auth/auth-client';
+import { signIn, TokenData, navigate } from '@/components/Auth/auth-client';
 import { DialogStore } from './module/Dialog';
 import { ShowTwoFactorModal } from '@/components/Common/TwoFactorModal';
 import { ToastPlugin } from './module/Toast/Toast';
+import { StorageState } from './standard/StorageState';
+
+
 
 export class UserStore implements Store {
   sid = 'user';
   constructor() {
     makeAutoObservable(this)
   }
-  id: string = '';
-  name?: string = '';
-  nickname?: string = '';
-  image?: string = '';
-  role: string = '';
+  tokenData = new StorageState<TokenData | null>({ key: 'blinkoToken', value: null });
   theme: any = 'light';
   isSetup: boolean = false;
   languageInitialized: boolean = false;
   themeInitialized: boolean = false;
   isHubInitialized: boolean = false;
   isUseAIInitialized: boolean = false;
-  requiresTwoFactor: boolean = false;
+
+  get id(): string {
+    return this.tokenData.value?.user?.id || '';
+  }
+
+  get name(): string {
+    return this.tokenData.value?.user?.name || '';
+  }
+
+  get nickname(): string {
+    return this.tokenData.value?.user?.nickname || '';
+  }
+
+  get image(): string {
+    return this.tokenData.value?.user?.image || '';
+  }
+
+  get role(): string {
+    return this.tokenData.value?.user?.role || '';
+  }
+
+  get token(): string | null {
+    return this.tokenData.value?.token || null;
+  }
+
+  get requiresTwoFactor(): boolean {
+    return !!this.tokenData.value?.requiresTwoFactor;
+  }
 
   wait() {
-    return new Promise<UserStore>((res, rej) => {
+    return new Promise<UserStore>((res) => {
       if (this.id) {
         res(this);
+      } else {
+        //@ts-ignore
+        this.event.once('user:ready', () => res(this));
       }
-
-      //@ts-ignore
-      this.event.once('user:ready', (user) => {
-        res(this);
-      });
     });
   }
 
   get isSuperAdmin() {
-    return this.role === 'superadmin'
+    return this.role === 'superadmin';
   }
 
   static wait() {
@@ -57,81 +81,79 @@ export class UserStore implements Store {
   }
 
   get isLogin() {
-    return !!this.name;
+    return !!this.token;
   }
 
   get blinko() {
-    return RootStore.Get(BlinkoStore)
+    return RootStore.Get(BlinkoStore);
   }
 
   userInfo = new PromiseState({
     function: async (id: number) => {
-      return await api.users.detail.query({ id })
+      return await api.users.detail.query({ id });
     }
-  })
+  });
 
   canRegister = new PromiseState({
     function: async () => {
-      return await api.users.canRegister.mutate()
-    }
-  })
-
-  checkSession = new PromiseState({
-    function: async () => {
-      try {
-        const session = await getSession();
-        return session !== null;
-      } catch (error) {
-        console.error('Failed to check session:', error);
-        return false;
-      }
+      return await api.users.canRegister.mutate();
     }
   });
 
   handleTwoFactorAuth = async (twoFactorCode: string) => {
     try {
-      eventBus.emit('user:twoFactorSubmit', twoFactorCode);
-      return true;
+      const res = await signIn('oauth-2fa', {
+        userId: this.id,
+        twoFactorCode,
+        callbackUrl: '/',
+        redirect: false,
+      });
+
+      if (res?.ok) {
+        eventBus.emit('user:twoFactorResult', { success: true });
+        return true;
+      }
+
+      eventBus.emit('user:twoFactorResult', {
+        success: false,
+        error: res?.error || 'Invalid verification code'
+      });
+      return false;
     } catch (error) {
       console.error('Failed to handle 2FA:', error);
       return false;
     }
   };
 
-  getSessionData() {
-    if (!this.isLogin) return null;
-
-    return {
-      user: {
-        id: this.id,
-        name: this.name,
-        nickname: this.nickname,
-        image: this.image,
-        role: this.role
-      },
-      expires: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-      requiresTwoFactor: this.requiresTwoFactor
-    };
-  }
-
   setData(args: Partial<UserStore>) {
     Object.assign(this, args);
     eventBus.emit('user:ready', this);
   }
 
-  ready(args: Partial<UserStore>) {
-    console.log('ready!!!!!!', args);
-    this.setData(args);
+  ready(userData: any) {
+    if (userData.token) {
+      const tokenData: TokenData = {
+        user: {
+          id: userData.id,
+          name: userData.name,
+          nickname: userData.nickname,
+          image: userData.image,
+          role: userData.role
+        },
+        expires: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+        requiresTwoFactor: userData.requiresTwoFactor,
+        token: userData.token
+      };
+      this.tokenData.save(tokenData);
+    }
+    this.isSetup = true;
+    eventBus.emit('user:ready', this);
   }
 
   clear() {
-    this.id = ''
-    this.name = ''
-    this.nickname = ''
-    this.image = ''
-    this.role = ''
-    this.isSetup = false
-    this.requiresTwoFactor = false
+    this.tokenData.save(null);
+    this.isSetup = false;
+    localStorage.removeItem('token');
     eventBus.emit('user:clear', this);
   }
 
@@ -251,36 +273,26 @@ export class UserStore implements Store {
     }
   }
 
-  handleSession(session: Session | null, successCallback?: () => void) {
+  handleToken(tokenData: TokenData | null, successCallback?: () => void) {
     const location = window.location;
-    console.log('handleSession', session);
+    console.log('handleToken', tokenData);
 
-    if (session && session.user) {
-      const userData: Partial<UserStore> = {
-        id: session.user.id ?? '0',
-        name: session.user.name ?? '',
-        nickname: session.user.nickname ?? '',
-        role: session.user.role ?? '',
-        requiresTwoFactor: !!session.requiresTwoFactor
-      };
+    if (tokenData && tokenData.user) {
+      this.tokenData.save(tokenData);
+      this.isSetup = true;
 
-      if (session.user.image) {
-        userData.image = session.user.image;
-      }
-      this.ready(userData);
-
-      if (session.requiresTwoFactor) {
+      if (tokenData.requiresTwoFactor) {
         this.showTwoFactorDialog();
       }
       else if (location.pathname === '/signin' || location.pathname === '/signup') {
-        window.location.href = '/';
+        navigate('/');
       }
 
       if (successCallback) {
         successCallback();
       }
     } else {
-      console.log('clearing user session');
+      console.log('clearing user token');
       this.clear();
 
       const pathname = location.pathname;
@@ -290,7 +302,7 @@ export class UserStore implements Store {
         pathname !== '/signup' &&
         !pathname.includes('/share') &&
         !isInitialLoad) {
-        window.location.href = '/signin';
+        navigate('/signin');
       }
     }
   }
@@ -301,7 +313,7 @@ export class UserStore implements Store {
 
       ShowTwoFactorModal(async (code) => {
         try {
-          eventBus.emit('user:twoFactorSubmit', code);
+          await this.handleTwoFactorAuth(code);
         } catch (error) {
           console.error('2FA verification failed:', error);
           RootStore.Get(ToastPlugin).error('verification-failed');
@@ -321,20 +333,35 @@ export class UserStore implements Store {
     }, []);
 
     useEffect(() => {
-      eventBus.on('user:session', (session) => {
-        this.handleSession(session, () => {
+      eventBus.on('user:token', (tokenData) => {
+        this.handleToken(tokenData, () => {
           this.initializeSettings(setTheme, i18n);
-          if (session?.user?.id) {
-            this.userInfo.call(Number(session.user.id));
+          if (tokenData?.user?.id) {
+            this.userInfo.call(Number(tokenData.user.id));
             this.canRegister.call();
           }
         });
       });
 
+      eventBus.on('user:showTwoFactor', (data) => {
+        console.log('Received showTwoFactor event:', data);
+        if (data && data.userId) {
+          this.tokenData.save({
+            ...this.tokenData.value,
+            requiresTwoFactor: true,
+            user: {
+              ...this.tokenData.value?.user,
+              id: data.userId.toString()
+            }
+          });
+          
+          this.showTwoFactorDialog();
+        }
+      });
+
       eventBus.on('user:twoFactorResult', (result) => {
         if (result.success) {
           RootStore.Get(DialogStore).close();
-          this.checkSession.call();
           if (!this.requiresTwoFactor) {
             navigate('/');
           }
@@ -343,11 +370,10 @@ export class UserStore implements Store {
         }
       });
 
-      this.checkSession.call();
-
       return () => {
-        eventBus.off('user:session', this.handleSession);
-        eventBus.off('user:twoFactorResult', () => { });
+        eventBus.off('user:token', this.handleToken);
+        eventBus.off('user:showTwoFactor', () => {});
+        eventBus.off('user:twoFactorResult', () => {});
       };
     }, []);
 
@@ -357,9 +383,7 @@ export class UserStore implements Store {
         if (pathname === '/signup' || pathname.includes('/share')) {
           return
         }
-        localStorage.removeItem('username')
-        localStorage.removeItem('password')
-        RootStore.Get(UserStore).clear()
+        this.clear()
         navigate('/signin')
       }
 

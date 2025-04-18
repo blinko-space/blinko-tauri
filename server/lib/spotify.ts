@@ -130,7 +130,7 @@ export class SpotifyClient {
   private async getArtistImage(artist: string): Promise<string> {
     try {
       const token = await this.getToken();
-      const response: { data: SpotifyArtistSearchResponse } = await getWithProxy('https://api.spotify.com/v1/search', {
+      const response: any = await getWithProxy('https://api.spotify.com/v1/search', {
         config: {
           params: {
             q: artist,
@@ -163,7 +163,7 @@ export class SpotifyClient {
     const token = await this.getToken();
 
     try {
-      const response: { data: SpotifySearchResponse } = await getWithProxy('https://api.spotify.com/v1/search', {
+      const response: any = await getWithProxy('https://api.spotify.com/v1/search', {
         config: {
           params: {
             q: params.query,

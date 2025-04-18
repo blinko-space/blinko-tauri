@@ -1,9 +1,8 @@
 import express from 'express';
 import { createTRPCClient, httpBatchStreamLink } from '@trpc/client';
 import superjson from 'superjson';
-import { getToken } from '../lib/helper';
+import { getTokenFromRequest } from '../lib/helper';
 import { getGlobalConfig } from '../routerTrpc/config';
-import { AppRouter } from '@/routerTrpc/_app';
 
 const router = express.Router();
 
@@ -34,7 +33,7 @@ router.options('/chat/completions', (req, res) => {
 
 router.post('/chat/completions', async (req, res) => {
   try {
-    const token = await getToken(req);
+    const token = await getTokenFromRequest(req);
     if (!token) {
       return res.status(401).json({
         error: { message: 'No valid authorization token provided' }

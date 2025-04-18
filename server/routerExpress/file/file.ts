@@ -8,7 +8,7 @@ import { UPLOAD_FILE_PATH } from '../../../shared/lib/constant';
 import crypto from 'crypto';
 import sharp from 'sharp';
 import { prisma } from '../../prisma';
-import { getToken } from '../../lib/helper';
+import { getTokenFromRequest } from '../../lib/helper';
 
 const router = express.Router();
 const STREAM_THRESHOLD = 5 * 1024 * 1024;
@@ -85,9 +85,10 @@ let activeStreams = 0;
  *     security:
  *       - bearer: []
  */
+//@ts-ignore
 router.get(/.*/, async (req, res) => {
   const fullPath = decodeURIComponent(req.path.substring(1));
-  const token = await getToken(req);
+  const token = await getTokenFromRequest(req);
 
   const needThumbnail = req.query.thumbnail === 'true';
   const isDownload = req.query.download === 'true';

@@ -1,6 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
+import authRoutes from './routerExpress/auth';
+import { configureSession } from './routerExpress/auth/config';
 
 // tRPC related imports
 import { createContext } from './context';
@@ -13,7 +15,6 @@ import swaggerUi from 'swagger-ui-express';
 import { openApiDocument } from './swagger';
 
 // Express router imports
-import { setupAuth } from './routerExpress/auth';
 import fileRouter from './routerExpress/file/file';
 import uploadRouter from './routerExpress/file/upload';
 import deleteRouter from './routerExpress/file/delete';
@@ -75,14 +76,21 @@ const errorHandler = (err: any, req: express.Request, res: express.Response, nex
  * Setup all API routes for the application
  */
 async function setupApiRoutes(app: express.Application) {
-  // tRPC endpoint
-  app.use('/api/trpc', createExpressMiddleware({
-    router: appRouter,
-    createContext,
-    onError: ({ error }) => {
-      console.error('tRPC error:', error);
-    }
-  }));
+  // Authentication routes
+  app.use('/api/auth', authRoutes);
+
+  // tRPC endpoint with adapter for Express
+  app.use('/api/trpc', 
+    createExpressMiddleware({
+      router: appRouter,
+      createContext: ({ req, res }) => {
+        return createContext(req, res);
+      },
+      onError: ({ error }) => {
+        console.error('tRPC error:', error);
+      }
+    })
+  );
 
   // File handling endpoints
   app.use('/api/file', fileRouter);
@@ -96,11 +104,15 @@ async function setupApiRoutes(app: express.Application) {
   app.use('/v1', openaiRouter);
 
   // OpenAPI integration
-  app.use('/api', createOpenApiExpressMiddleware({
-    //@ts-ignore
-    router: appRouter,
-    createContext,
-  }));
+  app.use('/api', 
+    // @ts-ignore
+    createOpenApiExpressMiddleware({
+      router: appRouter,
+      createContext: ({ req, res }: { req: express.Request; res: express.Response }) => {
+        return createContext(req, res);
+      }
+    })
+  );
 
   // OpenAPI documentation endpoints
   app.get('/api/openapi.json', (req, res) => {
@@ -123,9 +135,6 @@ async function setupApiRoutes(app: express.Application) {
   app.get('/health', (req, res) => {
     res.json({ status: 'ok' });
   });
-
-  // Apply global error handler
-  app.use(errorHandler);
 }
 
 /**
@@ -142,9 +151,14 @@ async function bootstrap() {
     app.use(express.json({ limit: '50mb' }));
     app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-    // Setup authentication and API routes
-    await setupAuth(app);
+    await configureSession(app);
+
+    // Setup API routes
     await setupApiRoutes(app);
+    //@ts-ignore
+    app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+      errorHandler(err, req, res, next);
+    });
 
     // Start or update server
     if (!server) {

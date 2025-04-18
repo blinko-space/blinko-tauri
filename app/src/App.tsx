@@ -16,7 +16,7 @@ import { LoadingPage } from '@/components/Common/LoadingPage';
 import { PluginManagerStore } from '@/store/plugin/pluginManagerStore';
 import { RootStore } from '@/store';
 import { UserStore } from '@/store/user';
-import { getSession } from '@/components/Auth/auth-client';
+import { getTokenData, setNavigate } from '@/components/Auth/auth-client';
 
 const HomePage = lazy(() => import('./pages/index'));
 const SignInPage = lazy(() => import('./pages/signin'));
@@ -41,20 +41,22 @@ const ProtectedRoute = ({ children }) => {
   const userStore = RootStore.Get(UserStore);
 
   useEffect(() => {
+    setNavigate(navigate);
+  }, [navigate]);
+
+  useEffect(() => {
     const checkAuth = async () => {
       const publicRoutes = ['/signin', '/signup', '/share', '/_offline'];
       const isPublicRoute = publicRoutes.some(route =>
         location.pathname === route || location.pathname.startsWith('/share/')
       );
 
-      // 如果用户未登录且不在公共路由上，重定向到登录页
       if (!userStore.isLogin && !isPublicRoute) {
-        // 尝试获取会话，可能用户有有效会话但userStore未更新
-        const session = await getSession();
+        const tokenData = await getTokenData();
+        console.log('tokenData', tokenData);
         
-        // 如果获取会话后仍未登录，则重定向
-        if (!userStore.isLogin) {
-          console.log('无有效会话，重定向到登录页');
+        if (!tokenData?.user?.id) {
+          console.log('No valid token, redirecting to login page');
           navigate('/signin', { replace: true });
         }
       }
@@ -63,7 +65,7 @@ const ProtectedRoute = ({ children }) => {
     };
 
     checkAuth();
-  }, [navigate, location, userStore.isLogin]);
+  }, [userStore.isLogin]);
 
   if (isChecking) {
     return <LoadingPage />;
@@ -100,8 +102,8 @@ function AppRoutes() {
 function App() {
   const [isLoading, setIsLoading] = useState(true);
   initStore();
+  
   useEffect(() => {
-
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 500);
