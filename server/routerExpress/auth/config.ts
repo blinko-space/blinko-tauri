@@ -307,16 +307,112 @@ const initOAuthStrategies = async () => {
           }, handleOAuthCallback));
           break;
           
+        // Additional OAuth providers
+        case 'spotify':
+          try {
+            const SpotifyStrategy = require('passport-spotify').Strategy;
+            passport.use(new SpotifyStrategy({
+              clientID: provider.clientId,
+              clientSecret: provider.clientSecret,
+              callbackURL: callbackURL,
+              scope: ['user-read-email', 'user-read-private']
+            }, handleOAuthCallback));
+          } catch (error) {
+            console.error('Spotify strategy requires passport-spotify package');
+          }
+          break;
+          
+        case 'apple':
+          try {
+            const AppleStrategy = require('passport-apple');
+            passport.use(new AppleStrategy({
+              clientID: provider.clientId,
+              clientSecret: provider.clientSecret,
+              callbackURL: callbackURL,
+              scope: ['name', 'email']
+            }, handleOAuthCallback));
+          } catch (error) {
+            console.error('Apple strategy requires passport-apple package');
+          }
+          break;
+          
+        case 'slack':
+          try {
+            const SlackStrategy = require('passport-slack').Strategy;
+            passport.use(new SlackStrategy({
+              clientID: provider.clientId,
+              clientSecret: provider.clientSecret,
+              callbackURL: callbackURL,
+              scope: ['identity.basic', 'identity.email']
+            }, handleOAuthCallback));
+          } catch (error) {
+            console.error('Slack strategy requires passport-slack package');
+          }
+          break;
+          
+        case 'twitch':
+          try {
+            const TwitchStrategy = require('passport-twitch-new').Strategy;
+            passport.use(new TwitchStrategy({
+              clientID: provider.clientId,
+              clientSecret: provider.clientSecret,
+              callbackURL: callbackURL,
+              scope: 'user:read:email'
+            }, handleOAuthCallback));
+          } catch (error) {
+            console.error('Twitch strategy requires passport-twitch-new package');
+          }
+          break;
+          
+        case 'line':
+          try {
+            const LineStrategy = require('passport-line').Strategy;
+            passport.use(new LineStrategy({
+              channelID: provider.clientId,
+              channelSecret: provider.clientSecret,
+              callbackURL: callbackURL,
+              scope: ['profile', 'openid', 'email']
+            }, handleOAuthCallback));
+          } catch (error) {
+            console.error('Line strategy requires passport-line package');
+          }
+          break;
           
         default:
+          // Custom OAuth provider configuration
           if (provider.wellKnown || (provider.authorizationUrl && provider.tokenUrl)) {
-            console.log(`自定义OAuth提供商 ${provider.id} 需要单独配置`);
+            console.log(`Custom OAuth provider ${provider.id} needs additional configuration`);
+            try {
+              const { Strategy: OAuth2Strategy } = require('passport-oauth2');
+              
+              const oauthConfig = {
+                authorizationURL: provider.authorizationUrl || provider.wellKnown + '/authorize',
+                tokenURL: provider.tokenUrl || provider.wellKnown + '/token',
+                clientID: provider.clientId,
+                clientSecret: provider.clientSecret,
+                callbackURL: callbackURL,
+                scope: provider.scope?.split(' ') || ['profile', 'email'],
+                passReqToCallback: true
+              };
+              
+              passport.use(provider.id, new OAuth2Strategy(oauthConfig, 
+                (req, accessToken, refreshToken, profile, done) => {
+                  if (provider.userinfoUrl) {
+                    handleOAuthCallback(accessToken, refreshToken, profile, done);
+                  } else {
+                    handleOAuthCallback(accessToken, refreshToken, profile, done);
+                  }
+                }
+              ));
+            } catch (error) {
+              console.error(`Failed to initialize custom OAuth provider: ${provider.id}`, error);
+            }
           }
           break;
       }
     }
   } catch (error) {
-    console.error('初始化OAuth策略失败:', error);
+    console.error('Failed to initialize OAuth strategies:', error);
   }
 };
 
