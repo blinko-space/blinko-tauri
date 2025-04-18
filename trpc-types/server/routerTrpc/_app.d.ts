@@ -55,8 +55,8 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
         completions: import("@trpc/server").TRPCMutationProcedure<{
             input: {
                 conversations: {
-                    content: string;
                     role: string;
+                    content: string;
                 }[];
                 question: string;
                 withTools?: boolean | undefined;
@@ -92,16 +92,16 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
         summarizeConversationTitle: import("@trpc/server").TRPCMutationProcedure<{
             input: {
                 conversations: {
-                    content: string;
                     role: string;
+                    content: string;
                 }[];
                 conversationId: number;
             };
             output: {
                 id: number;
-                accountId: number;
                 createdAt: Date;
                 updatedAt: Date;
+                accountId: number;
                 title: string;
             };
         }>;
@@ -132,21 +132,21 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
             };
             output: {
                 account: {
-                    id: number;
                     name: string;
+                    id: number;
                     nickname: string;
                     image: string;
                 } | null;
             } & {
                 id: number;
-                content: string;
-                accountId: number | null;
                 createdAt: Date;
                 updatedAt: Date;
-                noteId: number;
+                content: string;
+                accountId: number | null;
                 guestName: string | null;
                 guestIP: string | null;
                 guestUA: string | null;
+                noteId: number;
                 parentId: number | null;
             };
         }>;
@@ -188,9 +188,9 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
                 isArchived?: boolean | null | undefined;
                 isRecycle?: boolean | undefined;
                 isShare?: boolean | null | undefined;
+                size?: number | undefined;
                 tagId?: number | null | undefined;
                 page?: number | undefined;
-                size?: number | undefined;
                 searchText?: string | undefined;
                 withoutTag?: boolean | undefined;
                 withFile?: boolean | undefined;
@@ -201,23 +201,9 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
                 hasTodo?: boolean | undefined;
             };
             output: {
-                attachments: {
-                    id: number;
-                    type: string;
-                    isShare: boolean;
-                    sharePassword: string;
-                    accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    name: string;
-                    noteId: number | null;
-                    sortOrder: number;
-                    path: string;
-                    size: string | number | import("@prisma/client/runtime/library").Decimal;
-                    depth?: any;
-                    perfixPath?: any;
-                }[];
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -227,19 +213,33 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
+                attachments: {
+                    name: string;
+                    id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    type: string;
+                    isShare: boolean;
+                    sharePassword: string;
+                    accountId: number | null;
+                    sortOrder: number;
+                    noteId: number | null;
+                    path: string;
+                    size: string | number | import("@prisma/client/runtime/library").Decimal;
+                    perfixPath?: any;
+                    depth?: any;
+                }[];
                 tags: {
+                    id: number;
                     tag: {
+                        name: string;
                         id: number;
                         createdAt: Date;
                         updatedAt: Date;
-                        name: string;
                         icon: string;
                         parent: number;
                         sortOrder: number;
                     };
-                    id: number;
                     noteId: number;
                     tagId: number;
                 }[];
@@ -252,57 +252,43 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
                 shareMaxView?: number | null | undefined;
                 shareViewCount?: number | null | undefined;
                 metadata?: any;
+                canEdit?: boolean | undefined;
                 referencedBy?: {
                     fromNoteId: number;
                     fromNote?: {
-                        content?: string | undefined;
                         createdAt?: Date | undefined;
                         updatedAt?: Date | undefined;
+                        content?: string | undefined;
                     } | undefined;
                 }[] | undefined;
                 references?: {
                     toNoteId: number;
                     toNote?: {
-                        content?: string | undefined;
                         createdAt?: Date | undefined;
                         updatedAt?: Date | undefined;
+                        content?: string | undefined;
                     } | undefined;
                 }[] | undefined;
                 owner?: {
-                    id: number;
                     name: string;
+                    id: number;
                     nickname: string;
                     image: string;
                 } | null | undefined;
                 isSharedNote?: boolean | undefined;
-                canEdit?: boolean | undefined;
                 isInternalShared?: boolean | undefined;
             }[];
         }>;
         publicList: import("@trpc/server").TRPCMutationProcedure<{
             input: {
-                page?: number | undefined;
                 size?: number | undefined;
+                page?: number | undefined;
                 searchText?: string | undefined;
             };
             output: {
-                attachments: {
-                    id: number;
-                    type: string;
-                    isShare: boolean;
-                    sharePassword: string;
-                    accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    name: string;
-                    noteId: number | null;
-                    sortOrder: number;
-                    path: string;
-                    size: string | number | import("@prisma/client/runtime/library").Decimal;
-                    depth?: any;
-                    perfixPath?: any;
-                }[];
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -312,19 +298,33 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
+                attachments: {
+                    name: string;
+                    id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    type: string;
+                    isShare: boolean;
+                    sharePassword: string;
+                    accountId: number | null;
+                    sortOrder: number;
+                    noteId: number | null;
+                    path: string;
+                    size: string | number | import("@prisma/client/runtime/library").Decimal;
+                    perfixPath?: any;
+                    depth?: any;
+                }[];
                 tags: {
+                    id: number;
                     tag: {
+                        name: string;
                         id: number;
                         createdAt: Date;
                         updatedAt: Date;
-                        name: string;
                         icon: string;
                         parent: number;
                         sortOrder: number;
                     };
-                    id: number;
                     noteId: number;
                     tagId: number;
                 }[];
@@ -337,8 +337,8 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
                 shareViewCount?: number | null | undefined;
                 metadata?: any;
                 account?: {
-                    id?: number | undefined;
                     name?: string | undefined;
+                    id?: number | undefined;
                     nickname?: string | undefined;
                     image?: string | undefined;
                 } | null | undefined;
@@ -349,23 +349,9 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
                 ids: number[];
             };
             output: {
-                attachments: {
-                    id: number;
-                    type: string;
-                    isShare: boolean;
-                    sharePassword: string;
-                    accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    name: string;
-                    noteId: number | null;
-                    sortOrder: number;
-                    path: string;
-                    size: string | number | import("@prisma/client/runtime/library").Decimal;
-                    depth?: any;
-                    perfixPath?: any;
-                }[];
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -375,19 +361,33 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
+                attachments: {
+                    name: string;
+                    id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    type: string;
+                    isShare: boolean;
+                    sharePassword: string;
+                    accountId: number | null;
+                    sortOrder: number;
+                    noteId: number | null;
+                    path: string;
+                    size: string | number | import("@prisma/client/runtime/library").Decimal;
+                    perfixPath?: any;
+                    depth?: any;
+                }[];
                 tags: {
+                    id: number;
                     tag: {
+                        name: string;
                         id: number;
                         createdAt: Date;
                         updatedAt: Date;
-                        name: string;
                         icon: string;
                         parent: number;
                         sortOrder: number;
                     };
-                    id: number;
                     noteId: number;
                     tagId: number;
                 }[];
@@ -403,17 +403,17 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
                 referencedBy?: {
                     fromNoteId: number;
                     fromNote?: {
-                        content?: string | undefined;
                         createdAt?: Date | undefined;
                         updatedAt?: Date | undefined;
+                        content?: string | undefined;
                     } | undefined;
                 }[] | undefined;
                 references?: {
                     toNoteId: number;
                     toNote?: {
-                        content?: string | undefined;
                         createdAt?: Date | undefined;
                         updatedAt?: Date | undefined;
+                        content?: string | undefined;
                     } | undefined;
                 }[] | undefined;
             }[];
@@ -426,23 +426,9 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
             output: {
                 error: "expired" | null;
                 data: {
-                    attachments: {
-                        id: number;
-                        type: string;
-                        isShare: boolean;
-                        sharePassword: string;
-                        accountId: number | null;
-                        createdAt: Date;
-                        updatedAt: Date;
-                        name: string;
-                        noteId: number | null;
-                        sortOrder: number;
-                        path: string;
-                        size: string | number | import("@prisma/client/runtime/library").Decimal;
-                        depth?: any;
-                        perfixPath?: any;
-                    }[];
                     id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
                     type: number;
                     content: string;
                     isArchived: boolean;
@@ -452,8 +438,22 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
                     isReviewed: boolean;
                     sharePassword: string;
                     accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
+                    attachments: {
+                        name: string;
+                        id: number;
+                        createdAt: Date;
+                        updatedAt: Date;
+                        type: string;
+                        isShare: boolean;
+                        sharePassword: string;
+                        accountId: number | null;
+                        sortOrder: number;
+                        noteId: number | null;
+                        path: string;
+                        size: string | number | import("@prisma/client/runtime/library").Decimal;
+                        perfixPath?: any;
+                        depth?: any;
+                    }[];
                     _count: {
                         comments: number;
                         histories: number;
@@ -464,25 +464,25 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
                     shareViewCount?: number | null | undefined;
                     metadata?: any;
                     account?: {
-                        id?: number | undefined;
                         name?: string | undefined;
+                        id?: number | undefined;
                         nickname?: string | undefined;
                         image?: string | undefined;
                     } | null | undefined;
                     referencedBy?: {
                         fromNoteId: number;
                         fromNote?: {
-                            content?: string | undefined;
                             createdAt?: Date | undefined;
                             updatedAt?: Date | undefined;
+                            content?: string | undefined;
                         } | undefined;
                     }[] | undefined;
                     references?: {
                         toNoteId: number;
                         toNote?: {
-                            content?: string | undefined;
                             createdAt?: Date | undefined;
                             updatedAt?: Date | undefined;
+                            content?: string | undefined;
                         } | undefined;
                     }[] | undefined;
                 } | null;
@@ -494,23 +494,9 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
                 id: number;
             };
             output: {
-                attachments: {
-                    id: number;
-                    type: string;
-                    isShare: boolean;
-                    sharePassword: string;
-                    accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    name: string;
-                    noteId: number | null;
-                    sortOrder: number;
-                    path: string;
-                    size: string | number | import("@prisma/client/runtime/library").Decimal;
-                    depth?: any;
-                    perfixPath?: any;
-                }[];
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -520,19 +506,33 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
+                attachments: {
+                    name: string;
+                    id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    type: string;
+                    isShare: boolean;
+                    sharePassword: string;
+                    accountId: number | null;
+                    sortOrder: number;
+                    noteId: number | null;
+                    path: string;
+                    size: string | number | import("@prisma/client/runtime/library").Decimal;
+                    perfixPath?: any;
+                    depth?: any;
+                }[];
                 tags: {
+                    id: number;
                     tag: {
+                        name: string;
                         id: number;
                         createdAt: Date;
                         updatedAt: Date;
-                        name: string;
                         icon: string;
                         parent: number;
                         sortOrder: number;
                     };
-                    id: number;
                     noteId: number;
                     tagId: number;
                 }[];
@@ -548,17 +548,17 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
                 referencedBy?: {
                     fromNoteId: number;
                     fromNote?: {
-                        content?: string | undefined;
                         createdAt?: Date | undefined;
                         updatedAt?: Date | undefined;
+                        content?: string | undefined;
                     } | undefined;
                 }[] | undefined;
                 references?: {
                     toNoteId: number;
                     toNote?: {
-                        content?: string | undefined;
                         createdAt?: Date | undefined;
                         updatedAt?: Date | undefined;
+                        content?: string | undefined;
                     } | undefined;
                 }[] | undefined;
             } | null;
@@ -566,23 +566,9 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
         dailyReviewNoteList: import("@trpc/server").TRPCQueryProcedure<{
             input: void;
             output: {
-                attachments: {
-                    id: number;
-                    type: string;
-                    isShare: boolean;
-                    sharePassword: string;
-                    accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    name: string;
-                    noteId: number | null;
-                    sortOrder: number;
-                    path: string;
-                    size: string | number | import("@prisma/client/runtime/library").Decimal;
-                    depth?: any;
-                    perfixPath?: any;
-                }[];
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -592,8 +578,22 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
+                attachments: {
+                    name: string;
+                    id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    type: string;
+                    isShare: boolean;
+                    sharePassword: string;
+                    accountId: number | null;
+                    sortOrder: number;
+                    noteId: number | null;
+                    path: string;
+                    size: string | number | import("@prisma/client/runtime/library").Decimal;
+                    perfixPath?: any;
+                    depth?: any;
+                }[];
                 shareEncryptedUrl?: string | null | undefined;
                 shareExpiryDate?: Date | null | undefined;
                 shareMaxView?: number | null | undefined;
@@ -606,23 +606,9 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
                 limit?: number | undefined;
             };
             output: {
-                attachments: {
-                    id: number;
-                    type: string;
-                    isShare: boolean;
-                    sharePassword: string;
-                    accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    name: string;
-                    noteId: number | null;
-                    sortOrder: number;
-                    path: string;
-                    size: string | number | import("@prisma/client/runtime/library").Decimal;
-                    depth?: any;
-                    perfixPath?: any;
-                }[];
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -632,8 +618,22 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
+                attachments: {
+                    name: string;
+                    id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    type: string;
+                    isShare: boolean;
+                    sharePassword: string;
+                    accountId: number | null;
+                    sortOrder: number;
+                    noteId: number | null;
+                    path: string;
+                    size: string | number | import("@prisma/client/runtime/library").Decimal;
+                    perfixPath?: any;
+                    depth?: any;
+                }[];
                 shareEncryptedUrl?: string | null | undefined;
                 shareExpiryDate?: Date | null | undefined;
                 shareMaxView?: number | null | undefined;
@@ -646,23 +646,9 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
                 id: number;
             };
             output: {
-                attachments: {
-                    id: number;
-                    type: string;
-                    isShare: boolean;
-                    sharePassword: string;
-                    accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    name: string;
-                    noteId: number | null;
-                    sortOrder: number;
-                    path: string;
-                    size: string | number | import("@prisma/client/runtime/library").Decimal;
-                    depth?: any;
-                    perfixPath?: any;
-                }[];
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -672,19 +658,33 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
+                attachments: {
+                    name: string;
+                    id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    type: string;
+                    isShare: boolean;
+                    sharePassword: string;
+                    accountId: number | null;
+                    sortOrder: number;
+                    noteId: number | null;
+                    path: string;
+                    size: string | number | import("@prisma/client/runtime/library").Decimal;
+                    perfixPath?: any;
+                    depth?: any;
+                }[];
                 tags: {
+                    id: number;
                     tag: {
+                        name: string;
                         id: number;
                         createdAt: Date;
                         updatedAt: Date;
-                        name: string;
                         icon: string;
                         parent: number;
                         sortOrder: number;
                     };
-                    id: number;
                     noteId: number;
                     tagId: number;
                 }[];
@@ -700,17 +700,17 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
                 referencedBy?: {
                     fromNoteId: number;
                     fromNote?: {
-                        content?: string | undefined;
                         createdAt?: Date | undefined;
                         updatedAt?: Date | undefined;
+                        content?: string | undefined;
                     } | undefined;
                 }[] | undefined;
                 references?: {
                     toNoteId: number;
                     toNote?: {
-                        content?: string | undefined;
                         createdAt?: Date | undefined;
                         updatedAt?: Date | undefined;
+                        content?: string | undefined;
                     } | undefined;
                 }[] | undefined;
             }[];
@@ -721,6 +721,8 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
             };
             output: {
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -730,8 +732,6 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
                 shareEncryptedUrl?: string | null | undefined;
                 shareExpiryDate?: Date | null | undefined;
                 shareMaxView?: number | null | undefined;
@@ -741,13 +741,9 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
         }>;
         upsert: import("@trpc/server").TRPCMutationProcedure<{
             input: {
-                attachments?: {
-                    type: string;
-                    name: string;
-                    path: string;
-                    size: string | number;
-                }[] | undefined;
                 id?: number | undefined;
+                createdAt?: Date | undefined;
+                updatedAt?: Date | undefined;
                 type?: import("@shared/lib/types").NoteType | -1 | undefined;
                 content?: string | null | undefined;
                 isArchived?: boolean | null | undefined;
@@ -755,8 +751,12 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
                 isShare?: boolean | null | undefined;
                 isTop?: boolean | null | undefined;
                 metadata?: any;
-                createdAt?: Date | undefined;
-                updatedAt?: Date | undefined;
+                attachments?: {
+                    name: string;
+                    type: string;
+                    path: string;
+                    size: string | number;
+                }[] | undefined;
                 references?: number[] | undefined;
             };
             output: any;
@@ -770,6 +770,8 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
             };
             output: {
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -779,8 +781,6 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
                 shareEncryptedUrl?: string | null | undefined;
                 shareExpiryDate?: Date | null | undefined;
                 shareMaxView?: number | null | undefined;
@@ -811,8 +811,8 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
         }>;
         addReference: import("@trpc/server").TRPCMutationProcedure<{
             input: {
-                toNoteId: number;
                 fromNoteId: number;
+                toNoteId: number;
             };
             output: any;
         }>;
@@ -822,23 +822,9 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
                 type?: "referencedBy" | "references" | undefined;
             };
             output: {
-                attachments: {
-                    id: number;
-                    type: string;
-                    isShare: boolean;
-                    sharePassword: string;
-                    accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    name: string;
-                    noteId: number | null;
-                    sortOrder: number;
-                    path: string;
-                    size: string | number | import("@prisma/client/runtime/library").Decimal;
-                    depth?: any;
-                    perfixPath?: any;
-                }[];
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -848,8 +834,22 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
+                attachments: {
+                    name: string;
+                    id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    type: string;
+                    isShare: boolean;
+                    sharePassword: string;
+                    accountId: number | null;
+                    sortOrder: number;
+                    noteId: number | null;
+                    path: string;
+                    size: string | number | import("@prisma/client/runtime/library").Decimal;
+                    perfixPath?: any;
+                    depth?: any;
+                }[];
                 referenceCreatedAt: Date;
                 shareEncryptedUrl?: string | null | undefined;
                 shareExpiryDate?: Date | null | undefined;
@@ -877,9 +877,9 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
             };
             output: {
                 id: number;
+                createdAt: Date;
                 content: string;
                 accountId: number | null;
-                createdAt: Date;
                 noteId: number;
                 version?: number | undefined;
             }[];
@@ -890,8 +890,8 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
                 version?: number | undefined;
             };
             output: {
-                content: string;
                 createdAt: Date;
+                content: string;
                 version: number;
                 metadata?: any;
             };
@@ -912,8 +912,8 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
                 id: number;
             };
             output: {
-                id: number;
                 name: string;
+                id: number;
                 nickname: string;
                 image: string;
                 loginType: string;
@@ -923,27 +923,13 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
         internalSharedWithMe: import("@trpc/server").TRPCMutationProcedure<{
             input: {
                 orderBy?: "asc" | "desc" | undefined;
-                page?: number | undefined;
                 size?: number | undefined;
+                page?: number | undefined;
             };
             output: {
-                attachments: {
-                    id: number;
-                    type: string;
-                    isShare: boolean;
-                    sharePassword: string;
-                    accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    name: string;
-                    noteId: number | null;
-                    sortOrder: number;
-                    path: string;
-                    size: string | number | import("@prisma/client/runtime/library").Decimal;
-                    depth?: any;
-                    perfixPath?: any;
-                }[];
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -953,19 +939,34 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
+                attachments: {
+                    name: string;
+                    id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    type: string;
+                    isShare: boolean;
+                    sharePassword: string;
+                    accountId: number | null;
+                    sortOrder: number;
+                    noteId: number | null;
+                    path: string;
+                    size: string | number | import("@prisma/client/runtime/library").Decimal;
+                    perfixPath?: any;
+                    depth?: any;
+                }[];
+                canEdit: boolean;
                 tags: {
+                    id: number;
                     tag: {
+                        name: string;
                         id: number;
                         createdAt: Date;
                         updatedAt: Date;
-                        name: string;
                         icon: string;
                         parent: number;
                         sortOrder: number;
                     };
-                    id: number;
                     noteId: number;
                     tagId: number;
                 }[];
@@ -974,12 +975,11 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
                     histories: number;
                 };
                 owner: {
-                    id: number;
                     name: string;
+                    id: number;
                     nickname: string;
                     image: string;
                 } | null;
-                canEdit: boolean;
                 shareEncryptedUrl?: string | null | undefined;
                 shareExpiryDate?: Date | null | undefined;
                 shareMaxView?: number | null | undefined;
@@ -997,10 +997,10 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
         list: import("@trpc/server").TRPCQueryProcedure<{
             input: void;
             output: {
+                name: string;
                 id: number;
                 createdAt: Date;
                 updatedAt: Date;
-                name: string;
                 icon: string;
                 parent: number;
                 sortOrder: number;
@@ -1033,10 +1033,10 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
                 icon: string;
             };
             output: {
+                name: string;
                 id: number;
                 createdAt: Date;
                 updatedAt: Date;
-                name: string;
                 icon: string;
                 parent: number;
                 sortOrder: number;
@@ -1060,11 +1060,11 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
                 sortOrder: number;
             };
             output: {
+                name: string;
                 id: number;
-                accountId: number | null;
                 createdAt: Date;
                 updatedAt: Date;
-                name: string;
+                accountId: number | null;
                 icon: string;
                 parent: number;
                 sortOrder: number;
@@ -1080,16 +1080,16 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
         list: import("@trpc/server").TRPCQueryProcedure<{
             input: void;
             output: {
-                id: number;
-                createdAt: Date;
-                updatedAt: Date;
                 name: string;
+                id: number;
                 nickname: string;
                 password: string;
                 image: string;
                 apiToken: string;
                 note: number;
                 role: string;
+                createdAt: Date;
+                updatedAt: Date;
                 description?: string | undefined;
                 loginType?: string | undefined;
                 linkAccountId?: number | null | undefined;
@@ -1098,23 +1098,23 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
         publicUserList: import("@trpc/server").TRPCQueryProcedure<{
             input: void;
             output: {
-                id: number;
-                createdAt: Date;
-                updatedAt: Date;
                 name: string;
+                id: number;
                 nickname: string;
                 image: string | null;
                 description: string | null;
                 role: string;
                 loginType: string;
                 linkAccountId: number | null;
+                createdAt: Date;
+                updatedAt: Date;
             }[];
         }>;
         nativeAccountList: import("@trpc/server").TRPCQueryProcedure<{
             input: void;
             output: {
-                id: number;
                 name: string;
+                id: number;
                 nickname: string;
             }[];
         }>;
@@ -1136,8 +1136,8 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
                 id?: number | undefined;
             };
             output: {
-                id: number;
                 name: string;
+                id: number;
                 image: string | null;
                 role: string;
                 loginType: string;
@@ -1169,8 +1169,8 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
         }>;
         upsertUser: import("@trpc/server").TRPCMutationProcedure<{
             input: {
-                id?: number | undefined;
                 name?: string | undefined;
+                id?: number | undefined;
                 nickname?: string | undefined;
                 password?: string | undefined;
                 image?: string | undefined;
@@ -1180,8 +1180,8 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
         }>;
         upsertUserByAdmin: import("@trpc/server").TRPCMutationProcedure<{
             input: {
-                id?: number | undefined;
                 name?: string | undefined;
+                id?: number | undefined;
                 nickname?: string | undefined;
                 password?: string | undefined;
             };
@@ -1215,8 +1215,8 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
                 password: string;
             };
             output: {
-                id: number;
                 name: string;
+                id: number;
                 nickname: string;
                 image: string | null;
                 role: string;
@@ -1233,8 +1233,8 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
     }, import("@trpc/server/unstable-core-do-not-import").DecorateCreateRouterOptions<{
         list: import("@trpc/server").TRPCQueryProcedure<{
             input: {
-                page?: number | undefined;
                 size?: number | undefined;
+                page?: number | undefined;
                 searchText?: string | undefined;
                 folder?: string | undefined;
             };
@@ -1248,20 +1248,20 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
                 oldFolderPath?: string | undefined;
             };
             output: {
+                name: string;
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: string;
                 isShare: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
-                name: string;
-                noteId: number | null;
                 sortOrder: number;
+                noteId: number | null;
                 path: string;
                 size: import("@prisma/client/runtime/library").Decimal;
-                depth: number | null;
                 perfixPath: string | null;
+                depth: number | null;
             } | {
                 success: boolean;
             };
@@ -1351,8 +1351,8 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
                 isCloseDailyReview?: boolean | undefined;
                 maxHomePageWidth?: number | undefined;
                 oauth2Providers?: {
-                    id: string;
                     name: string;
+                    id: string;
                     tokenUrl: string;
                     userinfoUrl: string;
                     clientId: string;
@@ -1424,8 +1424,8 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
         oauthProviders: import("@trpc/server").TRPCQueryProcedure<{
             input: void;
             output: {
-                id: string;
                 name: string;
+                id: string;
                 icon?: string | undefined;
             }[];
         }>;
@@ -1479,8 +1479,8 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
         hubList: import("@trpc/server").TRPCQueryProcedure<{
             input: void;
             output: {
-                id: string;
                 name: string;
+                id: string;
                 image: string;
                 description: string;
             }[];
@@ -1491,10 +1491,10 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
                 refresh?: boolean | undefined;
             };
             output: {
-                url: string;
                 title: string;
-                tags?: string[] | undefined;
+                url: string;
                 image?: string | null | undefined;
+                tags?: string[] | undefined;
                 version?: string | undefined;
                 site_description?: string | null | undefined;
             }[];
@@ -1524,10 +1524,10 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
             input: void;
             output: {
                 name: string;
-                isRunning: boolean;
                 schedule: string;
                 lastRun: Date;
                 isSuccess: boolean;
+                isRunning: boolean;
                 output?: any;
             }[];
         }>;
@@ -1624,8 +1624,8 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
             input: {
                 noteId: number;
                 orderBy?: "asc" | "desc" | undefined;
-                page?: number | undefined;
                 size?: number | undefined;
+                page?: number | undefined;
             };
             output: {
                 total: number;
@@ -1660,6 +1660,8 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
             } | undefined;
             output: {
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -1669,46 +1671,44 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
-                attachments?: {
-                    id: number;
-                    type: string;
-                    isShare: boolean;
-                    sharePassword: string;
-                    accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    name: string;
-                    noteId: number | null;
-                    sortOrder: number;
-                    path: string;
-                    size: string | number | import("@prisma/client/runtime/library").Decimal;
-                    depth?: any;
-                    perfixPath?: any;
-                }[] | undefined;
                 shareEncryptedUrl?: string | null | undefined;
                 shareExpiryDate?: Date | null | undefined;
                 shareMaxView?: number | null | undefined;
                 shareViewCount?: number | null | undefined;
                 metadata?: any;
+                attachments?: {
+                    name: string;
+                    id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    type: string;
+                    isShare: boolean;
+                    sharePassword: string;
+                    accountId: number | null;
+                    sortOrder: number;
+                    noteId: number | null;
+                    path: string;
+                    size: string | number | import("@prisma/client/runtime/library").Decimal;
+                    perfixPath?: any;
+                    depth?: any;
+                }[] | undefined;
                 tags?: ({
+                    id: number;
                     tag: {
+                        name: string;
                         id: number;
                         createdAt: Date;
                         updatedAt: Date;
-                        name: string;
                         icon: string;
                         parent: number;
                         sortOrder: number;
                     };
-                    id: number;
                     noteId: number;
                     tagId: number;
                 } | undefined)[] | null | undefined;
                 account?: {
-                    id?: number | undefined;
                     name?: string | undefined;
+                    id?: number | undefined;
                     nickname?: string | undefined;
                     image?: string | undefined;
                 } | null | undefined;
@@ -1730,10 +1730,10 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
         }>;
         followFrom: import("@trpc/server").TRPCMutationProcedure<{
             input: {
-                siteUrl: string;
-                mySiteAccountId: number;
                 siteName: string;
+                siteUrl: string;
                 siteAvatar: string;
+                mySiteAccountId: number;
             };
             output: {
                 success: boolean;
@@ -1760,9 +1760,9 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
             };
             output: {
                 id: number;
-                accountId: number;
                 createdAt: Date;
                 updatedAt: Date;
+                accountId: number;
                 siteUrl: string;
                 followType: string;
                 description?: string | undefined;
@@ -1776,9 +1776,9 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
             };
             output: {
                 id: number;
-                accountId: number;
                 createdAt: Date;
                 updatedAt: Date;
+                accountId: number;
                 siteUrl: string;
                 followType: string;
                 description?: string | undefined;
@@ -1804,16 +1804,16 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
     }, import("@trpc/server/unstable-core-do-not-import").DecorateCreateRouterOptions<{
         list: import("@trpc/server").TRPCQueryProcedure<{
             input: {
-                page?: number | undefined;
                 size?: number | undefined;
+                page?: number | undefined;
             };
             output: {
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: string;
                 content: string;
                 accountId: number;
-                createdAt: Date;
-                updatedAt: Date;
                 title: string;
                 isRead: boolean;
                 metadata?: any;
@@ -1855,8 +1855,8 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
         getAllPlugins: import("@trpc/server").TRPCQueryProcedure<{
             input: void;
             output: {
-                url: string;
                 name: string;
+                url: string;
                 version: string;
                 author: string;
                 minAppVersion: string;
@@ -1892,8 +1892,8 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
         }>;
         installPlugin: import("@trpc/server").TRPCMutationProcedure<{
             input: {
-                url: string;
                 name: string;
+                url: string;
                 version: string;
                 author: string;
                 minAppVersion: string;
@@ -1902,12 +1902,12 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
             };
             output: {
                 id: number;
-                metadata: import("@prisma/client/runtime/library").JsonValue;
                 createdAt: Date;
                 updatedAt: Date;
-                isDev: boolean;
+                metadata: import("@prisma/client/runtime/library").JsonValue;
                 path: string;
                 isUse: boolean;
+                isDev: boolean;
             };
         }>;
         getInstalledPlugins: import("@trpc/server").TRPCQueryProcedure<{
@@ -1916,9 +1916,9 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
                 id: number;
                 createdAt: Date;
                 updatedAt: Date;
-                isDev: boolean;
                 path: string;
                 isUse: boolean;
+                isDev: boolean;
                 metadata?: any;
             }[];
         }>;
@@ -1943,9 +1943,9 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
             };
             output: {
                 id: number;
-                accountId: number;
                 createdAt: Date;
                 updatedAt: Date;
+                accountId: number;
                 title: string;
             };
         }>;
@@ -1959,14 +1959,14 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
         }>;
         list: import("@trpc/server").TRPCQueryProcedure<{
             input: {
-                page?: number | undefined;
                 size?: number | undefined;
+                page?: number | undefined;
             };
             output: {
                 id: number;
-                accountId: number;
                 createdAt: Date;
                 updatedAt: Date;
+                accountId: number;
                 title: string;
             }[];
         }>;
@@ -1977,18 +1977,18 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
             output: ({
                 messages: {
                     id: number;
-                    content: string;
-                    metadata: import("@prisma/client/runtime/library").JsonValue | null;
+                    role: string;
                     createdAt: Date;
                     updatedAt: Date;
-                    role: string;
+                    content: string;
+                    metadata: import("@prisma/client/runtime/library").JsonValue | null;
                     conversationId: number;
                 }[];
             } & {
                 id: number;
-                accountId: number;
                 createdAt: Date;
                 updatedAt: Date;
+                accountId: number;
                 title: string;
             }) | null;
         }>;
@@ -1999,9 +1999,9 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
             };
             output: {
                 id: number;
-                accountId: number;
                 createdAt: Date;
                 updatedAt: Date;
+                accountId: number;
                 title: string;
             };
         }>;
@@ -2011,9 +2011,9 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
             };
             output: {
                 id: number;
-                accountId: number;
                 createdAt: Date;
                 updatedAt: Date;
+                accountId: number;
                 title: string;
             };
         }>;
@@ -2026,34 +2026,34 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
     }, import("@trpc/server/unstable-core-do-not-import").DecorateCreateRouterOptions<{
         create: import("@trpc/server").TRPCMutationProcedure<{
             input: {
-                content: string;
                 role: "user" | "system" | "assistant";
+                content: string;
                 conversationId: number;
                 metadata?: any;
             };
             output: {
                 id: number;
-                content: string;
-                metadata: import("@prisma/client/runtime/library").JsonValue | null;
+                role: string;
                 createdAt: Date;
                 updatedAt: Date;
-                role: string;
+                content: string;
+                metadata: import("@prisma/client/runtime/library").JsonValue | null;
                 conversationId: number;
             };
         }>;
         list: import("@trpc/server").TRPCQueryProcedure<{
             input: {
                 conversationId: number;
-                page?: number | undefined;
                 size?: number | undefined;
+                page?: number | undefined;
             };
             output: {
                 id: number;
-                content: string;
-                metadata: import("@prisma/client/runtime/library").JsonValue | null;
+                role: string;
                 createdAt: Date;
                 updatedAt: Date;
-                role: string;
+                content: string;
+                metadata: import("@prisma/client/runtime/library").JsonValue | null;
                 conversationId: number;
             }[];
         }>;
@@ -2064,11 +2064,11 @@ export declare const appRouter: import("@trpc/server/unstable-core-do-not-import
             };
             output: {
                 id: number;
-                content: string;
-                metadata: import("@prisma/client/runtime/library").JsonValue | null;
+                role: string;
                 createdAt: Date;
                 updatedAt: Date;
-                role: string;
+                content: string;
+                metadata: import("@prisma/client/runtime/library").JsonValue | null;
                 conversationId: number;
             };
         }>;
@@ -2132,8 +2132,8 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
         completions: import("@trpc/server").TRPCMutationProcedure<{
             input: {
                 conversations: {
-                    content: string;
                     role: string;
+                    content: string;
                 }[];
                 question: string;
                 withTools?: boolean | undefined;
@@ -2169,16 +2169,16 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
         summarizeConversationTitle: import("@trpc/server").TRPCMutationProcedure<{
             input: {
                 conversations: {
-                    content: string;
                     role: string;
+                    content: string;
                 }[];
                 conversationId: number;
             };
             output: {
                 id: number;
-                accountId: number;
                 createdAt: Date;
                 updatedAt: Date;
+                accountId: number;
                 title: string;
             };
         }>;
@@ -2209,21 +2209,21 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
             };
             output: {
                 account: {
-                    id: number;
                     name: string;
+                    id: number;
                     nickname: string;
                     image: string;
                 } | null;
             } & {
                 id: number;
-                content: string;
-                accountId: number | null;
                 createdAt: Date;
                 updatedAt: Date;
-                noteId: number;
+                content: string;
+                accountId: number | null;
                 guestName: string | null;
                 guestIP: string | null;
                 guestUA: string | null;
+                noteId: number;
                 parentId: number | null;
             };
         }>;
@@ -2265,9 +2265,9 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
                 isArchived?: boolean | null | undefined;
                 isRecycle?: boolean | undefined;
                 isShare?: boolean | null | undefined;
+                size?: number | undefined;
                 tagId?: number | null | undefined;
                 page?: number | undefined;
-                size?: number | undefined;
                 searchText?: string | undefined;
                 withoutTag?: boolean | undefined;
                 withFile?: boolean | undefined;
@@ -2278,23 +2278,9 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
                 hasTodo?: boolean | undefined;
             };
             output: {
-                attachments: {
-                    id: number;
-                    type: string;
-                    isShare: boolean;
-                    sharePassword: string;
-                    accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    name: string;
-                    noteId: number | null;
-                    sortOrder: number;
-                    path: string;
-                    size: string | number | import("@prisma/client/runtime/library").Decimal;
-                    depth?: any;
-                    perfixPath?: any;
-                }[];
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -2304,19 +2290,33 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
+                attachments: {
+                    name: string;
+                    id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    type: string;
+                    isShare: boolean;
+                    sharePassword: string;
+                    accountId: number | null;
+                    sortOrder: number;
+                    noteId: number | null;
+                    path: string;
+                    size: string | number | import("@prisma/client/runtime/library").Decimal;
+                    perfixPath?: any;
+                    depth?: any;
+                }[];
                 tags: {
+                    id: number;
                     tag: {
+                        name: string;
                         id: number;
                         createdAt: Date;
                         updatedAt: Date;
-                        name: string;
                         icon: string;
                         parent: number;
                         sortOrder: number;
                     };
-                    id: number;
                     noteId: number;
                     tagId: number;
                 }[];
@@ -2329,57 +2329,43 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
                 shareMaxView?: number | null | undefined;
                 shareViewCount?: number | null | undefined;
                 metadata?: any;
+                canEdit?: boolean | undefined;
                 referencedBy?: {
                     fromNoteId: number;
                     fromNote?: {
-                        content?: string | undefined;
                         createdAt?: Date | undefined;
                         updatedAt?: Date | undefined;
+                        content?: string | undefined;
                     } | undefined;
                 }[] | undefined;
                 references?: {
                     toNoteId: number;
                     toNote?: {
-                        content?: string | undefined;
                         createdAt?: Date | undefined;
                         updatedAt?: Date | undefined;
+                        content?: string | undefined;
                     } | undefined;
                 }[] | undefined;
                 owner?: {
-                    id: number;
                     name: string;
+                    id: number;
                     nickname: string;
                     image: string;
                 } | null | undefined;
                 isSharedNote?: boolean | undefined;
-                canEdit?: boolean | undefined;
                 isInternalShared?: boolean | undefined;
             }[];
         }>;
         publicList: import("@trpc/server").TRPCMutationProcedure<{
             input: {
-                page?: number | undefined;
                 size?: number | undefined;
+                page?: number | undefined;
                 searchText?: string | undefined;
             };
             output: {
-                attachments: {
-                    id: number;
-                    type: string;
-                    isShare: boolean;
-                    sharePassword: string;
-                    accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    name: string;
-                    noteId: number | null;
-                    sortOrder: number;
-                    path: string;
-                    size: string | number | import("@prisma/client/runtime/library").Decimal;
-                    depth?: any;
-                    perfixPath?: any;
-                }[];
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -2389,19 +2375,33 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
+                attachments: {
+                    name: string;
+                    id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    type: string;
+                    isShare: boolean;
+                    sharePassword: string;
+                    accountId: number | null;
+                    sortOrder: number;
+                    noteId: number | null;
+                    path: string;
+                    size: string | number | import("@prisma/client/runtime/library").Decimal;
+                    perfixPath?: any;
+                    depth?: any;
+                }[];
                 tags: {
+                    id: number;
                     tag: {
+                        name: string;
                         id: number;
                         createdAt: Date;
                         updatedAt: Date;
-                        name: string;
                         icon: string;
                         parent: number;
                         sortOrder: number;
                     };
-                    id: number;
                     noteId: number;
                     tagId: number;
                 }[];
@@ -2414,8 +2414,8 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
                 shareViewCount?: number | null | undefined;
                 metadata?: any;
                 account?: {
-                    id?: number | undefined;
                     name?: string | undefined;
+                    id?: number | undefined;
                     nickname?: string | undefined;
                     image?: string | undefined;
                 } | null | undefined;
@@ -2426,23 +2426,9 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
                 ids: number[];
             };
             output: {
-                attachments: {
-                    id: number;
-                    type: string;
-                    isShare: boolean;
-                    sharePassword: string;
-                    accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    name: string;
-                    noteId: number | null;
-                    sortOrder: number;
-                    path: string;
-                    size: string | number | import("@prisma/client/runtime/library").Decimal;
-                    depth?: any;
-                    perfixPath?: any;
-                }[];
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -2452,19 +2438,33 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
+                attachments: {
+                    name: string;
+                    id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    type: string;
+                    isShare: boolean;
+                    sharePassword: string;
+                    accountId: number | null;
+                    sortOrder: number;
+                    noteId: number | null;
+                    path: string;
+                    size: string | number | import("@prisma/client/runtime/library").Decimal;
+                    perfixPath?: any;
+                    depth?: any;
+                }[];
                 tags: {
+                    id: number;
                     tag: {
+                        name: string;
                         id: number;
                         createdAt: Date;
                         updatedAt: Date;
-                        name: string;
                         icon: string;
                         parent: number;
                         sortOrder: number;
                     };
-                    id: number;
                     noteId: number;
                     tagId: number;
                 }[];
@@ -2480,17 +2480,17 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
                 referencedBy?: {
                     fromNoteId: number;
                     fromNote?: {
-                        content?: string | undefined;
                         createdAt?: Date | undefined;
                         updatedAt?: Date | undefined;
+                        content?: string | undefined;
                     } | undefined;
                 }[] | undefined;
                 references?: {
                     toNoteId: number;
                     toNote?: {
-                        content?: string | undefined;
                         createdAt?: Date | undefined;
                         updatedAt?: Date | undefined;
+                        content?: string | undefined;
                     } | undefined;
                 }[] | undefined;
             }[];
@@ -2503,23 +2503,9 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
             output: {
                 error: "expired" | null;
                 data: {
-                    attachments: {
-                        id: number;
-                        type: string;
-                        isShare: boolean;
-                        sharePassword: string;
-                        accountId: number | null;
-                        createdAt: Date;
-                        updatedAt: Date;
-                        name: string;
-                        noteId: number | null;
-                        sortOrder: number;
-                        path: string;
-                        size: string | number | import("@prisma/client/runtime/library").Decimal;
-                        depth?: any;
-                        perfixPath?: any;
-                    }[];
                     id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
                     type: number;
                     content: string;
                     isArchived: boolean;
@@ -2529,8 +2515,22 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
                     isReviewed: boolean;
                     sharePassword: string;
                     accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
+                    attachments: {
+                        name: string;
+                        id: number;
+                        createdAt: Date;
+                        updatedAt: Date;
+                        type: string;
+                        isShare: boolean;
+                        sharePassword: string;
+                        accountId: number | null;
+                        sortOrder: number;
+                        noteId: number | null;
+                        path: string;
+                        size: string | number | import("@prisma/client/runtime/library").Decimal;
+                        perfixPath?: any;
+                        depth?: any;
+                    }[];
                     _count: {
                         comments: number;
                         histories: number;
@@ -2541,25 +2541,25 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
                     shareViewCount?: number | null | undefined;
                     metadata?: any;
                     account?: {
-                        id?: number | undefined;
                         name?: string | undefined;
+                        id?: number | undefined;
                         nickname?: string | undefined;
                         image?: string | undefined;
                     } | null | undefined;
                     referencedBy?: {
                         fromNoteId: number;
                         fromNote?: {
-                            content?: string | undefined;
                             createdAt?: Date | undefined;
                             updatedAt?: Date | undefined;
+                            content?: string | undefined;
                         } | undefined;
                     }[] | undefined;
                     references?: {
                         toNoteId: number;
                         toNote?: {
-                            content?: string | undefined;
                             createdAt?: Date | undefined;
                             updatedAt?: Date | undefined;
+                            content?: string | undefined;
                         } | undefined;
                     }[] | undefined;
                 } | null;
@@ -2571,23 +2571,9 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
                 id: number;
             };
             output: {
-                attachments: {
-                    id: number;
-                    type: string;
-                    isShare: boolean;
-                    sharePassword: string;
-                    accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    name: string;
-                    noteId: number | null;
-                    sortOrder: number;
-                    path: string;
-                    size: string | number | import("@prisma/client/runtime/library").Decimal;
-                    depth?: any;
-                    perfixPath?: any;
-                }[];
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -2597,19 +2583,33 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
+                attachments: {
+                    name: string;
+                    id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    type: string;
+                    isShare: boolean;
+                    sharePassword: string;
+                    accountId: number | null;
+                    sortOrder: number;
+                    noteId: number | null;
+                    path: string;
+                    size: string | number | import("@prisma/client/runtime/library").Decimal;
+                    perfixPath?: any;
+                    depth?: any;
+                }[];
                 tags: {
+                    id: number;
                     tag: {
+                        name: string;
                         id: number;
                         createdAt: Date;
                         updatedAt: Date;
-                        name: string;
                         icon: string;
                         parent: number;
                         sortOrder: number;
                     };
-                    id: number;
                     noteId: number;
                     tagId: number;
                 }[];
@@ -2625,17 +2625,17 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
                 referencedBy?: {
                     fromNoteId: number;
                     fromNote?: {
-                        content?: string | undefined;
                         createdAt?: Date | undefined;
                         updatedAt?: Date | undefined;
+                        content?: string | undefined;
                     } | undefined;
                 }[] | undefined;
                 references?: {
                     toNoteId: number;
                     toNote?: {
-                        content?: string | undefined;
                         createdAt?: Date | undefined;
                         updatedAt?: Date | undefined;
+                        content?: string | undefined;
                     } | undefined;
                 }[] | undefined;
             } | null;
@@ -2643,23 +2643,9 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
         dailyReviewNoteList: import("@trpc/server").TRPCQueryProcedure<{
             input: void;
             output: {
-                attachments: {
-                    id: number;
-                    type: string;
-                    isShare: boolean;
-                    sharePassword: string;
-                    accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    name: string;
-                    noteId: number | null;
-                    sortOrder: number;
-                    path: string;
-                    size: string | number | import("@prisma/client/runtime/library").Decimal;
-                    depth?: any;
-                    perfixPath?: any;
-                }[];
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -2669,8 +2655,22 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
+                attachments: {
+                    name: string;
+                    id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    type: string;
+                    isShare: boolean;
+                    sharePassword: string;
+                    accountId: number | null;
+                    sortOrder: number;
+                    noteId: number | null;
+                    path: string;
+                    size: string | number | import("@prisma/client/runtime/library").Decimal;
+                    perfixPath?: any;
+                    depth?: any;
+                }[];
                 shareEncryptedUrl?: string | null | undefined;
                 shareExpiryDate?: Date | null | undefined;
                 shareMaxView?: number | null | undefined;
@@ -2683,23 +2683,9 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
                 limit?: number | undefined;
             };
             output: {
-                attachments: {
-                    id: number;
-                    type: string;
-                    isShare: boolean;
-                    sharePassword: string;
-                    accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    name: string;
-                    noteId: number | null;
-                    sortOrder: number;
-                    path: string;
-                    size: string | number | import("@prisma/client/runtime/library").Decimal;
-                    depth?: any;
-                    perfixPath?: any;
-                }[];
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -2709,8 +2695,22 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
+                attachments: {
+                    name: string;
+                    id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    type: string;
+                    isShare: boolean;
+                    sharePassword: string;
+                    accountId: number | null;
+                    sortOrder: number;
+                    noteId: number | null;
+                    path: string;
+                    size: string | number | import("@prisma/client/runtime/library").Decimal;
+                    perfixPath?: any;
+                    depth?: any;
+                }[];
                 shareEncryptedUrl?: string | null | undefined;
                 shareExpiryDate?: Date | null | undefined;
                 shareMaxView?: number | null | undefined;
@@ -2723,23 +2723,9 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
                 id: number;
             };
             output: {
-                attachments: {
-                    id: number;
-                    type: string;
-                    isShare: boolean;
-                    sharePassword: string;
-                    accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    name: string;
-                    noteId: number | null;
-                    sortOrder: number;
-                    path: string;
-                    size: string | number | import("@prisma/client/runtime/library").Decimal;
-                    depth?: any;
-                    perfixPath?: any;
-                }[];
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -2749,19 +2735,33 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
+                attachments: {
+                    name: string;
+                    id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    type: string;
+                    isShare: boolean;
+                    sharePassword: string;
+                    accountId: number | null;
+                    sortOrder: number;
+                    noteId: number | null;
+                    path: string;
+                    size: string | number | import("@prisma/client/runtime/library").Decimal;
+                    perfixPath?: any;
+                    depth?: any;
+                }[];
                 tags: {
+                    id: number;
                     tag: {
+                        name: string;
                         id: number;
                         createdAt: Date;
                         updatedAt: Date;
-                        name: string;
                         icon: string;
                         parent: number;
                         sortOrder: number;
                     };
-                    id: number;
                     noteId: number;
                     tagId: number;
                 }[];
@@ -2777,17 +2777,17 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
                 referencedBy?: {
                     fromNoteId: number;
                     fromNote?: {
-                        content?: string | undefined;
                         createdAt?: Date | undefined;
                         updatedAt?: Date | undefined;
+                        content?: string | undefined;
                     } | undefined;
                 }[] | undefined;
                 references?: {
                     toNoteId: number;
                     toNote?: {
-                        content?: string | undefined;
                         createdAt?: Date | undefined;
                         updatedAt?: Date | undefined;
+                        content?: string | undefined;
                     } | undefined;
                 }[] | undefined;
             }[];
@@ -2798,6 +2798,8 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
             };
             output: {
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -2807,8 +2809,6 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
                 shareEncryptedUrl?: string | null | undefined;
                 shareExpiryDate?: Date | null | undefined;
                 shareMaxView?: number | null | undefined;
@@ -2818,13 +2818,9 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
         }>;
         upsert: import("@trpc/server").TRPCMutationProcedure<{
             input: {
-                attachments?: {
-                    type: string;
-                    name: string;
-                    path: string;
-                    size: string | number;
-                }[] | undefined;
                 id?: number | undefined;
+                createdAt?: Date | undefined;
+                updatedAt?: Date | undefined;
                 type?: import("@shared/lib/types").NoteType | -1 | undefined;
                 content?: string | null | undefined;
                 isArchived?: boolean | null | undefined;
@@ -2832,8 +2828,12 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
                 isShare?: boolean | null | undefined;
                 isTop?: boolean | null | undefined;
                 metadata?: any;
-                createdAt?: Date | undefined;
-                updatedAt?: Date | undefined;
+                attachments?: {
+                    name: string;
+                    type: string;
+                    path: string;
+                    size: string | number;
+                }[] | undefined;
                 references?: number[] | undefined;
             };
             output: any;
@@ -2847,6 +2847,8 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
             };
             output: {
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -2856,8 +2858,6 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
                 shareEncryptedUrl?: string | null | undefined;
                 shareExpiryDate?: Date | null | undefined;
                 shareMaxView?: number | null | undefined;
@@ -2888,8 +2888,8 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
         }>;
         addReference: import("@trpc/server").TRPCMutationProcedure<{
             input: {
-                toNoteId: number;
                 fromNoteId: number;
+                toNoteId: number;
             };
             output: any;
         }>;
@@ -2899,23 +2899,9 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
                 type?: "referencedBy" | "references" | undefined;
             };
             output: {
-                attachments: {
-                    id: number;
-                    type: string;
-                    isShare: boolean;
-                    sharePassword: string;
-                    accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    name: string;
-                    noteId: number | null;
-                    sortOrder: number;
-                    path: string;
-                    size: string | number | import("@prisma/client/runtime/library").Decimal;
-                    depth?: any;
-                    perfixPath?: any;
-                }[];
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -2925,8 +2911,22 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
+                attachments: {
+                    name: string;
+                    id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    type: string;
+                    isShare: boolean;
+                    sharePassword: string;
+                    accountId: number | null;
+                    sortOrder: number;
+                    noteId: number | null;
+                    path: string;
+                    size: string | number | import("@prisma/client/runtime/library").Decimal;
+                    perfixPath?: any;
+                    depth?: any;
+                }[];
                 referenceCreatedAt: Date;
                 shareEncryptedUrl?: string | null | undefined;
                 shareExpiryDate?: Date | null | undefined;
@@ -2954,9 +2954,9 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
             };
             output: {
                 id: number;
+                createdAt: Date;
                 content: string;
                 accountId: number | null;
-                createdAt: Date;
                 noteId: number;
                 version?: number | undefined;
             }[];
@@ -2967,8 +2967,8 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
                 version?: number | undefined;
             };
             output: {
-                content: string;
                 createdAt: Date;
+                content: string;
                 version: number;
                 metadata?: any;
             };
@@ -2989,8 +2989,8 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
                 id: number;
             };
             output: {
-                id: number;
                 name: string;
+                id: number;
                 nickname: string;
                 image: string;
                 loginType: string;
@@ -3000,27 +3000,13 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
         internalSharedWithMe: import("@trpc/server").TRPCMutationProcedure<{
             input: {
                 orderBy?: "asc" | "desc" | undefined;
-                page?: number | undefined;
                 size?: number | undefined;
+                page?: number | undefined;
             };
             output: {
-                attachments: {
-                    id: number;
-                    type: string;
-                    isShare: boolean;
-                    sharePassword: string;
-                    accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    name: string;
-                    noteId: number | null;
-                    sortOrder: number;
-                    path: string;
-                    size: string | number | import("@prisma/client/runtime/library").Decimal;
-                    depth?: any;
-                    perfixPath?: any;
-                }[];
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -3030,19 +3016,34 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
+                attachments: {
+                    name: string;
+                    id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    type: string;
+                    isShare: boolean;
+                    sharePassword: string;
+                    accountId: number | null;
+                    sortOrder: number;
+                    noteId: number | null;
+                    path: string;
+                    size: string | number | import("@prisma/client/runtime/library").Decimal;
+                    perfixPath?: any;
+                    depth?: any;
+                }[];
+                canEdit: boolean;
                 tags: {
+                    id: number;
                     tag: {
+                        name: string;
                         id: number;
                         createdAt: Date;
                         updatedAt: Date;
-                        name: string;
                         icon: string;
                         parent: number;
                         sortOrder: number;
                     };
-                    id: number;
                     noteId: number;
                     tagId: number;
                 }[];
@@ -3051,12 +3052,11 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
                     histories: number;
                 };
                 owner: {
-                    id: number;
                     name: string;
+                    id: number;
                     nickname: string;
                     image: string;
                 } | null;
-                canEdit: boolean;
                 shareEncryptedUrl?: string | null | undefined;
                 shareExpiryDate?: Date | null | undefined;
                 shareMaxView?: number | null | undefined;
@@ -3074,10 +3074,10 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
         list: import("@trpc/server").TRPCQueryProcedure<{
             input: void;
             output: {
+                name: string;
                 id: number;
                 createdAt: Date;
                 updatedAt: Date;
-                name: string;
                 icon: string;
                 parent: number;
                 sortOrder: number;
@@ -3110,10 +3110,10 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
                 icon: string;
             };
             output: {
+                name: string;
                 id: number;
                 createdAt: Date;
                 updatedAt: Date;
-                name: string;
                 icon: string;
                 parent: number;
                 sortOrder: number;
@@ -3137,11 +3137,11 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
                 sortOrder: number;
             };
             output: {
+                name: string;
                 id: number;
-                accountId: number | null;
                 createdAt: Date;
                 updatedAt: Date;
-                name: string;
+                accountId: number | null;
                 icon: string;
                 parent: number;
                 sortOrder: number;
@@ -3157,16 +3157,16 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
         list: import("@trpc/server").TRPCQueryProcedure<{
             input: void;
             output: {
-                id: number;
-                createdAt: Date;
-                updatedAt: Date;
                 name: string;
+                id: number;
                 nickname: string;
                 password: string;
                 image: string;
                 apiToken: string;
                 note: number;
                 role: string;
+                createdAt: Date;
+                updatedAt: Date;
                 description?: string | undefined;
                 loginType?: string | undefined;
                 linkAccountId?: number | null | undefined;
@@ -3175,23 +3175,23 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
         publicUserList: import("@trpc/server").TRPCQueryProcedure<{
             input: void;
             output: {
-                id: number;
-                createdAt: Date;
-                updatedAt: Date;
                 name: string;
+                id: number;
                 nickname: string;
                 image: string | null;
                 description: string | null;
                 role: string;
                 loginType: string;
                 linkAccountId: number | null;
+                createdAt: Date;
+                updatedAt: Date;
             }[];
         }>;
         nativeAccountList: import("@trpc/server").TRPCQueryProcedure<{
             input: void;
             output: {
-                id: number;
                 name: string;
+                id: number;
                 nickname: string;
             }[];
         }>;
@@ -3213,8 +3213,8 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
                 id?: number | undefined;
             };
             output: {
-                id: number;
                 name: string;
+                id: number;
                 image: string | null;
                 role: string;
                 loginType: string;
@@ -3246,8 +3246,8 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
         }>;
         upsertUser: import("@trpc/server").TRPCMutationProcedure<{
             input: {
-                id?: number | undefined;
                 name?: string | undefined;
+                id?: number | undefined;
                 nickname?: string | undefined;
                 password?: string | undefined;
                 image?: string | undefined;
@@ -3257,8 +3257,8 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
         }>;
         upsertUserByAdmin: import("@trpc/server").TRPCMutationProcedure<{
             input: {
-                id?: number | undefined;
                 name?: string | undefined;
+                id?: number | undefined;
                 nickname?: string | undefined;
                 password?: string | undefined;
             };
@@ -3292,8 +3292,8 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
                 password: string;
             };
             output: {
-                id: number;
                 name: string;
+                id: number;
                 nickname: string;
                 image: string | null;
                 role: string;
@@ -3310,8 +3310,8 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
     }, import("@trpc/server/unstable-core-do-not-import").DecorateCreateRouterOptions<{
         list: import("@trpc/server").TRPCQueryProcedure<{
             input: {
-                page?: number | undefined;
                 size?: number | undefined;
+                page?: number | undefined;
                 searchText?: string | undefined;
                 folder?: string | undefined;
             };
@@ -3325,20 +3325,20 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
                 oldFolderPath?: string | undefined;
             };
             output: {
+                name: string;
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: string;
                 isShare: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
-                name: string;
-                noteId: number | null;
                 sortOrder: number;
+                noteId: number | null;
                 path: string;
                 size: import("@prisma/client/runtime/library").Decimal;
-                depth: number | null;
                 perfixPath: string | null;
+                depth: number | null;
             } | {
                 success: boolean;
             };
@@ -3428,8 +3428,8 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
                 isCloseDailyReview?: boolean | undefined;
                 maxHomePageWidth?: number | undefined;
                 oauth2Providers?: {
-                    id: string;
                     name: string;
+                    id: string;
                     tokenUrl: string;
                     userinfoUrl: string;
                     clientId: string;
@@ -3501,8 +3501,8 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
         oauthProviders: import("@trpc/server").TRPCQueryProcedure<{
             input: void;
             output: {
-                id: string;
                 name: string;
+                id: string;
                 icon?: string | undefined;
             }[];
         }>;
@@ -3556,8 +3556,8 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
         hubList: import("@trpc/server").TRPCQueryProcedure<{
             input: void;
             output: {
-                id: string;
                 name: string;
+                id: string;
                 image: string;
                 description: string;
             }[];
@@ -3568,10 +3568,10 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
                 refresh?: boolean | undefined;
             };
             output: {
-                url: string;
                 title: string;
-                tags?: string[] | undefined;
+                url: string;
                 image?: string | null | undefined;
+                tags?: string[] | undefined;
                 version?: string | undefined;
                 site_description?: string | null | undefined;
             }[];
@@ -3601,10 +3601,10 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
             input: void;
             output: {
                 name: string;
-                isRunning: boolean;
                 schedule: string;
                 lastRun: Date;
                 isSuccess: boolean;
+                isRunning: boolean;
                 output?: any;
             }[];
         }>;
@@ -3701,8 +3701,8 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
             input: {
                 noteId: number;
                 orderBy?: "asc" | "desc" | undefined;
-                page?: number | undefined;
                 size?: number | undefined;
+                page?: number | undefined;
             };
             output: {
                 total: number;
@@ -3737,6 +3737,8 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
             } | undefined;
             output: {
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -3746,46 +3748,44 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
-                attachments?: {
-                    id: number;
-                    type: string;
-                    isShare: boolean;
-                    sharePassword: string;
-                    accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    name: string;
-                    noteId: number | null;
-                    sortOrder: number;
-                    path: string;
-                    size: string | number | import("@prisma/client/runtime/library").Decimal;
-                    depth?: any;
-                    perfixPath?: any;
-                }[] | undefined;
                 shareEncryptedUrl?: string | null | undefined;
                 shareExpiryDate?: Date | null | undefined;
                 shareMaxView?: number | null | undefined;
                 shareViewCount?: number | null | undefined;
                 metadata?: any;
+                attachments?: {
+                    name: string;
+                    id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    type: string;
+                    isShare: boolean;
+                    sharePassword: string;
+                    accountId: number | null;
+                    sortOrder: number;
+                    noteId: number | null;
+                    path: string;
+                    size: string | number | import("@prisma/client/runtime/library").Decimal;
+                    perfixPath?: any;
+                    depth?: any;
+                }[] | undefined;
                 tags?: ({
+                    id: number;
                     tag: {
+                        name: string;
                         id: number;
                         createdAt: Date;
                         updatedAt: Date;
-                        name: string;
                         icon: string;
                         parent: number;
                         sortOrder: number;
                     };
-                    id: number;
                     noteId: number;
                     tagId: number;
                 } | undefined)[] | null | undefined;
                 account?: {
-                    id?: number | undefined;
                     name?: string | undefined;
+                    id?: number | undefined;
                     nickname?: string | undefined;
                     image?: string | undefined;
                 } | null | undefined;
@@ -3807,10 +3807,10 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
         }>;
         followFrom: import("@trpc/server").TRPCMutationProcedure<{
             input: {
-                siteUrl: string;
-                mySiteAccountId: number;
                 siteName: string;
+                siteUrl: string;
                 siteAvatar: string;
+                mySiteAccountId: number;
             };
             output: {
                 success: boolean;
@@ -3837,9 +3837,9 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
             };
             output: {
                 id: number;
-                accountId: number;
                 createdAt: Date;
                 updatedAt: Date;
+                accountId: number;
                 siteUrl: string;
                 followType: string;
                 description?: string | undefined;
@@ -3853,9 +3853,9 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
             };
             output: {
                 id: number;
-                accountId: number;
                 createdAt: Date;
                 updatedAt: Date;
+                accountId: number;
                 siteUrl: string;
                 followType: string;
                 description?: string | undefined;
@@ -3881,16 +3881,16 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
     }, import("@trpc/server/unstable-core-do-not-import").DecorateCreateRouterOptions<{
         list: import("@trpc/server").TRPCQueryProcedure<{
             input: {
-                page?: number | undefined;
                 size?: number | undefined;
+                page?: number | undefined;
             };
             output: {
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: string;
                 content: string;
                 accountId: number;
-                createdAt: Date;
-                updatedAt: Date;
                 title: string;
                 isRead: boolean;
                 metadata?: any;
@@ -3932,8 +3932,8 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
         getAllPlugins: import("@trpc/server").TRPCQueryProcedure<{
             input: void;
             output: {
-                url: string;
                 name: string;
+                url: string;
                 version: string;
                 author: string;
                 minAppVersion: string;
@@ -3969,8 +3969,8 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
         }>;
         installPlugin: import("@trpc/server").TRPCMutationProcedure<{
             input: {
-                url: string;
                 name: string;
+                url: string;
                 version: string;
                 author: string;
                 minAppVersion: string;
@@ -3979,12 +3979,12 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
             };
             output: {
                 id: number;
-                metadata: import("@prisma/client/runtime/library").JsonValue;
                 createdAt: Date;
                 updatedAt: Date;
-                isDev: boolean;
+                metadata: import("@prisma/client/runtime/library").JsonValue;
                 path: string;
                 isUse: boolean;
+                isDev: boolean;
             };
         }>;
         getInstalledPlugins: import("@trpc/server").TRPCQueryProcedure<{
@@ -3993,9 +3993,9 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
                 id: number;
                 createdAt: Date;
                 updatedAt: Date;
-                isDev: boolean;
                 path: string;
                 isUse: boolean;
+                isDev: boolean;
                 metadata?: any;
             }[];
         }>;
@@ -4020,9 +4020,9 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
             };
             output: {
                 id: number;
-                accountId: number;
                 createdAt: Date;
                 updatedAt: Date;
+                accountId: number;
                 title: string;
             };
         }>;
@@ -4036,14 +4036,14 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
         }>;
         list: import("@trpc/server").TRPCQueryProcedure<{
             input: {
-                page?: number | undefined;
                 size?: number | undefined;
+                page?: number | undefined;
             };
             output: {
                 id: number;
-                accountId: number;
                 createdAt: Date;
                 updatedAt: Date;
+                accountId: number;
                 title: string;
             }[];
         }>;
@@ -4054,18 +4054,18 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
             output: ({
                 messages: {
                     id: number;
-                    content: string;
-                    metadata: import("@prisma/client/runtime/library").JsonValue | null;
+                    role: string;
                     createdAt: Date;
                     updatedAt: Date;
-                    role: string;
+                    content: string;
+                    metadata: import("@prisma/client/runtime/library").JsonValue | null;
                     conversationId: number;
                 }[];
             } & {
                 id: number;
-                accountId: number;
                 createdAt: Date;
                 updatedAt: Date;
+                accountId: number;
                 title: string;
             }) | null;
         }>;
@@ -4076,9 +4076,9 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
             };
             output: {
                 id: number;
-                accountId: number;
                 createdAt: Date;
                 updatedAt: Date;
+                accountId: number;
                 title: string;
             };
         }>;
@@ -4088,9 +4088,9 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
             };
             output: {
                 id: number;
-                accountId: number;
                 createdAt: Date;
                 updatedAt: Date;
+                accountId: number;
                 title: string;
             };
         }>;
@@ -4103,34 +4103,34 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
     }, import("@trpc/server/unstable-core-do-not-import").DecorateCreateRouterOptions<{
         create: import("@trpc/server").TRPCMutationProcedure<{
             input: {
-                content: string;
                 role: "user" | "system" | "assistant";
+                content: string;
                 conversationId: number;
                 metadata?: any;
             };
             output: {
                 id: number;
-                content: string;
-                metadata: import("@prisma/client/runtime/library").JsonValue | null;
+                role: string;
                 createdAt: Date;
                 updatedAt: Date;
-                role: string;
+                content: string;
+                metadata: import("@prisma/client/runtime/library").JsonValue | null;
                 conversationId: number;
             };
         }>;
         list: import("@trpc/server").TRPCQueryProcedure<{
             input: {
                 conversationId: number;
-                page?: number | undefined;
                 size?: number | undefined;
+                page?: number | undefined;
             };
             output: {
                 id: number;
-                content: string;
-                metadata: import("@prisma/client/runtime/library").JsonValue | null;
+                role: string;
                 createdAt: Date;
                 updatedAt: Date;
-                role: string;
+                content: string;
+                metadata: import("@prisma/client/runtime/library").JsonValue | null;
                 conversationId: number;
             }[];
         }>;
@@ -4141,11 +4141,11 @@ export declare const createCaller: import("@trpc/server/unstable-core-do-not-imp
             };
             output: {
                 id: number;
-                content: string;
-                metadata: import("@prisma/client/runtime/library").JsonValue | null;
+                role: string;
                 createdAt: Date;
                 updatedAt: Date;
-                role: string;
+                content: string;
+                metadata: import("@prisma/client/runtime/library").JsonValue | null;
                 conversationId: number;
             };
         }>;
@@ -4204,8 +4204,8 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
         completions: import("@trpc/server").TRPCMutationProcedure<{
             input: {
                 conversations: {
-                    content: string;
                     role: string;
+                    content: string;
                 }[];
                 question: string;
                 withTools?: boolean | undefined;
@@ -4241,16 +4241,16 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
         summarizeConversationTitle: import("@trpc/server").TRPCMutationProcedure<{
             input: {
                 conversations: {
-                    content: string;
                     role: string;
+                    content: string;
                 }[];
                 conversationId: number;
             };
             output: {
                 id: number;
-                accountId: number;
                 createdAt: Date;
                 updatedAt: Date;
+                accountId: number;
                 title: string;
             };
         }>;
@@ -4281,21 +4281,21 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
             };
             output: {
                 account: {
-                    id: number;
                     name: string;
+                    id: number;
                     nickname: string;
                     image: string;
                 } | null;
             } & {
                 id: number;
-                content: string;
-                accountId: number | null;
                 createdAt: Date;
                 updatedAt: Date;
-                noteId: number;
+                content: string;
+                accountId: number | null;
                 guestName: string | null;
                 guestIP: string | null;
                 guestUA: string | null;
+                noteId: number;
                 parentId: number | null;
             };
         }>;
@@ -4337,9 +4337,9 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
                 isArchived?: boolean | null | undefined;
                 isRecycle?: boolean | undefined;
                 isShare?: boolean | null | undefined;
+                size?: number | undefined;
                 tagId?: number | null | undefined;
                 page?: number | undefined;
-                size?: number | undefined;
                 searchText?: string | undefined;
                 withoutTag?: boolean | undefined;
                 withFile?: boolean | undefined;
@@ -4350,23 +4350,9 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
                 hasTodo?: boolean | undefined;
             };
             output: {
-                attachments: {
-                    id: number;
-                    type: string;
-                    isShare: boolean;
-                    sharePassword: string;
-                    accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    name: string;
-                    noteId: number | null;
-                    sortOrder: number;
-                    path: string;
-                    size: string | number | import("@prisma/client/runtime/library").Decimal;
-                    depth?: any;
-                    perfixPath?: any;
-                }[];
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -4376,19 +4362,33 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
+                attachments: {
+                    name: string;
+                    id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    type: string;
+                    isShare: boolean;
+                    sharePassword: string;
+                    accountId: number | null;
+                    sortOrder: number;
+                    noteId: number | null;
+                    path: string;
+                    size: string | number | import("@prisma/client/runtime/library").Decimal;
+                    perfixPath?: any;
+                    depth?: any;
+                }[];
                 tags: {
+                    id: number;
                     tag: {
+                        name: string;
                         id: number;
                         createdAt: Date;
                         updatedAt: Date;
-                        name: string;
                         icon: string;
                         parent: number;
                         sortOrder: number;
                     };
-                    id: number;
                     noteId: number;
                     tagId: number;
                 }[];
@@ -4401,57 +4401,43 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
                 shareMaxView?: number | null | undefined;
                 shareViewCount?: number | null | undefined;
                 metadata?: any;
+                canEdit?: boolean | undefined;
                 referencedBy?: {
                     fromNoteId: number;
                     fromNote?: {
-                        content?: string | undefined;
                         createdAt?: Date | undefined;
                         updatedAt?: Date | undefined;
+                        content?: string | undefined;
                     } | undefined;
                 }[] | undefined;
                 references?: {
                     toNoteId: number;
                     toNote?: {
-                        content?: string | undefined;
                         createdAt?: Date | undefined;
                         updatedAt?: Date | undefined;
+                        content?: string | undefined;
                     } | undefined;
                 }[] | undefined;
                 owner?: {
-                    id: number;
                     name: string;
+                    id: number;
                     nickname: string;
                     image: string;
                 } | null | undefined;
                 isSharedNote?: boolean | undefined;
-                canEdit?: boolean | undefined;
                 isInternalShared?: boolean | undefined;
             }[];
         }>;
         publicList: import("@trpc/server").TRPCMutationProcedure<{
             input: {
-                page?: number | undefined;
                 size?: number | undefined;
+                page?: number | undefined;
                 searchText?: string | undefined;
             };
             output: {
-                attachments: {
-                    id: number;
-                    type: string;
-                    isShare: boolean;
-                    sharePassword: string;
-                    accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    name: string;
-                    noteId: number | null;
-                    sortOrder: number;
-                    path: string;
-                    size: string | number | import("@prisma/client/runtime/library").Decimal;
-                    depth?: any;
-                    perfixPath?: any;
-                }[];
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -4461,19 +4447,33 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
+                attachments: {
+                    name: string;
+                    id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    type: string;
+                    isShare: boolean;
+                    sharePassword: string;
+                    accountId: number | null;
+                    sortOrder: number;
+                    noteId: number | null;
+                    path: string;
+                    size: string | number | import("@prisma/client/runtime/library").Decimal;
+                    perfixPath?: any;
+                    depth?: any;
+                }[];
                 tags: {
+                    id: number;
                     tag: {
+                        name: string;
                         id: number;
                         createdAt: Date;
                         updatedAt: Date;
-                        name: string;
                         icon: string;
                         parent: number;
                         sortOrder: number;
                     };
-                    id: number;
                     noteId: number;
                     tagId: number;
                 }[];
@@ -4486,8 +4486,8 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
                 shareViewCount?: number | null | undefined;
                 metadata?: any;
                 account?: {
-                    id?: number | undefined;
                     name?: string | undefined;
+                    id?: number | undefined;
                     nickname?: string | undefined;
                     image?: string | undefined;
                 } | null | undefined;
@@ -4498,23 +4498,9 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
                 ids: number[];
             };
             output: {
-                attachments: {
-                    id: number;
-                    type: string;
-                    isShare: boolean;
-                    sharePassword: string;
-                    accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    name: string;
-                    noteId: number | null;
-                    sortOrder: number;
-                    path: string;
-                    size: string | number | import("@prisma/client/runtime/library").Decimal;
-                    depth?: any;
-                    perfixPath?: any;
-                }[];
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -4524,19 +4510,33 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
+                attachments: {
+                    name: string;
+                    id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    type: string;
+                    isShare: boolean;
+                    sharePassword: string;
+                    accountId: number | null;
+                    sortOrder: number;
+                    noteId: number | null;
+                    path: string;
+                    size: string | number | import("@prisma/client/runtime/library").Decimal;
+                    perfixPath?: any;
+                    depth?: any;
+                }[];
                 tags: {
+                    id: number;
                     tag: {
+                        name: string;
                         id: number;
                         createdAt: Date;
                         updatedAt: Date;
-                        name: string;
                         icon: string;
                         parent: number;
                         sortOrder: number;
                     };
-                    id: number;
                     noteId: number;
                     tagId: number;
                 }[];
@@ -4552,17 +4552,17 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
                 referencedBy?: {
                     fromNoteId: number;
                     fromNote?: {
-                        content?: string | undefined;
                         createdAt?: Date | undefined;
                         updatedAt?: Date | undefined;
+                        content?: string | undefined;
                     } | undefined;
                 }[] | undefined;
                 references?: {
                     toNoteId: number;
                     toNote?: {
-                        content?: string | undefined;
                         createdAt?: Date | undefined;
                         updatedAt?: Date | undefined;
+                        content?: string | undefined;
                     } | undefined;
                 }[] | undefined;
             }[];
@@ -4575,23 +4575,9 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
             output: {
                 error: "expired" | null;
                 data: {
-                    attachments: {
-                        id: number;
-                        type: string;
-                        isShare: boolean;
-                        sharePassword: string;
-                        accountId: number | null;
-                        createdAt: Date;
-                        updatedAt: Date;
-                        name: string;
-                        noteId: number | null;
-                        sortOrder: number;
-                        path: string;
-                        size: string | number | import("@prisma/client/runtime/library").Decimal;
-                        depth?: any;
-                        perfixPath?: any;
-                    }[];
                     id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
                     type: number;
                     content: string;
                     isArchived: boolean;
@@ -4601,8 +4587,22 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
                     isReviewed: boolean;
                     sharePassword: string;
                     accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
+                    attachments: {
+                        name: string;
+                        id: number;
+                        createdAt: Date;
+                        updatedAt: Date;
+                        type: string;
+                        isShare: boolean;
+                        sharePassword: string;
+                        accountId: number | null;
+                        sortOrder: number;
+                        noteId: number | null;
+                        path: string;
+                        size: string | number | import("@prisma/client/runtime/library").Decimal;
+                        perfixPath?: any;
+                        depth?: any;
+                    }[];
                     _count: {
                         comments: number;
                         histories: number;
@@ -4613,25 +4613,25 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
                     shareViewCount?: number | null | undefined;
                     metadata?: any;
                     account?: {
-                        id?: number | undefined;
                         name?: string | undefined;
+                        id?: number | undefined;
                         nickname?: string | undefined;
                         image?: string | undefined;
                     } | null | undefined;
                     referencedBy?: {
                         fromNoteId: number;
                         fromNote?: {
-                            content?: string | undefined;
                             createdAt?: Date | undefined;
                             updatedAt?: Date | undefined;
+                            content?: string | undefined;
                         } | undefined;
                     }[] | undefined;
                     references?: {
                         toNoteId: number;
                         toNote?: {
-                            content?: string | undefined;
                             createdAt?: Date | undefined;
                             updatedAt?: Date | undefined;
+                            content?: string | undefined;
                         } | undefined;
                     }[] | undefined;
                 } | null;
@@ -4643,23 +4643,9 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
                 id: number;
             };
             output: {
-                attachments: {
-                    id: number;
-                    type: string;
-                    isShare: boolean;
-                    sharePassword: string;
-                    accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    name: string;
-                    noteId: number | null;
-                    sortOrder: number;
-                    path: string;
-                    size: string | number | import("@prisma/client/runtime/library").Decimal;
-                    depth?: any;
-                    perfixPath?: any;
-                }[];
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -4669,19 +4655,33 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
+                attachments: {
+                    name: string;
+                    id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    type: string;
+                    isShare: boolean;
+                    sharePassword: string;
+                    accountId: number | null;
+                    sortOrder: number;
+                    noteId: number | null;
+                    path: string;
+                    size: string | number | import("@prisma/client/runtime/library").Decimal;
+                    perfixPath?: any;
+                    depth?: any;
+                }[];
                 tags: {
+                    id: number;
                     tag: {
+                        name: string;
                         id: number;
                         createdAt: Date;
                         updatedAt: Date;
-                        name: string;
                         icon: string;
                         parent: number;
                         sortOrder: number;
                     };
-                    id: number;
                     noteId: number;
                     tagId: number;
                 }[];
@@ -4697,17 +4697,17 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
                 referencedBy?: {
                     fromNoteId: number;
                     fromNote?: {
-                        content?: string | undefined;
                         createdAt?: Date | undefined;
                         updatedAt?: Date | undefined;
+                        content?: string | undefined;
                     } | undefined;
                 }[] | undefined;
                 references?: {
                     toNoteId: number;
                     toNote?: {
-                        content?: string | undefined;
                         createdAt?: Date | undefined;
                         updatedAt?: Date | undefined;
+                        content?: string | undefined;
                     } | undefined;
                 }[] | undefined;
             } | null;
@@ -4715,23 +4715,9 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
         dailyReviewNoteList: import("@trpc/server").TRPCQueryProcedure<{
             input: void;
             output: {
-                attachments: {
-                    id: number;
-                    type: string;
-                    isShare: boolean;
-                    sharePassword: string;
-                    accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    name: string;
-                    noteId: number | null;
-                    sortOrder: number;
-                    path: string;
-                    size: string | number | import("@prisma/client/runtime/library").Decimal;
-                    depth?: any;
-                    perfixPath?: any;
-                }[];
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -4741,8 +4727,22 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
+                attachments: {
+                    name: string;
+                    id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    type: string;
+                    isShare: boolean;
+                    sharePassword: string;
+                    accountId: number | null;
+                    sortOrder: number;
+                    noteId: number | null;
+                    path: string;
+                    size: string | number | import("@prisma/client/runtime/library").Decimal;
+                    perfixPath?: any;
+                    depth?: any;
+                }[];
                 shareEncryptedUrl?: string | null | undefined;
                 shareExpiryDate?: Date | null | undefined;
                 shareMaxView?: number | null | undefined;
@@ -4755,23 +4755,9 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
                 limit?: number | undefined;
             };
             output: {
-                attachments: {
-                    id: number;
-                    type: string;
-                    isShare: boolean;
-                    sharePassword: string;
-                    accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    name: string;
-                    noteId: number | null;
-                    sortOrder: number;
-                    path: string;
-                    size: string | number | import("@prisma/client/runtime/library").Decimal;
-                    depth?: any;
-                    perfixPath?: any;
-                }[];
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -4781,8 +4767,22 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
+                attachments: {
+                    name: string;
+                    id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    type: string;
+                    isShare: boolean;
+                    sharePassword: string;
+                    accountId: number | null;
+                    sortOrder: number;
+                    noteId: number | null;
+                    path: string;
+                    size: string | number | import("@prisma/client/runtime/library").Decimal;
+                    perfixPath?: any;
+                    depth?: any;
+                }[];
                 shareEncryptedUrl?: string | null | undefined;
                 shareExpiryDate?: Date | null | undefined;
                 shareMaxView?: number | null | undefined;
@@ -4795,23 +4795,9 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
                 id: number;
             };
             output: {
-                attachments: {
-                    id: number;
-                    type: string;
-                    isShare: boolean;
-                    sharePassword: string;
-                    accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    name: string;
-                    noteId: number | null;
-                    sortOrder: number;
-                    path: string;
-                    size: string | number | import("@prisma/client/runtime/library").Decimal;
-                    depth?: any;
-                    perfixPath?: any;
-                }[];
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -4821,19 +4807,33 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
+                attachments: {
+                    name: string;
+                    id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    type: string;
+                    isShare: boolean;
+                    sharePassword: string;
+                    accountId: number | null;
+                    sortOrder: number;
+                    noteId: number | null;
+                    path: string;
+                    size: string | number | import("@prisma/client/runtime/library").Decimal;
+                    perfixPath?: any;
+                    depth?: any;
+                }[];
                 tags: {
+                    id: number;
                     tag: {
+                        name: string;
                         id: number;
                         createdAt: Date;
                         updatedAt: Date;
-                        name: string;
                         icon: string;
                         parent: number;
                         sortOrder: number;
                     };
-                    id: number;
                     noteId: number;
                     tagId: number;
                 }[];
@@ -4849,17 +4849,17 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
                 referencedBy?: {
                     fromNoteId: number;
                     fromNote?: {
-                        content?: string | undefined;
                         createdAt?: Date | undefined;
                         updatedAt?: Date | undefined;
+                        content?: string | undefined;
                     } | undefined;
                 }[] | undefined;
                 references?: {
                     toNoteId: number;
                     toNote?: {
-                        content?: string | undefined;
                         createdAt?: Date | undefined;
                         updatedAt?: Date | undefined;
+                        content?: string | undefined;
                     } | undefined;
                 }[] | undefined;
             }[];
@@ -4870,6 +4870,8 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
             };
             output: {
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -4879,8 +4881,6 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
                 shareEncryptedUrl?: string | null | undefined;
                 shareExpiryDate?: Date | null | undefined;
                 shareMaxView?: number | null | undefined;
@@ -4890,13 +4890,9 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
         }>;
         upsert: import("@trpc/server").TRPCMutationProcedure<{
             input: {
-                attachments?: {
-                    type: string;
-                    name: string;
-                    path: string;
-                    size: string | number;
-                }[] | undefined;
                 id?: number | undefined;
+                createdAt?: Date | undefined;
+                updatedAt?: Date | undefined;
                 type?: import("@shared/lib/types").NoteType | -1 | undefined;
                 content?: string | null | undefined;
                 isArchived?: boolean | null | undefined;
@@ -4904,8 +4900,12 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
                 isShare?: boolean | null | undefined;
                 isTop?: boolean | null | undefined;
                 metadata?: any;
-                createdAt?: Date | undefined;
-                updatedAt?: Date | undefined;
+                attachments?: {
+                    name: string;
+                    type: string;
+                    path: string;
+                    size: string | number;
+                }[] | undefined;
                 references?: number[] | undefined;
             };
             output: any;
@@ -4919,6 +4919,8 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
             };
             output: {
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -4928,8 +4930,6 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
                 shareEncryptedUrl?: string | null | undefined;
                 shareExpiryDate?: Date | null | undefined;
                 shareMaxView?: number | null | undefined;
@@ -4960,8 +4960,8 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
         }>;
         addReference: import("@trpc/server").TRPCMutationProcedure<{
             input: {
-                toNoteId: number;
                 fromNoteId: number;
+                toNoteId: number;
             };
             output: any;
         }>;
@@ -4971,23 +4971,9 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
                 type?: "referencedBy" | "references" | undefined;
             };
             output: {
-                attachments: {
-                    id: number;
-                    type: string;
-                    isShare: boolean;
-                    sharePassword: string;
-                    accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    name: string;
-                    noteId: number | null;
-                    sortOrder: number;
-                    path: string;
-                    size: string | number | import("@prisma/client/runtime/library").Decimal;
-                    depth?: any;
-                    perfixPath?: any;
-                }[];
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -4997,8 +4983,22 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
+                attachments: {
+                    name: string;
+                    id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    type: string;
+                    isShare: boolean;
+                    sharePassword: string;
+                    accountId: number | null;
+                    sortOrder: number;
+                    noteId: number | null;
+                    path: string;
+                    size: string | number | import("@prisma/client/runtime/library").Decimal;
+                    perfixPath?: any;
+                    depth?: any;
+                }[];
                 referenceCreatedAt: Date;
                 shareEncryptedUrl?: string | null | undefined;
                 shareExpiryDate?: Date | null | undefined;
@@ -5026,9 +5026,9 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
             };
             output: {
                 id: number;
+                createdAt: Date;
                 content: string;
                 accountId: number | null;
-                createdAt: Date;
                 noteId: number;
                 version?: number | undefined;
             }[];
@@ -5039,8 +5039,8 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
                 version?: number | undefined;
             };
             output: {
-                content: string;
                 createdAt: Date;
+                content: string;
                 version: number;
                 metadata?: any;
             };
@@ -5061,8 +5061,8 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
                 id: number;
             };
             output: {
-                id: number;
                 name: string;
+                id: number;
                 nickname: string;
                 image: string;
                 loginType: string;
@@ -5072,27 +5072,13 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
         internalSharedWithMe: import("@trpc/server").TRPCMutationProcedure<{
             input: {
                 orderBy?: "asc" | "desc" | undefined;
-                page?: number | undefined;
                 size?: number | undefined;
+                page?: number | undefined;
             };
             output: {
-                attachments: {
-                    id: number;
-                    type: string;
-                    isShare: boolean;
-                    sharePassword: string;
-                    accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    name: string;
-                    noteId: number | null;
-                    sortOrder: number;
-                    path: string;
-                    size: string | number | import("@prisma/client/runtime/library").Decimal;
-                    depth?: any;
-                    perfixPath?: any;
-                }[];
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -5102,19 +5088,34 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
+                attachments: {
+                    name: string;
+                    id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    type: string;
+                    isShare: boolean;
+                    sharePassword: string;
+                    accountId: number | null;
+                    sortOrder: number;
+                    noteId: number | null;
+                    path: string;
+                    size: string | number | import("@prisma/client/runtime/library").Decimal;
+                    perfixPath?: any;
+                    depth?: any;
+                }[];
+                canEdit: boolean;
                 tags: {
+                    id: number;
                     tag: {
+                        name: string;
                         id: number;
                         createdAt: Date;
                         updatedAt: Date;
-                        name: string;
                         icon: string;
                         parent: number;
                         sortOrder: number;
                     };
-                    id: number;
                     noteId: number;
                     tagId: number;
                 }[];
@@ -5123,12 +5124,11 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
                     histories: number;
                 };
                 owner: {
-                    id: number;
                     name: string;
+                    id: number;
                     nickname: string;
                     image: string;
                 } | null;
-                canEdit: boolean;
                 shareEncryptedUrl?: string | null | undefined;
                 shareExpiryDate?: Date | null | undefined;
                 shareMaxView?: number | null | undefined;
@@ -5146,10 +5146,10 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
         list: import("@trpc/server").TRPCQueryProcedure<{
             input: void;
             output: {
+                name: string;
                 id: number;
                 createdAt: Date;
                 updatedAt: Date;
-                name: string;
                 icon: string;
                 parent: number;
                 sortOrder: number;
@@ -5182,10 +5182,10 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
                 icon: string;
             };
             output: {
+                name: string;
                 id: number;
                 createdAt: Date;
                 updatedAt: Date;
-                name: string;
                 icon: string;
                 parent: number;
                 sortOrder: number;
@@ -5209,11 +5209,11 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
                 sortOrder: number;
             };
             output: {
+                name: string;
                 id: number;
-                accountId: number | null;
                 createdAt: Date;
                 updatedAt: Date;
-                name: string;
+                accountId: number | null;
                 icon: string;
                 parent: number;
                 sortOrder: number;
@@ -5229,16 +5229,16 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
         list: import("@trpc/server").TRPCQueryProcedure<{
             input: void;
             output: {
-                id: number;
-                createdAt: Date;
-                updatedAt: Date;
                 name: string;
+                id: number;
                 nickname: string;
                 password: string;
                 image: string;
                 apiToken: string;
                 note: number;
                 role: string;
+                createdAt: Date;
+                updatedAt: Date;
                 description?: string | undefined;
                 loginType?: string | undefined;
                 linkAccountId?: number | null | undefined;
@@ -5247,23 +5247,23 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
         publicUserList: import("@trpc/server").TRPCQueryProcedure<{
             input: void;
             output: {
-                id: number;
-                createdAt: Date;
-                updatedAt: Date;
                 name: string;
+                id: number;
                 nickname: string;
                 image: string | null;
                 description: string | null;
                 role: string;
                 loginType: string;
                 linkAccountId: number | null;
+                createdAt: Date;
+                updatedAt: Date;
             }[];
         }>;
         nativeAccountList: import("@trpc/server").TRPCQueryProcedure<{
             input: void;
             output: {
-                id: number;
                 name: string;
+                id: number;
                 nickname: string;
             }[];
         }>;
@@ -5285,8 +5285,8 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
                 id?: number | undefined;
             };
             output: {
-                id: number;
                 name: string;
+                id: number;
                 image: string | null;
                 role: string;
                 loginType: string;
@@ -5318,8 +5318,8 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
         }>;
         upsertUser: import("@trpc/server").TRPCMutationProcedure<{
             input: {
-                id?: number | undefined;
                 name?: string | undefined;
+                id?: number | undefined;
                 nickname?: string | undefined;
                 password?: string | undefined;
                 image?: string | undefined;
@@ -5329,8 +5329,8 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
         }>;
         upsertUserByAdmin: import("@trpc/server").TRPCMutationProcedure<{
             input: {
-                id?: number | undefined;
                 name?: string | undefined;
+                id?: number | undefined;
                 nickname?: string | undefined;
                 password?: string | undefined;
             };
@@ -5364,8 +5364,8 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
                 password: string;
             };
             output: {
-                id: number;
                 name: string;
+                id: number;
                 nickname: string;
                 image: string | null;
                 role: string;
@@ -5382,8 +5382,8 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
     }, import("@trpc/server/unstable-core-do-not-import").DecorateCreateRouterOptions<{
         list: import("@trpc/server").TRPCQueryProcedure<{
             input: {
-                page?: number | undefined;
                 size?: number | undefined;
+                page?: number | undefined;
                 searchText?: string | undefined;
                 folder?: string | undefined;
             };
@@ -5397,20 +5397,20 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
                 oldFolderPath?: string | undefined;
             };
             output: {
+                name: string;
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: string;
                 isShare: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
-                name: string;
-                noteId: number | null;
                 sortOrder: number;
+                noteId: number | null;
                 path: string;
                 size: import("@prisma/client/runtime/library").Decimal;
-                depth: number | null;
                 perfixPath: string | null;
+                depth: number | null;
             } | {
                 success: boolean;
             };
@@ -5500,8 +5500,8 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
                 isCloseDailyReview?: boolean | undefined;
                 maxHomePageWidth?: number | undefined;
                 oauth2Providers?: {
-                    id: string;
                     name: string;
+                    id: string;
                     tokenUrl: string;
                     userinfoUrl: string;
                     clientId: string;
@@ -5573,8 +5573,8 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
         oauthProviders: import("@trpc/server").TRPCQueryProcedure<{
             input: void;
             output: {
-                id: string;
                 name: string;
+                id: string;
                 icon?: string | undefined;
             }[];
         }>;
@@ -5628,8 +5628,8 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
         hubList: import("@trpc/server").TRPCQueryProcedure<{
             input: void;
             output: {
-                id: string;
                 name: string;
+                id: string;
                 image: string;
                 description: string;
             }[];
@@ -5640,10 +5640,10 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
                 refresh?: boolean | undefined;
             };
             output: {
-                url: string;
                 title: string;
-                tags?: string[] | undefined;
+                url: string;
                 image?: string | null | undefined;
+                tags?: string[] | undefined;
                 version?: string | undefined;
                 site_description?: string | null | undefined;
             }[];
@@ -5673,10 +5673,10 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
             input: void;
             output: {
                 name: string;
-                isRunning: boolean;
                 schedule: string;
                 lastRun: Date;
                 isSuccess: boolean;
+                isRunning: boolean;
                 output?: any;
             }[];
         }>;
@@ -5773,8 +5773,8 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
             input: {
                 noteId: number;
                 orderBy?: "asc" | "desc" | undefined;
-                page?: number | undefined;
                 size?: number | undefined;
+                page?: number | undefined;
             };
             output: {
                 total: number;
@@ -5809,6 +5809,8 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
             } | undefined;
             output: {
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -5818,46 +5820,44 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
-                attachments?: {
-                    id: number;
-                    type: string;
-                    isShare: boolean;
-                    sharePassword: string;
-                    accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    name: string;
-                    noteId: number | null;
-                    sortOrder: number;
-                    path: string;
-                    size: string | number | import("@prisma/client/runtime/library").Decimal;
-                    depth?: any;
-                    perfixPath?: any;
-                }[] | undefined;
                 shareEncryptedUrl?: string | null | undefined;
                 shareExpiryDate?: Date | null | undefined;
                 shareMaxView?: number | null | undefined;
                 shareViewCount?: number | null | undefined;
                 metadata?: any;
+                attachments?: {
+                    name: string;
+                    id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    type: string;
+                    isShare: boolean;
+                    sharePassword: string;
+                    accountId: number | null;
+                    sortOrder: number;
+                    noteId: number | null;
+                    path: string;
+                    size: string | number | import("@prisma/client/runtime/library").Decimal;
+                    perfixPath?: any;
+                    depth?: any;
+                }[] | undefined;
                 tags?: ({
+                    id: number;
                     tag: {
+                        name: string;
                         id: number;
                         createdAt: Date;
                         updatedAt: Date;
-                        name: string;
                         icon: string;
                         parent: number;
                         sortOrder: number;
                     };
-                    id: number;
                     noteId: number;
                     tagId: number;
                 } | undefined)[] | null | undefined;
                 account?: {
-                    id?: number | undefined;
                     name?: string | undefined;
+                    id?: number | undefined;
                     nickname?: string | undefined;
                     image?: string | undefined;
                 } | null | undefined;
@@ -5879,10 +5879,10 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
         }>;
         followFrom: import("@trpc/server").TRPCMutationProcedure<{
             input: {
-                siteUrl: string;
-                mySiteAccountId: number;
                 siteName: string;
+                siteUrl: string;
                 siteAvatar: string;
+                mySiteAccountId: number;
             };
             output: {
                 success: boolean;
@@ -5909,9 +5909,9 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
             };
             output: {
                 id: number;
-                accountId: number;
                 createdAt: Date;
                 updatedAt: Date;
+                accountId: number;
                 siteUrl: string;
                 followType: string;
                 description?: string | undefined;
@@ -5925,9 +5925,9 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
             };
             output: {
                 id: number;
-                accountId: number;
                 createdAt: Date;
                 updatedAt: Date;
+                accountId: number;
                 siteUrl: string;
                 followType: string;
                 description?: string | undefined;
@@ -5953,16 +5953,16 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
     }, import("@trpc/server/unstable-core-do-not-import").DecorateCreateRouterOptions<{
         list: import("@trpc/server").TRPCQueryProcedure<{
             input: {
-                page?: number | undefined;
                 size?: number | undefined;
+                page?: number | undefined;
             };
             output: {
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: string;
                 content: string;
                 accountId: number;
-                createdAt: Date;
-                updatedAt: Date;
                 title: string;
                 isRead: boolean;
                 metadata?: any;
@@ -6004,8 +6004,8 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
         getAllPlugins: import("@trpc/server").TRPCQueryProcedure<{
             input: void;
             output: {
-                url: string;
                 name: string;
+                url: string;
                 version: string;
                 author: string;
                 minAppVersion: string;
@@ -6041,8 +6041,8 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
         }>;
         installPlugin: import("@trpc/server").TRPCMutationProcedure<{
             input: {
-                url: string;
                 name: string;
+                url: string;
                 version: string;
                 author: string;
                 minAppVersion: string;
@@ -6051,12 +6051,12 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
             };
             output: {
                 id: number;
-                metadata: import("@prisma/client/runtime/library").JsonValue;
                 createdAt: Date;
                 updatedAt: Date;
-                isDev: boolean;
+                metadata: import("@prisma/client/runtime/library").JsonValue;
                 path: string;
                 isUse: boolean;
+                isDev: boolean;
             };
         }>;
         getInstalledPlugins: import("@trpc/server").TRPCQueryProcedure<{
@@ -6065,9 +6065,9 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
                 id: number;
                 createdAt: Date;
                 updatedAt: Date;
-                isDev: boolean;
                 path: string;
                 isUse: boolean;
+                isDev: boolean;
                 metadata?: any;
             }[];
         }>;
@@ -6092,9 +6092,9 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
             };
             output: {
                 id: number;
-                accountId: number;
                 createdAt: Date;
                 updatedAt: Date;
+                accountId: number;
                 title: string;
             };
         }>;
@@ -6108,14 +6108,14 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
         }>;
         list: import("@trpc/server").TRPCQueryProcedure<{
             input: {
-                page?: number | undefined;
                 size?: number | undefined;
+                page?: number | undefined;
             };
             output: {
                 id: number;
-                accountId: number;
                 createdAt: Date;
                 updatedAt: Date;
+                accountId: number;
                 title: string;
             }[];
         }>;
@@ -6126,18 +6126,18 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
             output: ({
                 messages: {
                     id: number;
-                    content: string;
-                    metadata: import("@prisma/client/runtime/library").JsonValue | null;
+                    role: string;
                     createdAt: Date;
                     updatedAt: Date;
-                    role: string;
+                    content: string;
+                    metadata: import("@prisma/client/runtime/library").JsonValue | null;
                     conversationId: number;
                 }[];
             } & {
                 id: number;
-                accountId: number;
                 createdAt: Date;
                 updatedAt: Date;
+                accountId: number;
                 title: string;
             }) | null;
         }>;
@@ -6148,9 +6148,9 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
             };
             output: {
                 id: number;
-                accountId: number;
                 createdAt: Date;
                 updatedAt: Date;
+                accountId: number;
                 title: string;
             };
         }>;
@@ -6160,9 +6160,9 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
             };
             output: {
                 id: number;
-                accountId: number;
                 createdAt: Date;
                 updatedAt: Date;
+                accountId: number;
                 title: string;
             };
         }>;
@@ -6175,34 +6175,34 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
     }, import("@trpc/server/unstable-core-do-not-import").DecorateCreateRouterOptions<{
         create: import("@trpc/server").TRPCMutationProcedure<{
             input: {
-                content: string;
                 role: "user" | "system" | "assistant";
+                content: string;
                 conversationId: number;
                 metadata?: any;
             };
             output: {
                 id: number;
-                content: string;
-                metadata: import("@prisma/client/runtime/library").JsonValue | null;
+                role: string;
                 createdAt: Date;
                 updatedAt: Date;
-                role: string;
+                content: string;
+                metadata: import("@prisma/client/runtime/library").JsonValue | null;
                 conversationId: number;
             };
         }>;
         list: import("@trpc/server").TRPCQueryProcedure<{
             input: {
                 conversationId: number;
-                page?: number | undefined;
                 size?: number | undefined;
+                page?: number | undefined;
             };
             output: {
                 id: number;
-                content: string;
-                metadata: import("@prisma/client/runtime/library").JsonValue | null;
+                role: string;
                 createdAt: Date;
                 updatedAt: Date;
-                role: string;
+                content: string;
+                metadata: import("@prisma/client/runtime/library").JsonValue | null;
                 conversationId: number;
             }[];
         }>;
@@ -6213,11 +6213,11 @@ export declare const adminCaller: import("@trpc/server/unstable-core-do-not-impo
             };
             output: {
                 id: number;
-                content: string;
-                metadata: import("@prisma/client/runtime/library").JsonValue | null;
+                role: string;
                 createdAt: Date;
                 updatedAt: Date;
-                role: string;
+                content: string;
+                metadata: import("@prisma/client/runtime/library").JsonValue | null;
                 conversationId: number;
             };
         }>;
@@ -6276,8 +6276,8 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
         completions: import("@trpc/server").TRPCMutationProcedure<{
             input: {
                 conversations: {
-                    content: string;
                     role: string;
+                    content: string;
                 }[];
                 question: string;
                 withTools?: boolean | undefined;
@@ -6313,16 +6313,16 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
         summarizeConversationTitle: import("@trpc/server").TRPCMutationProcedure<{
             input: {
                 conversations: {
-                    content: string;
                     role: string;
+                    content: string;
                 }[];
                 conversationId: number;
             };
             output: {
                 id: number;
-                accountId: number;
                 createdAt: Date;
                 updatedAt: Date;
+                accountId: number;
                 title: string;
             };
         }>;
@@ -6353,21 +6353,21 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
             };
             output: {
                 account: {
-                    id: number;
                     name: string;
+                    id: number;
                     nickname: string;
                     image: string;
                 } | null;
             } & {
                 id: number;
-                content: string;
-                accountId: number | null;
                 createdAt: Date;
                 updatedAt: Date;
-                noteId: number;
+                content: string;
+                accountId: number | null;
                 guestName: string | null;
                 guestIP: string | null;
                 guestUA: string | null;
+                noteId: number;
                 parentId: number | null;
             };
         }>;
@@ -6409,9 +6409,9 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
                 isArchived?: boolean | null | undefined;
                 isRecycle?: boolean | undefined;
                 isShare?: boolean | null | undefined;
+                size?: number | undefined;
                 tagId?: number | null | undefined;
                 page?: number | undefined;
-                size?: number | undefined;
                 searchText?: string | undefined;
                 withoutTag?: boolean | undefined;
                 withFile?: boolean | undefined;
@@ -6422,23 +6422,9 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
                 hasTodo?: boolean | undefined;
             };
             output: {
-                attachments: {
-                    id: number;
-                    type: string;
-                    isShare: boolean;
-                    sharePassword: string;
-                    accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    name: string;
-                    noteId: number | null;
-                    sortOrder: number;
-                    path: string;
-                    size: string | number | import("@prisma/client/runtime/library").Decimal;
-                    depth?: any;
-                    perfixPath?: any;
-                }[];
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -6448,19 +6434,33 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
+                attachments: {
+                    name: string;
+                    id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    type: string;
+                    isShare: boolean;
+                    sharePassword: string;
+                    accountId: number | null;
+                    sortOrder: number;
+                    noteId: number | null;
+                    path: string;
+                    size: string | number | import("@prisma/client/runtime/library").Decimal;
+                    perfixPath?: any;
+                    depth?: any;
+                }[];
                 tags: {
+                    id: number;
                     tag: {
+                        name: string;
                         id: number;
                         createdAt: Date;
                         updatedAt: Date;
-                        name: string;
                         icon: string;
                         parent: number;
                         sortOrder: number;
                     };
-                    id: number;
                     noteId: number;
                     tagId: number;
                 }[];
@@ -6473,57 +6473,43 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
                 shareMaxView?: number | null | undefined;
                 shareViewCount?: number | null | undefined;
                 metadata?: any;
+                canEdit?: boolean | undefined;
                 referencedBy?: {
                     fromNoteId: number;
                     fromNote?: {
-                        content?: string | undefined;
                         createdAt?: Date | undefined;
                         updatedAt?: Date | undefined;
+                        content?: string | undefined;
                     } | undefined;
                 }[] | undefined;
                 references?: {
                     toNoteId: number;
                     toNote?: {
-                        content?: string | undefined;
                         createdAt?: Date | undefined;
                         updatedAt?: Date | undefined;
+                        content?: string | undefined;
                     } | undefined;
                 }[] | undefined;
                 owner?: {
-                    id: number;
                     name: string;
+                    id: number;
                     nickname: string;
                     image: string;
                 } | null | undefined;
                 isSharedNote?: boolean | undefined;
-                canEdit?: boolean | undefined;
                 isInternalShared?: boolean | undefined;
             }[];
         }>;
         publicList: import("@trpc/server").TRPCMutationProcedure<{
             input: {
-                page?: number | undefined;
                 size?: number | undefined;
+                page?: number | undefined;
                 searchText?: string | undefined;
             };
             output: {
-                attachments: {
-                    id: number;
-                    type: string;
-                    isShare: boolean;
-                    sharePassword: string;
-                    accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    name: string;
-                    noteId: number | null;
-                    sortOrder: number;
-                    path: string;
-                    size: string | number | import("@prisma/client/runtime/library").Decimal;
-                    depth?: any;
-                    perfixPath?: any;
-                }[];
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -6533,19 +6519,33 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
+                attachments: {
+                    name: string;
+                    id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    type: string;
+                    isShare: boolean;
+                    sharePassword: string;
+                    accountId: number | null;
+                    sortOrder: number;
+                    noteId: number | null;
+                    path: string;
+                    size: string | number | import("@prisma/client/runtime/library").Decimal;
+                    perfixPath?: any;
+                    depth?: any;
+                }[];
                 tags: {
+                    id: number;
                     tag: {
+                        name: string;
                         id: number;
                         createdAt: Date;
                         updatedAt: Date;
-                        name: string;
                         icon: string;
                         parent: number;
                         sortOrder: number;
                     };
-                    id: number;
                     noteId: number;
                     tagId: number;
                 }[];
@@ -6558,8 +6558,8 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
                 shareViewCount?: number | null | undefined;
                 metadata?: any;
                 account?: {
-                    id?: number | undefined;
                     name?: string | undefined;
+                    id?: number | undefined;
                     nickname?: string | undefined;
                     image?: string | undefined;
                 } | null | undefined;
@@ -6570,23 +6570,9 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
                 ids: number[];
             };
             output: {
-                attachments: {
-                    id: number;
-                    type: string;
-                    isShare: boolean;
-                    sharePassword: string;
-                    accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    name: string;
-                    noteId: number | null;
-                    sortOrder: number;
-                    path: string;
-                    size: string | number | import("@prisma/client/runtime/library").Decimal;
-                    depth?: any;
-                    perfixPath?: any;
-                }[];
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -6596,19 +6582,33 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
+                attachments: {
+                    name: string;
+                    id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    type: string;
+                    isShare: boolean;
+                    sharePassword: string;
+                    accountId: number | null;
+                    sortOrder: number;
+                    noteId: number | null;
+                    path: string;
+                    size: string | number | import("@prisma/client/runtime/library").Decimal;
+                    perfixPath?: any;
+                    depth?: any;
+                }[];
                 tags: {
+                    id: number;
                     tag: {
+                        name: string;
                         id: number;
                         createdAt: Date;
                         updatedAt: Date;
-                        name: string;
                         icon: string;
                         parent: number;
                         sortOrder: number;
                     };
-                    id: number;
                     noteId: number;
                     tagId: number;
                 }[];
@@ -6624,17 +6624,17 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
                 referencedBy?: {
                     fromNoteId: number;
                     fromNote?: {
-                        content?: string | undefined;
                         createdAt?: Date | undefined;
                         updatedAt?: Date | undefined;
+                        content?: string | undefined;
                     } | undefined;
                 }[] | undefined;
                 references?: {
                     toNoteId: number;
                     toNote?: {
-                        content?: string | undefined;
                         createdAt?: Date | undefined;
                         updatedAt?: Date | undefined;
+                        content?: string | undefined;
                     } | undefined;
                 }[] | undefined;
             }[];
@@ -6647,23 +6647,9 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
             output: {
                 error: "expired" | null;
                 data: {
-                    attachments: {
-                        id: number;
-                        type: string;
-                        isShare: boolean;
-                        sharePassword: string;
-                        accountId: number | null;
-                        createdAt: Date;
-                        updatedAt: Date;
-                        name: string;
-                        noteId: number | null;
-                        sortOrder: number;
-                        path: string;
-                        size: string | number | import("@prisma/client/runtime/library").Decimal;
-                        depth?: any;
-                        perfixPath?: any;
-                    }[];
                     id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
                     type: number;
                     content: string;
                     isArchived: boolean;
@@ -6673,8 +6659,22 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
                     isReviewed: boolean;
                     sharePassword: string;
                     accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
+                    attachments: {
+                        name: string;
+                        id: number;
+                        createdAt: Date;
+                        updatedAt: Date;
+                        type: string;
+                        isShare: boolean;
+                        sharePassword: string;
+                        accountId: number | null;
+                        sortOrder: number;
+                        noteId: number | null;
+                        path: string;
+                        size: string | number | import("@prisma/client/runtime/library").Decimal;
+                        perfixPath?: any;
+                        depth?: any;
+                    }[];
                     _count: {
                         comments: number;
                         histories: number;
@@ -6685,25 +6685,25 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
                     shareViewCount?: number | null | undefined;
                     metadata?: any;
                     account?: {
-                        id?: number | undefined;
                         name?: string | undefined;
+                        id?: number | undefined;
                         nickname?: string | undefined;
                         image?: string | undefined;
                     } | null | undefined;
                     referencedBy?: {
                         fromNoteId: number;
                         fromNote?: {
-                            content?: string | undefined;
                             createdAt?: Date | undefined;
                             updatedAt?: Date | undefined;
+                            content?: string | undefined;
                         } | undefined;
                     }[] | undefined;
                     references?: {
                         toNoteId: number;
                         toNote?: {
-                            content?: string | undefined;
                             createdAt?: Date | undefined;
                             updatedAt?: Date | undefined;
+                            content?: string | undefined;
                         } | undefined;
                     }[] | undefined;
                 } | null;
@@ -6715,23 +6715,9 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
                 id: number;
             };
             output: {
-                attachments: {
-                    id: number;
-                    type: string;
-                    isShare: boolean;
-                    sharePassword: string;
-                    accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    name: string;
-                    noteId: number | null;
-                    sortOrder: number;
-                    path: string;
-                    size: string | number | import("@prisma/client/runtime/library").Decimal;
-                    depth?: any;
-                    perfixPath?: any;
-                }[];
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -6741,19 +6727,33 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
+                attachments: {
+                    name: string;
+                    id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    type: string;
+                    isShare: boolean;
+                    sharePassword: string;
+                    accountId: number | null;
+                    sortOrder: number;
+                    noteId: number | null;
+                    path: string;
+                    size: string | number | import("@prisma/client/runtime/library").Decimal;
+                    perfixPath?: any;
+                    depth?: any;
+                }[];
                 tags: {
+                    id: number;
                     tag: {
+                        name: string;
                         id: number;
                         createdAt: Date;
                         updatedAt: Date;
-                        name: string;
                         icon: string;
                         parent: number;
                         sortOrder: number;
                     };
-                    id: number;
                     noteId: number;
                     tagId: number;
                 }[];
@@ -6769,17 +6769,17 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
                 referencedBy?: {
                     fromNoteId: number;
                     fromNote?: {
-                        content?: string | undefined;
                         createdAt?: Date | undefined;
                         updatedAt?: Date | undefined;
+                        content?: string | undefined;
                     } | undefined;
                 }[] | undefined;
                 references?: {
                     toNoteId: number;
                     toNote?: {
-                        content?: string | undefined;
                         createdAt?: Date | undefined;
                         updatedAt?: Date | undefined;
+                        content?: string | undefined;
                     } | undefined;
                 }[] | undefined;
             } | null;
@@ -6787,23 +6787,9 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
         dailyReviewNoteList: import("@trpc/server").TRPCQueryProcedure<{
             input: void;
             output: {
-                attachments: {
-                    id: number;
-                    type: string;
-                    isShare: boolean;
-                    sharePassword: string;
-                    accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    name: string;
-                    noteId: number | null;
-                    sortOrder: number;
-                    path: string;
-                    size: string | number | import("@prisma/client/runtime/library").Decimal;
-                    depth?: any;
-                    perfixPath?: any;
-                }[];
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -6813,8 +6799,22 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
+                attachments: {
+                    name: string;
+                    id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    type: string;
+                    isShare: boolean;
+                    sharePassword: string;
+                    accountId: number | null;
+                    sortOrder: number;
+                    noteId: number | null;
+                    path: string;
+                    size: string | number | import("@prisma/client/runtime/library").Decimal;
+                    perfixPath?: any;
+                    depth?: any;
+                }[];
                 shareEncryptedUrl?: string | null | undefined;
                 shareExpiryDate?: Date | null | undefined;
                 shareMaxView?: number | null | undefined;
@@ -6827,23 +6827,9 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
                 limit?: number | undefined;
             };
             output: {
-                attachments: {
-                    id: number;
-                    type: string;
-                    isShare: boolean;
-                    sharePassword: string;
-                    accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    name: string;
-                    noteId: number | null;
-                    sortOrder: number;
-                    path: string;
-                    size: string | number | import("@prisma/client/runtime/library").Decimal;
-                    depth?: any;
-                    perfixPath?: any;
-                }[];
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -6853,8 +6839,22 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
+                attachments: {
+                    name: string;
+                    id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    type: string;
+                    isShare: boolean;
+                    sharePassword: string;
+                    accountId: number | null;
+                    sortOrder: number;
+                    noteId: number | null;
+                    path: string;
+                    size: string | number | import("@prisma/client/runtime/library").Decimal;
+                    perfixPath?: any;
+                    depth?: any;
+                }[];
                 shareEncryptedUrl?: string | null | undefined;
                 shareExpiryDate?: Date | null | undefined;
                 shareMaxView?: number | null | undefined;
@@ -6867,23 +6867,9 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
                 id: number;
             };
             output: {
-                attachments: {
-                    id: number;
-                    type: string;
-                    isShare: boolean;
-                    sharePassword: string;
-                    accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    name: string;
-                    noteId: number | null;
-                    sortOrder: number;
-                    path: string;
-                    size: string | number | import("@prisma/client/runtime/library").Decimal;
-                    depth?: any;
-                    perfixPath?: any;
-                }[];
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -6893,19 +6879,33 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
+                attachments: {
+                    name: string;
+                    id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    type: string;
+                    isShare: boolean;
+                    sharePassword: string;
+                    accountId: number | null;
+                    sortOrder: number;
+                    noteId: number | null;
+                    path: string;
+                    size: string | number | import("@prisma/client/runtime/library").Decimal;
+                    perfixPath?: any;
+                    depth?: any;
+                }[];
                 tags: {
+                    id: number;
                     tag: {
+                        name: string;
                         id: number;
                         createdAt: Date;
                         updatedAt: Date;
-                        name: string;
                         icon: string;
                         parent: number;
                         sortOrder: number;
                     };
-                    id: number;
                     noteId: number;
                     tagId: number;
                 }[];
@@ -6921,17 +6921,17 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
                 referencedBy?: {
                     fromNoteId: number;
                     fromNote?: {
-                        content?: string | undefined;
                         createdAt?: Date | undefined;
                         updatedAt?: Date | undefined;
+                        content?: string | undefined;
                     } | undefined;
                 }[] | undefined;
                 references?: {
                     toNoteId: number;
                     toNote?: {
-                        content?: string | undefined;
                         createdAt?: Date | undefined;
                         updatedAt?: Date | undefined;
+                        content?: string | undefined;
                     } | undefined;
                 }[] | undefined;
             }[];
@@ -6942,6 +6942,8 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
             };
             output: {
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -6951,8 +6953,6 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
                 shareEncryptedUrl?: string | null | undefined;
                 shareExpiryDate?: Date | null | undefined;
                 shareMaxView?: number | null | undefined;
@@ -6962,13 +6962,9 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
         }>;
         upsert: import("@trpc/server").TRPCMutationProcedure<{
             input: {
-                attachments?: {
-                    type: string;
-                    name: string;
-                    path: string;
-                    size: string | number;
-                }[] | undefined;
                 id?: number | undefined;
+                createdAt?: Date | undefined;
+                updatedAt?: Date | undefined;
                 type?: import("@shared/lib/types").NoteType | -1 | undefined;
                 content?: string | null | undefined;
                 isArchived?: boolean | null | undefined;
@@ -6976,8 +6972,12 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
                 isShare?: boolean | null | undefined;
                 isTop?: boolean | null | undefined;
                 metadata?: any;
-                createdAt?: Date | undefined;
-                updatedAt?: Date | undefined;
+                attachments?: {
+                    name: string;
+                    type: string;
+                    path: string;
+                    size: string | number;
+                }[] | undefined;
                 references?: number[] | undefined;
             };
             output: any;
@@ -6991,6 +6991,8 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
             };
             output: {
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -7000,8 +7002,6 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
                 shareEncryptedUrl?: string | null | undefined;
                 shareExpiryDate?: Date | null | undefined;
                 shareMaxView?: number | null | undefined;
@@ -7032,8 +7032,8 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
         }>;
         addReference: import("@trpc/server").TRPCMutationProcedure<{
             input: {
-                toNoteId: number;
                 fromNoteId: number;
+                toNoteId: number;
             };
             output: any;
         }>;
@@ -7043,23 +7043,9 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
                 type?: "referencedBy" | "references" | undefined;
             };
             output: {
-                attachments: {
-                    id: number;
-                    type: string;
-                    isShare: boolean;
-                    sharePassword: string;
-                    accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    name: string;
-                    noteId: number | null;
-                    sortOrder: number;
-                    path: string;
-                    size: string | number | import("@prisma/client/runtime/library").Decimal;
-                    depth?: any;
-                    perfixPath?: any;
-                }[];
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -7069,8 +7055,22 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
+                attachments: {
+                    name: string;
+                    id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    type: string;
+                    isShare: boolean;
+                    sharePassword: string;
+                    accountId: number | null;
+                    sortOrder: number;
+                    noteId: number | null;
+                    path: string;
+                    size: string | number | import("@prisma/client/runtime/library").Decimal;
+                    perfixPath?: any;
+                    depth?: any;
+                }[];
                 referenceCreatedAt: Date;
                 shareEncryptedUrl?: string | null | undefined;
                 shareExpiryDate?: Date | null | undefined;
@@ -7098,9 +7098,9 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
             };
             output: {
                 id: number;
+                createdAt: Date;
                 content: string;
                 accountId: number | null;
-                createdAt: Date;
                 noteId: number;
                 version?: number | undefined;
             }[];
@@ -7111,8 +7111,8 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
                 version?: number | undefined;
             };
             output: {
-                content: string;
                 createdAt: Date;
+                content: string;
                 version: number;
                 metadata?: any;
             };
@@ -7133,8 +7133,8 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
                 id: number;
             };
             output: {
-                id: number;
                 name: string;
+                id: number;
                 nickname: string;
                 image: string;
                 loginType: string;
@@ -7144,27 +7144,13 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
         internalSharedWithMe: import("@trpc/server").TRPCMutationProcedure<{
             input: {
                 orderBy?: "asc" | "desc" | undefined;
-                page?: number | undefined;
                 size?: number | undefined;
+                page?: number | undefined;
             };
             output: {
-                attachments: {
-                    id: number;
-                    type: string;
-                    isShare: boolean;
-                    sharePassword: string;
-                    accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    name: string;
-                    noteId: number | null;
-                    sortOrder: number;
-                    path: string;
-                    size: string | number | import("@prisma/client/runtime/library").Decimal;
-                    depth?: any;
-                    perfixPath?: any;
-                }[];
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -7174,19 +7160,34 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
+                attachments: {
+                    name: string;
+                    id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    type: string;
+                    isShare: boolean;
+                    sharePassword: string;
+                    accountId: number | null;
+                    sortOrder: number;
+                    noteId: number | null;
+                    path: string;
+                    size: string | number | import("@prisma/client/runtime/library").Decimal;
+                    perfixPath?: any;
+                    depth?: any;
+                }[];
+                canEdit: boolean;
                 tags: {
+                    id: number;
                     tag: {
+                        name: string;
                         id: number;
                         createdAt: Date;
                         updatedAt: Date;
-                        name: string;
                         icon: string;
                         parent: number;
                         sortOrder: number;
                     };
-                    id: number;
                     noteId: number;
                     tagId: number;
                 }[];
@@ -7195,12 +7196,11 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
                     histories: number;
                 };
                 owner: {
-                    id: number;
                     name: string;
+                    id: number;
                     nickname: string;
                     image: string;
                 } | null;
-                canEdit: boolean;
                 shareEncryptedUrl?: string | null | undefined;
                 shareExpiryDate?: Date | null | undefined;
                 shareMaxView?: number | null | undefined;
@@ -7218,10 +7218,10 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
         list: import("@trpc/server").TRPCQueryProcedure<{
             input: void;
             output: {
+                name: string;
                 id: number;
                 createdAt: Date;
                 updatedAt: Date;
-                name: string;
                 icon: string;
                 parent: number;
                 sortOrder: number;
@@ -7254,10 +7254,10 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
                 icon: string;
             };
             output: {
+                name: string;
                 id: number;
                 createdAt: Date;
                 updatedAt: Date;
-                name: string;
                 icon: string;
                 parent: number;
                 sortOrder: number;
@@ -7281,11 +7281,11 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
                 sortOrder: number;
             };
             output: {
+                name: string;
                 id: number;
-                accountId: number | null;
                 createdAt: Date;
                 updatedAt: Date;
-                name: string;
+                accountId: number | null;
                 icon: string;
                 parent: number;
                 sortOrder: number;
@@ -7301,16 +7301,16 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
         list: import("@trpc/server").TRPCQueryProcedure<{
             input: void;
             output: {
-                id: number;
-                createdAt: Date;
-                updatedAt: Date;
                 name: string;
+                id: number;
                 nickname: string;
                 password: string;
                 image: string;
                 apiToken: string;
                 note: number;
                 role: string;
+                createdAt: Date;
+                updatedAt: Date;
                 description?: string | undefined;
                 loginType?: string | undefined;
                 linkAccountId?: number | null | undefined;
@@ -7319,23 +7319,23 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
         publicUserList: import("@trpc/server").TRPCQueryProcedure<{
             input: void;
             output: {
-                id: number;
-                createdAt: Date;
-                updatedAt: Date;
                 name: string;
+                id: number;
                 nickname: string;
                 image: string | null;
                 description: string | null;
                 role: string;
                 loginType: string;
                 linkAccountId: number | null;
+                createdAt: Date;
+                updatedAt: Date;
             }[];
         }>;
         nativeAccountList: import("@trpc/server").TRPCQueryProcedure<{
             input: void;
             output: {
-                id: number;
                 name: string;
+                id: number;
                 nickname: string;
             }[];
         }>;
@@ -7357,8 +7357,8 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
                 id?: number | undefined;
             };
             output: {
-                id: number;
                 name: string;
+                id: number;
                 image: string | null;
                 role: string;
                 loginType: string;
@@ -7390,8 +7390,8 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
         }>;
         upsertUser: import("@trpc/server").TRPCMutationProcedure<{
             input: {
-                id?: number | undefined;
                 name?: string | undefined;
+                id?: number | undefined;
                 nickname?: string | undefined;
                 password?: string | undefined;
                 image?: string | undefined;
@@ -7401,8 +7401,8 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
         }>;
         upsertUserByAdmin: import("@trpc/server").TRPCMutationProcedure<{
             input: {
-                id?: number | undefined;
                 name?: string | undefined;
+                id?: number | undefined;
                 nickname?: string | undefined;
                 password?: string | undefined;
             };
@@ -7436,8 +7436,8 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
                 password: string;
             };
             output: {
-                id: number;
                 name: string;
+                id: number;
                 nickname: string;
                 image: string | null;
                 role: string;
@@ -7454,8 +7454,8 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
     }, import("@trpc/server/unstable-core-do-not-import").DecorateCreateRouterOptions<{
         list: import("@trpc/server").TRPCQueryProcedure<{
             input: {
-                page?: number | undefined;
                 size?: number | undefined;
+                page?: number | undefined;
                 searchText?: string | undefined;
                 folder?: string | undefined;
             };
@@ -7469,20 +7469,20 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
                 oldFolderPath?: string | undefined;
             };
             output: {
+                name: string;
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: string;
                 isShare: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
-                name: string;
-                noteId: number | null;
                 sortOrder: number;
+                noteId: number | null;
                 path: string;
                 size: import("@prisma/client/runtime/library").Decimal;
-                depth: number | null;
                 perfixPath: string | null;
+                depth: number | null;
             } | {
                 success: boolean;
             };
@@ -7572,8 +7572,8 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
                 isCloseDailyReview?: boolean | undefined;
                 maxHomePageWidth?: number | undefined;
                 oauth2Providers?: {
-                    id: string;
                     name: string;
+                    id: string;
                     tokenUrl: string;
                     userinfoUrl: string;
                     clientId: string;
@@ -7645,8 +7645,8 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
         oauthProviders: import("@trpc/server").TRPCQueryProcedure<{
             input: void;
             output: {
-                id: string;
                 name: string;
+                id: string;
                 icon?: string | undefined;
             }[];
         }>;
@@ -7700,8 +7700,8 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
         hubList: import("@trpc/server").TRPCQueryProcedure<{
             input: void;
             output: {
-                id: string;
                 name: string;
+                id: string;
                 image: string;
                 description: string;
             }[];
@@ -7712,10 +7712,10 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
                 refresh?: boolean | undefined;
             };
             output: {
-                url: string;
                 title: string;
-                tags?: string[] | undefined;
+                url: string;
                 image?: string | null | undefined;
+                tags?: string[] | undefined;
                 version?: string | undefined;
                 site_description?: string | null | undefined;
             }[];
@@ -7745,10 +7745,10 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
             input: void;
             output: {
                 name: string;
-                isRunning: boolean;
                 schedule: string;
                 lastRun: Date;
                 isSuccess: boolean;
+                isRunning: boolean;
                 output?: any;
             }[];
         }>;
@@ -7845,8 +7845,8 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
             input: {
                 noteId: number;
                 orderBy?: "asc" | "desc" | undefined;
-                page?: number | undefined;
                 size?: number | undefined;
+                page?: number | undefined;
             };
             output: {
                 total: number;
@@ -7881,6 +7881,8 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
             } | undefined;
             output: {
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -7890,46 +7892,44 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
-                attachments?: {
-                    id: number;
-                    type: string;
-                    isShare: boolean;
-                    sharePassword: string;
-                    accountId: number | null;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    name: string;
-                    noteId: number | null;
-                    sortOrder: number;
-                    path: string;
-                    size: string | number | import("@prisma/client/runtime/library").Decimal;
-                    depth?: any;
-                    perfixPath?: any;
-                }[] | undefined;
                 shareEncryptedUrl?: string | null | undefined;
                 shareExpiryDate?: Date | null | undefined;
                 shareMaxView?: number | null | undefined;
                 shareViewCount?: number | null | undefined;
                 metadata?: any;
+                attachments?: {
+                    name: string;
+                    id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    type: string;
+                    isShare: boolean;
+                    sharePassword: string;
+                    accountId: number | null;
+                    sortOrder: number;
+                    noteId: number | null;
+                    path: string;
+                    size: string | number | import("@prisma/client/runtime/library").Decimal;
+                    perfixPath?: any;
+                    depth?: any;
+                }[] | undefined;
                 tags?: ({
+                    id: number;
                     tag: {
+                        name: string;
                         id: number;
                         createdAt: Date;
                         updatedAt: Date;
-                        name: string;
                         icon: string;
                         parent: number;
                         sortOrder: number;
                     };
-                    id: number;
                     noteId: number;
                     tagId: number;
                 } | undefined)[] | null | undefined;
                 account?: {
-                    id?: number | undefined;
                     name?: string | undefined;
+                    id?: number | undefined;
                     nickname?: string | undefined;
                     image?: string | undefined;
                 } | null | undefined;
@@ -7951,10 +7951,10 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
         }>;
         followFrom: import("@trpc/server").TRPCMutationProcedure<{
             input: {
-                siteUrl: string;
-                mySiteAccountId: number;
                 siteName: string;
+                siteUrl: string;
                 siteAvatar: string;
+                mySiteAccountId: number;
             };
             output: {
                 success: boolean;
@@ -7981,9 +7981,9 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
             };
             output: {
                 id: number;
-                accountId: number;
                 createdAt: Date;
                 updatedAt: Date;
+                accountId: number;
                 siteUrl: string;
                 followType: string;
                 description?: string | undefined;
@@ -7997,9 +7997,9 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
             };
             output: {
                 id: number;
-                accountId: number;
                 createdAt: Date;
                 updatedAt: Date;
+                accountId: number;
                 siteUrl: string;
                 followType: string;
                 description?: string | undefined;
@@ -8025,16 +8025,16 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
     }, import("@trpc/server/unstable-core-do-not-import").DecorateCreateRouterOptions<{
         list: import("@trpc/server").TRPCQueryProcedure<{
             input: {
-                page?: number | undefined;
                 size?: number | undefined;
+                page?: number | undefined;
             };
             output: {
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: string;
                 content: string;
                 accountId: number;
-                createdAt: Date;
-                updatedAt: Date;
                 title: string;
                 isRead: boolean;
                 metadata?: any;
@@ -8076,8 +8076,8 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
         getAllPlugins: import("@trpc/server").TRPCQueryProcedure<{
             input: void;
             output: {
-                url: string;
                 name: string;
+                url: string;
                 version: string;
                 author: string;
                 minAppVersion: string;
@@ -8113,8 +8113,8 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
         }>;
         installPlugin: import("@trpc/server").TRPCMutationProcedure<{
             input: {
-                url: string;
                 name: string;
+                url: string;
                 version: string;
                 author: string;
                 minAppVersion: string;
@@ -8123,12 +8123,12 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
             };
             output: {
                 id: number;
-                metadata: import("@prisma/client/runtime/library").JsonValue;
                 createdAt: Date;
                 updatedAt: Date;
-                isDev: boolean;
+                metadata: import("@prisma/client/runtime/library").JsonValue;
                 path: string;
                 isUse: boolean;
+                isDev: boolean;
             };
         }>;
         getInstalledPlugins: import("@trpc/server").TRPCQueryProcedure<{
@@ -8137,9 +8137,9 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
                 id: number;
                 createdAt: Date;
                 updatedAt: Date;
-                isDev: boolean;
                 path: string;
                 isUse: boolean;
+                isDev: boolean;
                 metadata?: any;
             }[];
         }>;
@@ -8164,9 +8164,9 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
             };
             output: {
                 id: number;
-                accountId: number;
                 createdAt: Date;
                 updatedAt: Date;
+                accountId: number;
                 title: string;
             };
         }>;
@@ -8180,14 +8180,14 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
         }>;
         list: import("@trpc/server").TRPCQueryProcedure<{
             input: {
-                page?: number | undefined;
                 size?: number | undefined;
+                page?: number | undefined;
             };
             output: {
                 id: number;
-                accountId: number;
                 createdAt: Date;
                 updatedAt: Date;
+                accountId: number;
                 title: string;
             }[];
         }>;
@@ -8198,18 +8198,18 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
             output: ({
                 messages: {
                     id: number;
-                    content: string;
-                    metadata: import("@prisma/client/runtime/library").JsonValue | null;
+                    role: string;
                     createdAt: Date;
                     updatedAt: Date;
-                    role: string;
+                    content: string;
+                    metadata: import("@prisma/client/runtime/library").JsonValue | null;
                     conversationId: number;
                 }[];
             } & {
                 id: number;
-                accountId: number;
                 createdAt: Date;
                 updatedAt: Date;
+                accountId: number;
                 title: string;
             }) | null;
         }>;
@@ -8220,9 +8220,9 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
             };
             output: {
                 id: number;
-                accountId: number;
                 createdAt: Date;
                 updatedAt: Date;
+                accountId: number;
                 title: string;
             };
         }>;
@@ -8232,9 +8232,9 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
             };
             output: {
                 id: number;
-                accountId: number;
                 createdAt: Date;
                 updatedAt: Date;
+                accountId: number;
                 title: string;
             };
         }>;
@@ -8247,34 +8247,34 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
     }, import("@trpc/server/unstable-core-do-not-import").DecorateCreateRouterOptions<{
         create: import("@trpc/server").TRPCMutationProcedure<{
             input: {
-                content: string;
                 role: "user" | "system" | "assistant";
+                content: string;
                 conversationId: number;
                 metadata?: any;
             };
             output: {
                 id: number;
-                content: string;
-                metadata: import("@prisma/client/runtime/library").JsonValue | null;
+                role: string;
                 createdAt: Date;
                 updatedAt: Date;
-                role: string;
+                content: string;
+                metadata: import("@prisma/client/runtime/library").JsonValue | null;
                 conversationId: number;
             };
         }>;
         list: import("@trpc/server").TRPCQueryProcedure<{
             input: {
                 conversationId: number;
-                page?: number | undefined;
                 size?: number | undefined;
+                page?: number | undefined;
             };
             output: {
                 id: number;
-                content: string;
-                metadata: import("@prisma/client/runtime/library").JsonValue | null;
+                role: string;
                 createdAt: Date;
                 updatedAt: Date;
-                role: string;
+                content: string;
+                metadata: import("@prisma/client/runtime/library").JsonValue | null;
                 conversationId: number;
             }[];
         }>;
@@ -8285,11 +8285,11 @@ export declare const userCaller: (ctx: Context) => import("@trpc/server/unstable
             };
             output: {
                 id: number;
-                content: string;
-                metadata: import("@prisma/client/runtime/library").JsonValue | null;
+                role: string;
                 createdAt: Date;
                 updatedAt: Date;
-                role: string;
+                content: string;
+                metadata: import("@prisma/client/runtime/library").JsonValue | null;
                 conversationId: number;
             };
         }>;

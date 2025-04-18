@@ -22,6 +22,6 @@
       "@/routerExpress/*": ["./server/routerExpress/*"]
     }
   },
-  "include": ["app/src", "server", "dist"],
+  "include": ["app/src", "server"],
   "references": [{ "path": "./tsconfig.node.json" }]
 } 

@@ -45,8 +45,8 @@ export declare const router: <TInput extends import("@trpc/server/unstable-core-
 export declare const publicProcedure: import("@trpc/server/unstable-core-do-not-import").ProcedureBuilder<import("../context").User, OpenApiMeta, object, typeof import("@trpc/server/unstable-core-do-not-import").unsetMarker, typeof import("@trpc/server/unstable-core-do-not-import").unsetMarker, typeof import("@trpc/server/unstable-core-do-not-import").unsetMarker, typeof import("@trpc/server/unstable-core-do-not-import").unsetMarker, false>;
 export declare const authProcedure: import("@trpc/server/unstable-core-do-not-import").ProcedureBuilder<import("../context").User, OpenApiMeta, {
     sub: string;
-    id: string;
     name: string;
+    id: string;
     role: string;
     exp: number;
     iat: number;
@@ -60,8 +60,8 @@ export declare const authProcedure: import("@trpc/server/unstable-core-do-not-im
 }, typeof import("@trpc/server/unstable-core-do-not-import").unsetMarker, typeof import("@trpc/server/unstable-core-do-not-import").unsetMarker, typeof import("@trpc/server/unstable-core-do-not-import").unsetMarker, typeof import("@trpc/server/unstable-core-do-not-import").unsetMarker, false>;
 export declare const demoAuthMiddleware: import("@trpc/server/unstable-core-do-not-import").MiddlewareBuilder<import("../context").User, OpenApiMeta, {
     sub: string;
-    id: string;
     name: string;
+    id: string;
     role: string;
     exp: number;
     iat: number;
@@ -75,8 +75,8 @@ export declare const demoAuthMiddleware: import("@trpc/server/unstable-core-do-n
 }, unknown>;
 export declare const superAdminAuthMiddleware: import("@trpc/server/unstable-core-do-not-import").MiddlewareBuilder<import("../context").User, OpenApiMeta, {
     sub: string;
-    id: string;
     name: string;
+    id: string;
     role: string;
     exp: number;
     iat: number;

@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "dev": "cd app && bun run tauri dev",
-    "build": "turbo run build",
+    "build:web": "turbo run build:web",
     "test": "turbo run test",
     "clean": "turbo run clean && rm -rf node_modules",
     "dev:backend": "dotenv turbo run dev --filter=@blinko/backend",
@@ -19,7 +19,9 @@
     "prisma:generate": "cd prisma && prisma generate",
     "prisma:migrate:dev": "cd prisma && prisma migrate dev",
     "prisma:migrate:deploy": "cd prisma && prisma migrate deploy",
-    "prisma:studio": "cd prisma && prisma studio"
+    "prisma:studio": "cd prisma && prisma studio",
+    "build:seed": "tsup prisma/seed.ts --outDir dist",
+    "seed": "bun dist/seed.js"
   },
   "devDependencies": {
     "@types/lru-cache": "^7.10.10",
@@ -34,26 +36,8 @@
     "node": ">=20.0.0"
   },
   "dependencies": {
-    "@types/passport-facebook": "^3.0.3",
-    "@types/passport-github2": "^1.2.9",
-    "@types/passport-google-oauth20": "^2.0.16",
-    "@types/passport-twitter": "^1.0.40",
     "dotenv": "^16.5.0",
-    "express-list-endpoints": "^7.1.1",
     "lru-cache": "^11.1.0",
-    "passport-apple": "^2.0.2",
-    "passport-discord": "^0.1.4",
-    "passport-facebook": "^3.0.0",
-    "passport-github2": "^0.1.12",
-    "passport-google-oauth20": "^2.0.0",
-    "passport-line": "^0.0.4",
-    "passport-oauth2": "^1.8.0",
-    "passport-slack": "^0.0.7",
-    "passport-spotify": "^2.0.0",
-    "passport-twitch-new": "^0.0.3",
-    "passport-twitter": "^1.0.4",
-    "qrcode.react": "^4.2.0",
-    "unfurl.js": "^6.4.0",
     "wait-on": "^8.0.3"
   }
 }

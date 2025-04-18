@@ -18,28 +18,28 @@ export declare class AiModelFactory {
         notes: {
             score: number;
             attachments: {
+                name: string;
                 id: number;
+                createdAt: Date;
+                updatedAt: Date;
                 type: string;
                 isShare: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
-                name: string;
-                noteId: number | null;
                 sortOrder: number;
+                noteId: number | null;
                 path: string;
                 size: import("@prisma/client/runtime/library").Decimal;
-                depth: number | null;
                 perfixPath: string | null;
+                depth: number | null;
             }[];
             tags: ({
                 tag: {
+                    name: string;
                     id: number;
-                    accountId: number | null;
                     createdAt: Date;
                     updatedAt: Date;
-                    name: string;
+                    accountId: number | null;
                     icon: string;
                     parent: number;
                     sortOrder: number;
@@ -52,17 +52,17 @@ export declare class AiModelFactory {
             referencedBy: {
                 fromNoteId: number;
                 fromNote: {
-                    content: string;
                     createdAt: Date;
                     updatedAt: Date;
+                    content: string;
                 };
             }[];
             references: {
                 toNoteId: number;
                 toNote: {
-                    content: string;
                     createdAt: Date;
                     updatedAt: Date;
+                    content: string;
                 };
             }[];
             _count: {
@@ -70,6 +70,8 @@ export declare class AiModelFactory {
                 histories: number;
             };
             id: number;
+            createdAt: Date;
+            updatedAt: Date;
             type: number;
             content: string;
             isArchived: boolean;
@@ -84,8 +86,6 @@ export declare class AiModelFactory {
             shareViewCount: number | null;
             metadata: import("@prisma/client/runtime/library").JsonValue | null;
             accountId: number | null;
-            createdAt: Date;
-            updatedAt: Date;
         }[];
         aiContext: string[];
     }>;
@@ -139,8 +139,8 @@ export declare class AiModelFactory {
         isCloseDailyReview?: boolean | undefined;
         maxHomePageWidth?: number | undefined;
         oauth2Providers?: {
-            id: string;
             name: string;
+            id: string;
             tokenUrl: string;
             userinfoUrl: string;
             clientId: string;
@@ -218,8 +218,8 @@ export declare class AiModelFactory {
         isCloseDailyReview?: boolean | undefined;
         maxHomePageWidth?: number | undefined;
         oauth2Providers?: {
-            id: string;
             name: string;
+            id: string;
             tokenUrl: string;
             userinfoUrl: string;
             clientId: string;

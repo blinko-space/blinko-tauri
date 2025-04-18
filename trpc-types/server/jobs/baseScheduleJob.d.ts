@@ -6,19 +6,19 @@ export declare abstract class BaseScheduleJob {
     protected static createJob(): CronJob<null, null>;
     static Start(cronTime: string, immediate?: boolean): Promise<{
         name: string;
-        output: import("@prisma/client/runtime/library").JsonValue | null;
-        isRunning: boolean;
         schedule: string;
         lastRun: Date;
         isSuccess: boolean;
+        isRunning: boolean;
+        output: import("@prisma/client/runtime/library").JsonValue | null;
     }>;
     static Stop(): Promise<{
         name: string;
-        output: import("@prisma/client/runtime/library").JsonValue | null;
-        isRunning: boolean;
         schedule: string;
         lastRun: Date;
         isSuccess: boolean;
+        isRunning: boolean;
+        output: import("@prisma/client/runtime/library").JsonValue | null;
     }>;
     static SetCronTime(cronTime: string): Promise<void>;
     protected static autoStart(schedule: string): Promise<void>;

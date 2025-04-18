@@ -28,16 +28,25 @@
         "node_modules/.prisma/**"
       ]
     },
-    "build": {
+    "build:web": {
       "inputs": [
         ".env"
       ],
       "dependsOn": [
-        "^build",
+        "^build:web",
         "prisma:generate"
       ],
       "outputs": [
-        "dist/**"
+        "dist/**",
+        "../dist/**"
+      ]
+    },
+    "build:seed": {
+      "inputs": [
+        "prisma/seed.ts"
+      ],
+      "outputs": [
+        "dist/prisma/**"
       ]
     },
     "dev": {
@@ -50,13 +59,13 @@
     },
     "start": {
       "dependsOn": [
-        "build"
+        "build:web"
       ]
     },
     "lint": {},
     "test": {
       "dependsOn": [
-        "build"
+        "build:web"
       ]
     }
   }

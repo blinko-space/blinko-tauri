@@ -6,34 +6,34 @@ export declare const messageRouter: import("@trpc/server/unstable-core-do-not-im
 }, import("@trpc/server/unstable-core-do-not-import").DecorateCreateRouterOptions<{
     create: import("@trpc/server").TRPCMutationProcedure<{
         input: {
-            content: string;
             role: "user" | "system" | "assistant";
+            content: string;
             conversationId: number;
             metadata?: any;
         };
         output: {
             id: number;
-            content: string;
-            metadata: import("@prisma/client/runtime/library").JsonValue | null;
+            role: string;
             createdAt: Date;
             updatedAt: Date;
-            role: string;
+            content: string;
+            metadata: import("@prisma/client/runtime/library").JsonValue | null;
             conversationId: number;
         };
     }>;
     list: import("@trpc/server").TRPCQueryProcedure<{
         input: {
             conversationId: number;
-            page?: number | undefined;
             size?: number | undefined;
+            page?: number | undefined;
         };
         output: {
             id: number;
-            content: string;
-            metadata: import("@prisma/client/runtime/library").JsonValue | null;
+            role: string;
             createdAt: Date;
             updatedAt: Date;
-            role: string;
+            content: string;
+            metadata: import("@prisma/client/runtime/library").JsonValue | null;
             conversationId: number;
         }[];
     }>;
@@ -44,11 +44,11 @@ export declare const messageRouter: import("@trpc/server/unstable-core-do-not-im
         };
         output: {
             id: number;
-            content: string;
-            metadata: import("@prisma/client/runtime/library").JsonValue | null;
+            role: string;
             createdAt: Date;
             updatedAt: Date;
-            role: string;
+            content: string;
+            metadata: import("@prisma/client/runtime/library").JsonValue | null;
             conversationId: number;
         };
     }>;

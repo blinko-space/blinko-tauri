@@ -15,30 +15,30 @@ export declare const accountsSchema: z.ZodObject<{
     createdAt: z.ZodDate;
     updatedAt: z.ZodDate;
 }, "strip", z.ZodTypeAny, {
-    id: number;
-    createdAt: Date;
-    updatedAt: Date;
     name: string;
+    id: number;
     nickname: string;
     password: string;
     image: string;
     apiToken: string;
     note: number;
     role: string;
+    createdAt: Date;
+    updatedAt: Date;
     description?: string | undefined;
     loginType?: string | undefined;
     linkAccountId?: number | null | undefined;
 }, {
-    id: number;
-    createdAt: Date;
-    updatedAt: Date;
     name: string;
+    id: number;
     nickname: string;
     password: string;
     image: string;
     apiToken: string;
     note: number;
     role: string;
+    createdAt: Date;
+    updatedAt: Date;
     description?: string | undefined;
     loginType?: string | undefined;
     linkAccountId?: number | null | undefined;
@@ -60,35 +60,35 @@ export declare const attachmentsSchema: z.ZodObject<{
     depth: z.ZodAny;
     perfixPath: z.ZodAny;
 }, "strip", z.ZodTypeAny, {
+    name: string;
     id: number;
+    createdAt: Date;
+    updatedAt: Date;
     type: string;
     isShare: boolean;
     sharePassword: string;
     accountId: number | null;
-    createdAt: Date;
-    updatedAt: Date;
-    name: string;
-    noteId: number | null;
     sortOrder: number;
+    noteId: number | null;
     path: string;
     size: string | number | Prisma.Decimal;
-    depth?: any;
     perfixPath?: any;
+    depth?: any;
 }, {
+    name: string;
     id: number;
+    createdAt: Date;
+    updatedAt: Date;
     type: string;
     isShare: boolean;
     sharePassword: string;
     accountId: number | null;
-    createdAt: Date;
-    updatedAt: Date;
-    name: string;
-    noteId: number | null;
     sortOrder: number;
+    noteId: number | null;
     path: string;
     size: string | number | Prisma.Decimal;
-    depth?: any;
     perfixPath?: any;
+    depth?: any;
 }>;
 export type attachments = z.infer<typeof attachmentsSchema>;
 export declare const configSchema: z.ZodObject<{
@@ -125,6 +125,8 @@ export declare const notesSchema: z.ZodObject<{
     updatedAt: z.ZodDate;
 }, "strip", z.ZodTypeAny, {
     id: number;
+    createdAt: Date;
+    updatedAt: Date;
     type: number;
     content: string;
     isArchived: boolean;
@@ -134,8 +136,6 @@ export declare const notesSchema: z.ZodObject<{
     isReviewed: boolean;
     sharePassword: string;
     accountId: number | null;
-    createdAt: Date;
-    updatedAt: Date;
     shareEncryptedUrl?: string | null | undefined;
     shareExpiryDate?: Date | null | undefined;
     shareMaxView?: number | null | undefined;
@@ -143,6 +143,8 @@ export declare const notesSchema: z.ZodObject<{
     metadata?: any;
 }, {
     id: number;
+    createdAt: Date;
+    updatedAt: Date;
     type: number;
     content: string;
     isArchived: boolean;
@@ -152,8 +154,6 @@ export declare const notesSchema: z.ZodObject<{
     isReviewed: boolean;
     sharePassword: string;
     accountId: number | null;
-    createdAt: Date;
-    updatedAt: Date;
     shareEncryptedUrl?: string | null | undefined;
     shareExpiryDate?: Date | null | undefined;
     shareMaxView?: number | null | undefined;
@@ -170,18 +170,18 @@ export declare const tagSchema: z.ZodObject<{
     createdAt: z.ZodDate;
     updatedAt: z.ZodDate;
 }, "strip", z.ZodTypeAny, {
+    name: string;
     id: number;
     createdAt: Date;
     updatedAt: Date;
-    name: string;
     icon: string;
     parent: number;
     sortOrder: number;
 }, {
+    name: string;
     id: number;
     createdAt: Date;
     updatedAt: Date;
-    name: string;
     icon: string;
     parent: number;
     sortOrder: number;
@@ -210,17 +210,17 @@ export declare const scheduledTaskSchema: z.ZodObject<{
     output: z.ZodAny;
 }, "strip", z.ZodTypeAny, {
     name: string;
-    isRunning: boolean;
     schedule: string;
     lastRun: Date;
     isSuccess: boolean;
+    isRunning: boolean;
     output?: any;
 }, {
     name: string;
-    isRunning: boolean;
     schedule: string;
     lastRun: Date;
     isSuccess: boolean;
+    isRunning: boolean;
     output?: any;
 }>;
 export type scheduledTask = z.infer<typeof scheduledTaskSchema>;
@@ -232,12 +232,12 @@ export declare const noteReferenceSchema: z.ZodObject<{
     toNoteId: z.ZodNumber;
 }, "strip", z.ZodTypeAny, {
     id: number;
-    toNoteId: number;
     fromNoteId: number;
+    toNoteId: number;
 }, {
     id: number;
-    toNoteId: number;
     fromNoteId: number;
+    toNoteId: number;
 }>;
 export declare const commentsSchema: z.ZodObject<{
     id: z.ZodNumber;
@@ -252,25 +252,25 @@ export declare const commentsSchema: z.ZodObject<{
     updatedAt: z.ZodDate;
 }, "strip", z.ZodTypeAny, {
     id: number;
-    content: string;
-    accountId: number | null;
     createdAt: Date;
     updatedAt: Date;
-    noteId: number;
+    content: string;
+    accountId: number | null;
     guestName: string | null;
     guestIP: string | null;
     guestUA: string | null;
+    noteId: number;
     parentId: number | null;
 }, {
     id: number;
-    content: string;
-    accountId: number | null;
     createdAt: Date;
     updatedAt: Date;
-    noteId: number;
+    content: string;
+    accountId: number | null;
     guestName: string | null;
     guestIP: string | null;
     guestUA: string | null;
+    noteId: number;
     parentId: number | null;
 }>;
 export type comments = z.infer<typeof commentsSchema>;
@@ -286,9 +286,9 @@ export declare const followsSchema: z.ZodObject<{
     accountId: z.ZodNumber;
 }, "strip", z.ZodTypeAny, {
     id: number;
-    accountId: number;
     createdAt: Date;
     updatedAt: Date;
+    accountId: number;
     siteUrl: string;
     followType: string;
     description?: string | undefined;
@@ -296,9 +296,9 @@ export declare const followsSchema: z.ZodObject<{
     siteAvatar?: string | undefined;
 }, {
     id: number;
-    accountId: number;
     createdAt: Date;
     updatedAt: Date;
+    accountId: number;
     siteUrl: string;
     followType: string;
     description?: string | undefined;
@@ -324,21 +324,21 @@ export declare const notificationsSchema: z.ZodObject<{
     updatedAt: z.ZodDate;
 }, "strip", z.ZodTypeAny, {
     id: number;
+    createdAt: Date;
+    updatedAt: Date;
     type: string;
     content: string;
     accountId: number;
-    createdAt: Date;
-    updatedAt: Date;
     title: string;
     isRead: boolean;
     metadata?: any;
 }, {
     id: number;
+    createdAt: Date;
+    updatedAt: Date;
     type: string;
     content: string;
     accountId: number;
-    createdAt: Date;
-    updatedAt: Date;
     title: string;
     isRead: boolean;
     metadata?: any;
@@ -370,17 +370,17 @@ export declare const pluginSchema: z.ZodObject<{
     id: number;
     createdAt: Date;
     updatedAt: Date;
-    isDev: boolean;
     path: string;
     isUse: boolean;
+    isDev: boolean;
     metadata?: any;
 }, {
     id: number;
     createdAt: Date;
     updatedAt: Date;
-    isDev: boolean;
     path: string;
     isUse: boolean;
+    isDev: boolean;
     metadata?: any;
 }>;
 export type plugin = z.infer<typeof pluginSchema>;
@@ -392,15 +392,15 @@ export declare const conversationSchema: z.ZodObject<{
     updatedAt: z.ZodDate;
 }, "strip", z.ZodTypeAny, {
     id: number;
-    accountId: number;
     createdAt: Date;
     updatedAt: Date;
+    accountId: number;
     title: string;
 }, {
     id: number;
-    accountId: number;
     createdAt: Date;
     updatedAt: Date;
+    accountId: number;
     title: string;
 }>;
 export type conversation = z.infer<typeof conversationSchema>;
@@ -414,18 +414,18 @@ export declare const messageSchema: z.ZodObject<{
     metadata: z.ZodAny;
 }, "strip", z.ZodTypeAny, {
     id: number;
-    content: string;
+    role: string;
     createdAt: Date;
     updatedAt: Date;
-    role: string;
+    content: string;
     conversationId: number;
     metadata?: any;
 }, {
     id: number;
-    content: string;
+    role: string;
     createdAt: Date;
     updatedAt: Date;
-    role: string;
+    content: string;
     conversationId: number;
     metadata?: any;
 }>;
@@ -439,16 +439,16 @@ export declare const historySchema: z.ZodObject<{
     accountId: z.ZodNullable<z.ZodNumber>;
 }, "strip", z.ZodTypeAny, {
     id: number;
+    createdAt: Date;
     content: string;
     accountId: number | null;
-    createdAt: Date;
     noteId: number;
     version?: number | undefined;
 }, {
     id: number;
+    createdAt: Date;
     content: string;
     accountId: number | null;
-    createdAt: Date;
     noteId: number;
     version?: number | undefined;
 }>;

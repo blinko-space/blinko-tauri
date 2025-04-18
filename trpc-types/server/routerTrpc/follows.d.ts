@@ -10,6 +10,8 @@ export declare const followsRouter: import("@trpc/server/unstable-core-do-not-im
         } | undefined;
         output: {
             id: number;
+            createdAt: Date;
+            updatedAt: Date;
             type: number;
             content: string;
             isArchived: boolean;
@@ -19,46 +21,44 @@ export declare const followsRouter: import("@trpc/server/unstable-core-do-not-im
             isReviewed: boolean;
             sharePassword: string;
             accountId: number | null;
-            createdAt: Date;
-            updatedAt: Date;
-            attachments?: {
-                id: number;
-                type: string;
-                isShare: boolean;
-                sharePassword: string;
-                accountId: number | null;
-                createdAt: Date;
-                updatedAt: Date;
-                name: string;
-                noteId: number | null;
-                sortOrder: number;
-                path: string;
-                size: string | number | import("@prisma/client/runtime/library").Decimal;
-                depth?: any;
-                perfixPath?: any;
-            }[] | undefined;
             shareEncryptedUrl?: string | null | undefined;
             shareExpiryDate?: Date | null | undefined;
             shareMaxView?: number | null | undefined;
             shareViewCount?: number | null | undefined;
             metadata?: any;
+            attachments?: {
+                name: string;
+                id: number;
+                createdAt: Date;
+                updatedAt: Date;
+                type: string;
+                isShare: boolean;
+                sharePassword: string;
+                accountId: number | null;
+                sortOrder: number;
+                noteId: number | null;
+                path: string;
+                size: string | number | import("@prisma/client/runtime/library").Decimal;
+                perfixPath?: any;
+                depth?: any;
+            }[] | undefined;
             tags?: ({
+                id: number;
                 tag: {
+                    name: string;
                     id: number;
                     createdAt: Date;
                     updatedAt: Date;
-                    name: string;
                     icon: string;
                     parent: number;
                     sortOrder: number;
                 };
-                id: number;
                 noteId: number;
                 tagId: number;
             } | undefined)[] | null | undefined;
             account?: {
-                id?: number | undefined;
                 name?: string | undefined;
+                id?: number | undefined;
                 nickname?: string | undefined;
                 image?: string | undefined;
             } | null | undefined;
@@ -80,10 +80,10 @@ export declare const followsRouter: import("@trpc/server/unstable-core-do-not-im
     }>;
     followFrom: import("@trpc/server").TRPCMutationProcedure<{
         input: {
-            siteUrl: string;
-            mySiteAccountId: number;
             siteName: string;
+            siteUrl: string;
             siteAvatar: string;
+            mySiteAccountId: number;
         };
         output: {
             success: boolean;
@@ -110,9 +110,9 @@ export declare const followsRouter: import("@trpc/server/unstable-core-do-not-im
         };
         output: {
             id: number;
-            accountId: number;
             createdAt: Date;
             updatedAt: Date;
+            accountId: number;
             siteUrl: string;
             followType: string;
             description?: string | undefined;
@@ -126,9 +126,9 @@ export declare const followsRouter: import("@trpc/server/unstable-core-do-not-im
         };
         output: {
             id: number;
-            accountId: number;
             createdAt: Date;
             updatedAt: Date;
+            accountId: number;
             siteUrl: string;
             followType: string;
             description?: string | undefined;

@@ -48,8 +48,8 @@ export declare class FileService {
             isCloseDailyReview?: boolean | undefined;
             maxHomePageWidth?: number | undefined;
             oauth2Providers?: {
-                id: string;
                 name: string;
+                id: string;
                 tokenUrl: string;
                 userinfoUrl: string;
                 clientId: string;

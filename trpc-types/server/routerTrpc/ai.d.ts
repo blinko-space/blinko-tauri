@@ -44,8 +44,8 @@ export declare const aiRouter: import("@trpc/server/unstable-core-do-not-import"
     completions: import("@trpc/server").TRPCMutationProcedure<{
         input: {
             conversations: {
-                content: string;
                 role: string;
+                content: string;
             }[];
             question: string;
             withTools?: boolean | undefined;
@@ -81,16 +81,16 @@ export declare const aiRouter: import("@trpc/server/unstable-core-do-not-import"
     summarizeConversationTitle: import("@trpc/server").TRPCMutationProcedure<{
         input: {
             conversations: {
-                content: string;
                 role: string;
+                content: string;
             }[];
             conversationId: number;
         };
         output: {
             id: number;
-            accountId: number;
             createdAt: Date;
             updatedAt: Date;
+            accountId: number;
             title: string;
         };
     }>;
@@ -121,21 +121,21 @@ export declare const aiRouter: import("@trpc/server/unstable-core-do-not-import"
         };
         output: {
             account: {
-                id: number;
                 name: string;
+                id: number;
                 nickname: string;
                 image: string;
             } | null;
         } & {
             id: number;
-            content: string;
-            accountId: number | null;
             createdAt: Date;
             updatedAt: Date;
-            noteId: number;
+            content: string;
+            accountId: number | null;
             guestName: string | null;
             guestIP: string | null;
             guestUA: string | null;
+            noteId: number;
             parentId: number | null;
         };
     }>;
