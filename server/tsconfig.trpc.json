@@ -1,0 +1,21 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+      "outDir": "../trpc-types",
+      "declaration": true,
+      "declarationMap": false,
+      "emitDeclarationOnly": true,
+      "noEmit": false,
+      "paths": {
+        "@server/*": ["./*"],
+        "@prisma/*": ["../prisma/*"],
+        "@shared/*": ["../shared/*"]
+      },
+    },
+    "include": [
+      "./types/trpc.d.ts"
+    ],
+    "exclude": [
+      "node_modules"
+    ]
+  }

@@ -8,12 +8,12 @@ import { NoteType } from '../../shared/lib/types';
 import { attachmentsSchema, historySchema, notesSchema, tagSchema, tagsToNoteSchema } from '@shared/lib/prismaZodType';
 import { getGlobalConfig } from './config';
 import { FileService } from '../lib/files';
-import { AiService } from '@/aiServer';
-import { SendWebhook } from '@/lib/helper';
+import { AiService } from '@server/aiServer';
+import { SendWebhook } from '@server/lib/helper';
 import { Context } from '../context';
 import { cache } from '@shared/lib/cache';
-import { AiModelFactory } from '@/aiServer/aiModelFactory';
-import { authProcedure, demoAuthMiddleware, publicProcedure, router } from '@/middleware';
+import { AiModelFactory } from '@server/aiServer/aiModelFactory';
+import { authProcedure, demoAuthMiddleware, publicProcedure, router } from '@server/middleware';
 
 const extractHashtags = (input: string): string[] => {
   const withoutCodeBlocks = input.replace(/```[\s\S]*?```/g, '');

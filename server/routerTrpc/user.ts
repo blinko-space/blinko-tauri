@@ -5,7 +5,7 @@ import { prisma } from '../prisma';
 import { Prisma } from '@prisma/client';
 import { accountsSchema } from '@shared/lib/prismaZodType';
 import { hashPassword, verifyPassword } from '@prisma/seed';
-import { generateTOTP, generateTOTPQRCode, getNextAuthSecret, verifyTOTP } from "@/lib/helper";
+import { generateTOTP, generateTOTPQRCode, getNextAuthSecret, verifyTOTP } from "@server/lib/helper";
 import { deleteNotes } from './note';
 import { createSeed } from '@prisma/seedData';
 import jwt from 'jsonwebtoken';

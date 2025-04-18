@@ -5,8 +5,8 @@ import * as https from 'https';
 import { URL } from 'url';
 import { ProxyAgent } from 'proxy-agent';
 import nodeFetch from 'node-fetch';
-import { getGlobalConfig } from '@/routerTrpc/config';
-import { Context } from '@/context';
+import { getGlobalConfig } from '@server/routerTrpc/config';
+import { Context } from '@server/context';
 
 // Extended interface for http.AgentOptions and https.AgentOptions to include auth property
 interface ExtendedAgentOptions extends http.AgentOptions, https.AgentOptions {

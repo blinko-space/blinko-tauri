@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "bun --watch index.ts",
     "build": "tsup index.ts --external=@node-rs/crc32 --external=lightningcss --external=zod-openapi --format=esm --target=node16 --clean --outDir=../dist",
-    "start": "bun dist/index.js",
-    "generate-types": "bun run scripts/generateClientTypes.ts"
+    "build:trpc:types": "tsc --p tsconfig.trpc.json",
+    "start": "bun dist/index.js"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^1.2.10",

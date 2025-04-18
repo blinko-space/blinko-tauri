@@ -3,8 +3,8 @@ import { authenticator } from 'otplib';
 import crypto from 'crypto';
 import { Feed } from "feed";
 import jwt from 'jsonwebtoken';
-import { prisma } from "@/prisma";
-import { User } from "@/context";
+import { prisma } from "@server/prisma";
+import { User } from "@server/context";
 import { Request as ExpressRequest } from 'express';
 
 export const SendWebhook = async (data: any, webhookType: string, ctx: { id: string }) => {

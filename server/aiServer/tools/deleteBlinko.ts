@@ -1,4 +1,4 @@
-import { userCaller } from '@/routerTrpc/_app';
+import { userCaller } from '@server/routerTrpc/_app';
 import { createTool } from '@mastra/core';
 import { z } from 'zod';
 

@@ -7,11 +7,11 @@ import { Metadata } from 'unfurl.js/dist/types';
 import pLimit from 'p-limit';
 import * as mm from 'music-metadata';
 import { UPLOAD_FILE_PATH } from '@shared/lib/constant';
-import { SpotifyClient } from '@/lib/spotify';
+import { SpotifyClient } from '@server/lib/spotify';
 import { getGlobalConfig } from './config';
 import { prisma } from '../prisma';
 import * as fs from 'fs';
-import { getWithProxy } from '@/lib/proxy';
+import { getWithProxy } from '@server/lib/proxy';
 
 const limit = pLimit(5);
 let refreshTicker = 0;

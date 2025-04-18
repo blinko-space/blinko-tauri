@@ -1,9 +1,9 @@
-import { router, authProcedure, demoAuthMiddleware, superAdminAuthMiddleware } from '@/middleware';
+import { router, authProcedure, demoAuthMiddleware, superAdminAuthMiddleware } from '@server/middleware';
 import { z } from 'zod';
-import { prisma } from '@/prisma';
-import { DBJob } from '@/jobs/dbjob';
-import '@/jobs/recommandJob';
-import { ArchiveJob } from '@/jobs/archivejob';
+import { prisma } from '@server/prisma';
+import { DBJob } from '@server/jobs/dbjob';
+import '@server/jobs/recommandJob';
+import { ArchiveJob } from '@server/jobs/archivejob';
 import { ARCHIVE_BLINKO_TASK_NAME, DBBAK_TASK_NAME, TEMP_PATH, UPLOAD_FILE_PATH } from '@shared/lib/constant';
 import { scheduledTaskSchema } from '@shared/lib/prismaZodType';
 import { Memos } from '../jobs/memosJob';

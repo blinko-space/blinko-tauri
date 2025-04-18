@@ -4,7 +4,7 @@ import { userCaller } from '../routerTrpc/_app';
 import { FileService } from '../lib/files';
 import { getGlobalConfig } from '../routerTrpc/config';
 import { Context } from '../context';
-import { resetSequences } from '@/lib/helper';
+import { resetSequences } from '@server/lib/helper';
 import { ProgressResult } from '@shared/lib/types';
 type Memo = {
   id: number;

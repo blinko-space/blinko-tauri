@@ -1,8 +1,8 @@
 import { createTRPCClient, httpBatchLink, httpLink, splitLink, httpBatchStreamLink } from '@trpc/client';
-// import type { AppRouter } from '../../../server/routerTrpc/_app'; 
+import type { AppRouter } from '../../../trpc-types/server/routerTrpc/_app'; 
 import superjson from 'superjson';
 //@ts-ignore
-export const api = createTRPCClient({
+export const api = createTRPCClient<AppRouter>({
   links: [
     splitLink({
       condition(op) {
@@ -20,9 +20,8 @@ export const api = createTRPCClient({
     })
   ],
 });
-
 //@ts-ignore
-export const streamApi = createTRPCClient({
+export const streamApi = createTRPCClient<AppRouter>({
   links: [
     httpBatchStreamLink({
       url: `/api/trpc`,

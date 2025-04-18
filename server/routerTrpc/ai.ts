@@ -1,12 +1,12 @@
 import { router, authProcedure } from '../middleware';
 import { z } from 'zod';
-import { AiService } from '@/aiServer';
+import { AiService } from '@server/aiServer';
 import { prisma } from '../prisma';
 import { TRPCError } from '@trpc/server';
 import { CoreMessage } from '@mastra/core';
-import { AiModelFactory } from '@/aiServer/aiModelFactory';
+import { AiModelFactory } from '@server/aiServer/aiModelFactory';
 import { RebuildEmbeddingJob } from '../jobs/rebuildEmbeddingJob';
-import { getAllPathTags } from '@/lib/helper';
+import { getAllPathTags } from '@server/lib/helper';
 
 export const aiRouter = router({
   embeddingUpsert: authProcedure

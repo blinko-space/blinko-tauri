@@ -1,6 +1,6 @@
-import { router, authProcedure, publicProcedure } from '@/middleware';
+import { router, authProcedure, publicProcedure } from '@server/middleware';
 import { z } from 'zod';
-import { prisma } from '@/prisma';
+import { prisma } from '@server/prisma';
 import { InputNotificationType, notificationsSchema, notificationType, NotificationType } from '@shared/lib/prismaZodType';
 
 export const CreateNotification = async (input: {

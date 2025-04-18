@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { prisma } from '../prisma';
 import { commentsSchema, accountsSchema, NotificationType } from '@shared/lib/prismaZodType';
 import * as crypto from 'crypto';
-import { AiService } from '@/aiServer';
+import { AiService } from '@server/aiServer';
 import { CreateNotification } from './notification';
 
 const accountSchema = accountsSchema.pick({

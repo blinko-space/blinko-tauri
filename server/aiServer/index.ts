@@ -19,7 +19,7 @@ import { embedMany } from 'ai';
 import { RebuildEmbeddingJob } from '../jobs/rebuildEmbeddingJob';
 import { userCaller } from '../routerTrpc/_app';
 import { LibSQLVector } from './vector';
-import { getAllPathTags } from '@/lib/helper';
+import { getAllPathTags } from '@server/lib/helper';
 
 
 export function isImage(filePath: string): boolean {

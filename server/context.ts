@@ -1,5 +1,5 @@
 import Bowser from 'bowser';
-import { getTokenFromRequest } from "@/lib/helper";
+import { getTokenFromRequest } from "@server/lib/helper";
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import session from 'express-session';

@@ -8,7 +8,7 @@ import { AiModelFactory } from '../aiModelFactory';
 import { createOpenAI } from '@ai-sdk/openai';
 import { createVoyage } from 'voyage-ai-provider';
 import { LibSQLVector } from '../vector';
-import { fetchWithProxy } from '@/lib/proxy';
+import { fetchWithProxy } from '@server/lib/proxy';
 let vectorStore: LibSQLVector;
 
 export abstract class AiBaseModelProvider {

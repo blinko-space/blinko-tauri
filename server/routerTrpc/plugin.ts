@@ -10,7 +10,7 @@ import { pluginInfoSchema, installPluginSchema } from '../../shared/lib/types';
 import { pluginSchema } from '@shared/lib/prismaZodType';
 import { cache } from '@shared/lib/cache';
 import { existsSync } from 'fs';
-import { getHttpCacheKey, getWithProxy } from '@/lib/proxy';
+import { getHttpCacheKey, getWithProxy } from '@server/lib/proxy';
 
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes cache duration
 const MAX_RETRIES = 3;

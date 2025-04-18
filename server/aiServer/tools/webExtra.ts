@@ -1,4 +1,4 @@
-import { getGlobalConfig } from '@/routerTrpc/config';
+import { getGlobalConfig } from '@server/routerTrpc/config';
 import { createTool } from '@mastra/core';
 import { tavily } from '@tavily/core';
 import { z } from 'zod';

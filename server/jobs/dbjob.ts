@@ -17,7 +17,7 @@ import yauzl from 'yauzl-promise';
 import { FileService } from "../lib/files";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getGlobalConfig } from "../routerTrpc/config";
-import { resetSequences } from '@/lib/helper';
+import { resetSequences } from '@server/lib/helper';
 import { RestoreResult } from '@shared/lib/types';
 
 

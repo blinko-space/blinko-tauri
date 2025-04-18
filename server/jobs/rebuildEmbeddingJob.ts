@@ -2,8 +2,8 @@ import { BaseScheduleJob } from "./baseScheduleJob";
 import { prisma } from "../prisma";
 import { NotificationType } from "@shared/lib/prismaZodType";
 import { CreateNotification } from "../routerTrpc/notification";
-import { AiModelFactory } from "@/aiServer/aiModelFactory";
-import { AiService } from "@/aiServer";
+import { AiModelFactory } from "@server/aiServer/aiModelFactory";
+import { AiService } from "@server/aiServer";
 
 export const REBUILD_EMBEDDING_TASK_NAME = "rebuildEmbedding";
 
