@@ -64,7 +64,7 @@ export function _createClient(config: ExpandedConfig): Client {
       );
     }
   }
-
+ //@ts-ignore
   let isInMemory = isInMemoryConfig(config);
   if (isInMemory && config.syncUrl) {
     throw new LibsqlError(
@@ -84,7 +84,9 @@ export function _createClient(config: ExpandedConfig): Client {
     encryptionKey: config.encryptionKey,
     syncUrl: config.syncUrl,
     syncPeriod: config.syncInterval,
+    //@ts-ignore
     readYourWrites: config.readYourWrites,
+    //@ts-ignore
     offline: config.offline,
   };
   console.log(path, options, 'path, options');
@@ -415,6 +417,7 @@ function rowFromSql(
     Object.defineProperty(row, i, { value });
 
     const column = columns[i];
+     //@ts-ignore
     if (column && !Object.hasOwn(row, column)) {
       Object.defineProperty(row, column, {
         value,

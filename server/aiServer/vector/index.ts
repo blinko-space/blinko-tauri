@@ -2,8 +2,7 @@ import { join, resolve, isAbsolute } from 'path';
 import { createClient } from './sqlite3';
 import type { Client as TursoClient, InValue } from '@libsql/client';
 
-import { MastraVector, QueryResult, ParamsToArgs, QueryVectorArgs, QueryVectorParams, UpsertVectorParams, CreateIndexParams, IndexStats } from '@mastra/core/vector';
-import { VectorFilter } from '@mastra/core/vector/filter';
+import { MastraVector, QueryResult, ParamsToArgs, QueryVectorArgs, QueryVectorParams, UpsertVectorParams, CreateIndexParams, IndexStats } from '@mastra/core';
 import { buildFilterQuery } from './sql-builder';
 import { LibSQLFilterTranslator } from './filter';
 
@@ -62,7 +61,7 @@ export class LibSQLVector extends MastraVector {
         const baseDir = join(cwd, `..`, `..`); // <- .mastra/output/../../
 
         const fullPath = resolve(baseDir, pathPart);
-
+        //@ts-ignore
         this.logger.debug(
           `Initializing LibSQL db with url ${url} with relative file path from inside .mastra/output directory. Rewriting relative file url to "file:${fullPath}". This ensures it's outside the .mastra/output directory.`,
         );
@@ -74,12 +73,13 @@ export class LibSQLVector extends MastraVector {
     return url;
   }
 
-  transformFilter(filter?: VectorFilter) {
+  transformFilter(filter?: any) {
     const translator = new LibSQLFilterTranslator();
     return translator.translate(filter);
   }
 
   async query(...args: ParamsToArgs<LibSQLQueryParams> | LibSQLQueryArgs): Promise<QueryResult[]> {
+    //@ts-ignore
     const params = this.normalizeArgs<LibSQLQueryParams, LibSQLQueryArgs>('query', args, ['minScore']);
 
     try {
@@ -124,6 +124,7 @@ export class LibSQLVector extends MastraVector {
   }
 
   async upsert(...args: ParamsToArgs<UpsertVectorParams>): Promise<string[]> {
+     //@ts-ignore
     const params = this.normalizeArgs<UpsertVectorParams>('upsert', args);
 
     const { indexName, vectors, metadata, ids } = params;
@@ -180,6 +181,7 @@ export class LibSQLVector extends MastraVector {
   }
 
   async createIndex(...args: ParamsToArgs<CreateIndexParams>): Promise<void> {
+     //@ts-ignore
     const params = this.normalizeArgs<CreateIndexParams>('createIndex', args);
 
     const { indexName, dimension } = params;

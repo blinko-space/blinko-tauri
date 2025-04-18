@@ -11,8 +11,8 @@ interface TagSelectorProps {
   className?: string;
 }
 
-export default function TagSelector({ 
-  selectedTag, 
+export default function TagSelector({
+  selectedTag,
   onSelectionChange,
   variant = "bordered",
   className = "max-w-full"
@@ -44,7 +44,7 @@ export default function TagSelector({
       }
       onSelectionChange={(key) => onSelectionChange(key as string)}
     >
-      {(tag) => (
+      {(tag: any) => (
         <AutocompleteItem key={tag.id} textValue={tag.name}>
           <div className="flex gap-2 items-center">
             {tag.icon ? (

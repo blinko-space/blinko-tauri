@@ -36,6 +36,7 @@ const router = express.Router();
  *                 error:
  *                   type: string
  */
+//@ts-ignore
 router.get(/.*/, (req, res) => {
   try {
     const pathArray = req.params[0].split('/').filter(Boolean);

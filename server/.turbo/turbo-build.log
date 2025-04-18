@@ -1,0 +1,21 @@
+$ tsc -p tsconfig.json
+aiServer/index.ts(5,10): error TS2459: Module '"../jobs/memosJob"' declares 'ProgressResult' locally, but it is not exported.
+aiServer/providers/index.ts(16,3): error TS2564: Property 'provider' has no initializer and is not definitely assigned in the constructor.
+aiServer/vector/index.ts(5,144): error TS2307: Cannot find module '@mastra/core/vector' or its corresponding type declarations.
+  There are types at 'E:/code/blinko-tauri/node_modules/@mastra/core/dist/vector/index.d.ts', but this result could not be resolved under your current 'moduleResolution' setting. Consider updating to 'node16', 'nodenext', or 'bundler'.
+aiServer/vector/index.ts(6,30): error TS2307: Cannot find module '@mastra/core/vector/filter' or its corresponding type declarations.
+  There are types at 'E:/code/blinko-tauri/node_modules/@mastra/core/dist/vector/filter/index.d.ts', but this result could not be resolved under your current 'moduleResolution' setting. Consider updating to 'node16', 'nodenext', or 'bundler'.
+aiServer/vector/index.ts(66,14): error TS2339: Property 'logger' does not exist on type 'LibSQLVector'.
+aiServer/vector/index.ts(83,25): error TS2339: Property 'normalizeArgs' does not exist on type 'LibSQLVector'.
+aiServer/vector/index.ts(127,25): error TS2339: Property 'normalizeArgs' does not exist on type 'LibSQLVector'.
+aiServer/vector/index.ts(183,25): error TS2339: Property 'normalizeArgs' does not exist on type 'LibSQLVector'.
+aiServer/vector/libsql-config/config.ts(94,17): error TS2550: Property 'hasOwn' does not exist on type 'ObjectConstructor'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2022' or later.
+aiServer/vector/libsql-config/uri.ts(133,30): error TS2550: Property 'replaceAll' does not exist on type 'string'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2021' or later.
+aiServer/vector/libsql-config/uri.ts(134,34): error TS2550: Property 'replaceAll' does not exist on type 'string'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2021' or later.
+aiServer/vector/sqlite3.ts(68,37): error TS2345: Argument of type 'import("E:/code/blinko-tauri/node_modules/@libsql/core/lib-esm/config").ExpandedConfig' is not assignable to parameter of type 'import("E:/code/blinko-tauri/server/aiServer/vector/libsql-config/config").ExpandedConfig'.
+  Type 'ExpandedConfig' is missing the following properties from type 'ExpandedConfig': readYourWrites, offline
+aiServer/vector/sqlite3.ts(87,28): error TS2339: Property 'readYourWrites' does not exist on type 'ExpandedConfig'.
+aiServer/vector/sqlite3.ts(88,21): error TS2339: Property 'offline' does not exist on type 'ExpandedConfig'.
+aiServer/vector/sqlite3.ts(418,27): error TS2550: Property 'hasOwn' does not exist on type 'ObjectConstructor'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2022' or later.
+routerExpress/file/plugin.ts(39,12): error TS2345: Argument of type 'RegExp' is not assignable to parameter of type 'string'.
+routerExpress/file/s3file.ts(113,12): error TS2345: Argument of type 'RegExp' is not assignable to parameter of type 'string'.

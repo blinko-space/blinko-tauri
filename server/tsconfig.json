@@ -9,7 +9,7 @@
     "noImplicitAny": false,
     "skipLibCheck": true,
     "sourceMap": true,
-    "outDir": "dist",
+    "outDir": "../dist",
     "rootDir": "..",
     "baseUrl": ".",
     "resolveJsonModule": true,
@@ -21,6 +21,6 @@
     },
     "types": ["bun-types"]
   },
-  "include": ["./**/*", "../shared/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["./**/*", "../shared/**/*", "../dist"],
+  "exclude": ["node_modules", "../dist"]
 } 

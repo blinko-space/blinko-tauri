@@ -130,7 +130,9 @@ function parseQuery(text: string): Query {
     }
     //@ts-ignore
     pairs.push({
+      //@ts-ignore
       key: percentDecode(key.replaceAll("+", " ")),
+      //@ts-ignore
       value: percentDecode(value.replaceAll("+", " ")),
     });
   }

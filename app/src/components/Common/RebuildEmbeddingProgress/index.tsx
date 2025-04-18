@@ -1,6 +1,6 @@
 import i18n from '@/lib/i18n'
 import { api } from '@/lib/trpc'
-import { type ProgressResult } from '@/server/plugins/memos'
+import { type ProgressResult } from '@shared/lib/types'
 import { RootStore } from '@/store'
 import { BlinkoStore } from '@/store/blinkoStore'
 import { ToastPlugin } from '@/store/module/Toast/Toast'

@@ -13,7 +13,7 @@ let vectorStore: LibSQLVector;
 
 export abstract class AiBaseModelProvider {
   globalConfig: GlobalConfig;
-  provider: ProviderV1;
+  provider!: ProviderV1;
   protected proxiedFetch: typeof fetch | undefined = undefined;
   protected ready: Promise<void>;
 

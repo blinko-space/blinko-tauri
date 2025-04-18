@@ -2,7 +2,7 @@ import '../lib/pdf-parse-wrapper';
 import { AIMessage, HumanMessage } from '@langchain/core/messages';
 import { prisma } from '../prisma';
 import { AiModelFactory } from './aiModelFactory';
-import { ProgressResult } from '../jobs/memosJob';
+import { ProgressResult } from '@shared/lib/types';
 import { PDFLoader } from '@langchain/community/document_loaders/fs/pdf';
 import { DocxLoader } from '@langchain/community/document_loaders/fs/docx';
 import { CSVLoader } from '@langchain/community/document_loaders/fs/csv';

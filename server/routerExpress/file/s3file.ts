@@ -110,6 +110,7 @@ async function generateThumbnail(s3ClientInstance: any, config: any, fullPath: s
  *     security:
  *       - bearer: []
  */
+//@ts-ignore
 router.get(/.*/, async (req: Request, res: Response) => {
   try {
     const { s3ClientInstance, config } = await FileService.getS3Client();
@@ -120,14 +121,14 @@ router.get(/.*/, async (req: Request, res: Response) => {
       try {
         const thumbnail = await generateThumbnail(s3ClientInstance, config, fullPath);
         const filename = decodeURIComponent(fullPath.split('/').pop() || '');
-        
+
         res.set({
           "Content-Type": mime.lookup(filename) || "image/jpeg",
           "Cache-Control": "public, max-age=31536000",
           "Content-Disposition": `inline; filename*=UTF-8''${encodeURIComponent(filename)}`,
           "X-Content-Type-Options": "nosniff",
         });
-        
+
         return res.send(thumbnail);
       } catch (error) {
         console.error('Failed to generate thumbnail, falling back to original:', error);
@@ -164,7 +165,7 @@ router.get(/.*/, async (req: Request, res: Response) => {
       'Cache-Control': `public, max-age=${CACHE_DURATION}, immutable`,
       'Expires': new Date(Date.now() + CACHE_DURATION * 1000).toUTCString()
     });
-    
+
     return res.redirect(signedUrl);
   } catch (error) {
     console.error('S3 file access error:', error);

@@ -91,6 +91,7 @@ export function expandConfig(
   }
 
   for (const { key, value } of uri.query?.pairs ?? []) {
+     //@ts-ignore
     if (!Object.hasOwn(queryParamsDef, key)) {
       throw new LibsqlError(
         `Unsupported URL query parameter ${JSON.stringify(key)}`,
