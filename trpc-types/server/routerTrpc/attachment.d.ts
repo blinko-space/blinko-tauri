@@ -22,8 +22,8 @@ export declare const attachmentsRouter: import("@trpc/server/unstable-core-do-no
 }, import("@trpc/server/unstable-core-do-not-import").DecorateCreateRouterOptions<{
     list: import("@trpc/server").TRPCQueryProcedure<{
         input: {
-            size?: number | undefined;
             page?: number | undefined;
+            size?: number | undefined;
             searchText?: string | undefined;
             folder?: string | undefined;
         };
@@ -37,20 +37,20 @@ export declare const attachmentsRouter: import("@trpc/server/unstable-core-do-no
             oldFolderPath?: string | undefined;
         };
         output: {
-            name: string;
             id: number;
-            createdAt: Date;
-            updatedAt: Date;
             type: string;
             isShare: boolean;
             sharePassword: string;
             accountId: number | null;
-            sortOrder: number;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
             noteId: number | null;
+            sortOrder: number;
             path: string;
             size: Prisma.Decimal;
-            perfixPath: string | null;
             depth: number | null;
+            perfixPath: string | null;
         } | {
             success: boolean;
         };

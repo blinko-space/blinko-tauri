@@ -4,10 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "bun --watch index.ts",
+    "dev": "dotenv -e ../.env -- bun --watch index.ts",
     "build:web": "tsup index.ts --external=@node-rs/crc32 --external=lightningcss --external=zod-openapi --format=esm --target=node16 --clean --outDir=../dist",
     "build:trpc:types": "tsc --p tsconfig.trpc.json",
-    "start": "NODE_ENV=production bun ../dist/index.js"
+    "start": "NODE_ENV=production dotenv -e ../.env -- bun ../dist/index.js"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^1.2.10",
@@ -25,6 +25,7 @@
     "@mastra/rag": "^0.1.17",
     "@openrouter/ai-sdk-provider": "^0.4.5",
     "@prisma/client": "^5.22.0",
+    "@prisma/engines": "^6.5.0",
     "@tavily/core": "^0.3.7",
     "@trpc/server": "11.1.0",
     "@types/express": "^5.0.1",

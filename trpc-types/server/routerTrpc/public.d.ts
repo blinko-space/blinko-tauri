@@ -11,8 +11,8 @@ export declare const publicRouter: import("@trpc/server/unstable-core-do-not-imp
     oauthProviders: import("@trpc/server").TRPCQueryProcedure<{
         input: void;
         output: {
-            name: string;
             id: string;
+            name: string;
             icon?: string | undefined;
         }[];
     }>;
@@ -66,8 +66,8 @@ export declare const publicRouter: import("@trpc/server/unstable-core-do-not-imp
     hubList: import("@trpc/server").TRPCQueryProcedure<{
         input: void;
         output: {
-            name: string;
             id: string;
+            name: string;
             image: string;
             description: string;
         }[];
@@ -78,10 +78,10 @@ export declare const publicRouter: import("@trpc/server/unstable-core-do-not-imp
             refresh?: boolean | undefined;
         };
         output: {
-            title: string;
             url: string;
-            image?: string | null | undefined;
+            title: string;
             tags?: string[] | undefined;
+            image?: string | null | undefined;
             version?: string | undefined;
             site_description?: string | null | undefined;
         }[];

@@ -4,8 +4,8 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "cd ../server && bun run build:trpc:types && bun --watch index.ts",
-    "build:web": "tsc && cd ../server && bun run build:trpc:types && cd ../app && vite build",
+    "dev": "cd ../server && bun run build:trpc:types && bun run dev",
+    "build:web": "tsc && cd ../server && cd ../app && vite build",
     "tauri:dev": "tauri dev",
     "tauri:android:dev": "tauri android dev" 
   },

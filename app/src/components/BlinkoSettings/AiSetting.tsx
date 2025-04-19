@@ -103,9 +103,10 @@ export const AiSetting = observer(() => {
       try {
         const provider = blinko.config.value?.aiModelProvider!;
         let modelList: any = [];
+        const endpoint = new URL(blinko.config.value?.aiApiEndpoint!) ;
         if (provider === 'Ollama') {
           console.log(blinko.config.value?.aiApiEndpoint);
-          let { data } = await axios.get(`${!!blinko.config.value?.aiApiEndpoint ? blinko.config.value?.aiApiEndpoint : 'http://127.0.0.1:11434/api'}/tags`);
+          let { data } = await axios.get(`${!!endpoint ? endpoint.origin : 'http://127.0.0.1:11434/api'}/tags`);
           modelList = data.models.map(model => ({
             label: model.name,
             value: model.name
@@ -114,7 +115,7 @@ export const AiSetting = observer(() => {
           this.embeddingModelSelect.save(modelList);
           this.rerankModelSelect.save(modelList);
         } else {
-          let { data } = await axios.get(`${!!blinko.config.value?.aiApiEndpoint ? blinko.config.value?.aiApiEndpoint : 'https://api.openai.com'}/models`, {
+          let { data } = await axios.get(`${!!endpoint ? endpoint.origin : 'https://api.openai.com'}/models`, {
             headers: {
               'Authorization': `Bearer ${blinko.config.value?.aiApiKey}`
             }
@@ -129,7 +130,7 @@ export const AiSetting = observer(() => {
         }
 
         if (blinko.config.value?.embeddingApiEndpoint) {
-          let { data } = await axios.get(`${!!blinko.config.value?.embeddingApiEndpoint ? blinko.config.value?.embeddingApiEndpoint : 'https://api.openai.com'}/models`, {
+          let { data } = await axios.get(`${!!endpoint ? endpoint.origin : 'https://api.openai.com'}/models`, {
             headers: {
               'Authorization': `Bearer ${blinko.config.value?.embeddingApiKey}`
             }
@@ -320,7 +321,7 @@ export const AiSetting = observer(() => {
                     PromiseCall(
                       api.config.update.mutate({
                         key: 'aiApiEndpoint',
-                        value: store.apiEndPoint.trim(),
+                        value: new URL(store.apiEndPoint).href,
                       }),
                       { autoAlert: false },
                     );
@@ -331,6 +332,10 @@ export const AiSetting = observer(() => {
                   containerSize={40}
                   tooltip={<div>{t('check-connect')}</div>}
                   onClick={async (e) => {
+                    if (!blinko.config.value?.embeddingModel) {
+                      RootStore.Get(ToastPlugin).error(t('please-select-the-embedding-model'));
+                      return;
+                    }
                     RootStore.Get(ToastPlugin).promise(api.ai.testConnect.mutate(), {
                       loading: t('loading'),
                       success: t('check-connect-success'),

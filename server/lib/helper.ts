@@ -147,7 +147,7 @@ export const generateToken = async (user: any, twoFactorVerified = false) => {
       name: user.name,
       role: user.role || 'user',
       twoFactorVerified,
-      exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 30), 
+      exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 30),
       iat: Math.floor(Date.now() / 1000)
     },
     secret,
@@ -168,6 +168,7 @@ export const verifyToken = async (token: string) => {
 
 export const getTokenFromRequest = async (req: ExpressRequest) => {
   try {
+    console.log( req.user, 'getTokenFromRequest');
     if (req.session && req.isAuthenticated && req.isAuthenticated() && req.user) {
       const user = req.user;
       return {
@@ -179,7 +180,7 @@ export const getTokenFromRequest = async (req: ExpressRequest) => {
         iat: Math.floor(Date.now() / 1000),
       } as User;
     }
-    
+
     if (req.headers && typeof req.headers === 'object') {
       const authHeader = req.headers.authorization;
       if (authHeader && authHeader.startsWith('Bearer ')) {
@@ -188,7 +189,7 @@ export const getTokenFromRequest = async (req: ExpressRequest) => {
         if (tokenData) return tokenData;
       }
     }
-    
+
     return null;
   } catch (error) {
     console.error('Token retrieval error:', error);
@@ -238,7 +239,7 @@ export const getAllPathTags = async () => {
 
     const listTags = buildHashTagTreeFromDb(flattenTags);
     let pathTags: string[] = [];
-    
+
     listTags.forEach(node => {
       pathTags = pathTags.concat(generateTagPaths(node));
     });
@@ -259,7 +260,7 @@ export const getAllPathTags = async () => {
         const parts = tag.split('/');
         let currentPath = '#' + parts[0];
         pathTags.push(currentPath);
-        
+
         for (let i = 1; i < parts.length; i++) {
           currentPath += '/' + parts[i];
           pathTags.push(currentPath);
@@ -298,7 +299,7 @@ export const getUserFromRequest = async (req: any) => {
   if (sessionUser) {
     return sessionUser;
   }
-  
+
   return await getTokenFromRequest(req);
 };
 

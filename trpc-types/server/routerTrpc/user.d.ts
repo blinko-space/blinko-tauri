@@ -7,16 +7,16 @@ export declare const userRouter: import("@trpc/server/unstable-core-do-not-impor
     list: import("@trpc/server").TRPCQueryProcedure<{
         input: void;
         output: {
-            name: string;
             id: number;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
             nickname: string;
             password: string;
             image: string;
             apiToken: string;
             note: number;
             role: string;
-            createdAt: Date;
-            updatedAt: Date;
             description?: string | undefined;
             loginType?: string | undefined;
             linkAccountId?: number | null | undefined;
@@ -25,23 +25,23 @@ export declare const userRouter: import("@trpc/server/unstable-core-do-not-impor
     publicUserList: import("@trpc/server").TRPCQueryProcedure<{
         input: void;
         output: {
-            name: string;
             id: number;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
             nickname: string;
             image: string | null;
             description: string | null;
             role: string;
             loginType: string;
             linkAccountId: number | null;
-            createdAt: Date;
-            updatedAt: Date;
         }[];
     }>;
     nativeAccountList: import("@trpc/server").TRPCQueryProcedure<{
         input: void;
         output: {
-            name: string;
             id: number;
+            name: string;
             nickname: string;
         }[];
     }>;
@@ -63,8 +63,8 @@ export declare const userRouter: import("@trpc/server/unstable-core-do-not-impor
             id?: number | undefined;
         };
         output: {
-            name: string;
             id: number;
+            name: string;
             image: string | null;
             role: string;
             loginType: string;
@@ -96,8 +96,8 @@ export declare const userRouter: import("@trpc/server/unstable-core-do-not-impor
     }>;
     upsertUser: import("@trpc/server").TRPCMutationProcedure<{
         input: {
-            name?: string | undefined;
             id?: number | undefined;
+            name?: string | undefined;
             nickname?: string | undefined;
             password?: string | undefined;
             image?: string | undefined;
@@ -107,8 +107,8 @@ export declare const userRouter: import("@trpc/server/unstable-core-do-not-impor
     }>;
     upsertUserByAdmin: import("@trpc/server").TRPCMutationProcedure<{
         input: {
-            name?: string | undefined;
             id?: number | undefined;
+            name?: string | undefined;
             nickname?: string | undefined;
             password?: string | undefined;
         };
@@ -142,8 +142,8 @@ export declare const userRouter: import("@trpc/server/unstable-core-do-not-impor
             password: string;
         };
         output: {
-            name: string;
             id: number;
+            name: string;
             nickname: string;
             image: string | null;
             role: string;

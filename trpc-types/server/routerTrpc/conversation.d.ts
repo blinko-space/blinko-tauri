@@ -10,9 +10,9 @@ export declare const conversationRouter: import("@trpc/server/unstable-core-do-n
         };
         output: {
             id: number;
+            accountId: number;
             createdAt: Date;
             updatedAt: Date;
-            accountId: number;
             title: string;
         };
     }>;
@@ -26,14 +26,14 @@ export declare const conversationRouter: import("@trpc/server/unstable-core-do-n
     }>;
     list: import("@trpc/server").TRPCQueryProcedure<{
         input: {
-            size?: number | undefined;
             page?: number | undefined;
+            size?: number | undefined;
         };
         output: {
             id: number;
+            accountId: number;
             createdAt: Date;
             updatedAt: Date;
-            accountId: number;
             title: string;
         }[];
     }>;
@@ -44,18 +44,18 @@ export declare const conversationRouter: import("@trpc/server/unstable-core-do-n
         output: ({
             messages: {
                 id: number;
-                role: string;
-                createdAt: Date;
-                updatedAt: Date;
                 content: string;
                 metadata: import("@prisma/client/runtime/library").JsonValue | null;
+                createdAt: Date;
+                updatedAt: Date;
+                role: string;
                 conversationId: number;
             }[];
         } & {
             id: number;
+            accountId: number;
             createdAt: Date;
             updatedAt: Date;
-            accountId: number;
             title: string;
         }) | null;
     }>;
@@ -66,9 +66,9 @@ export declare const conversationRouter: import("@trpc/server/unstable-core-do-n
         };
         output: {
             id: number;
+            accountId: number;
             createdAt: Date;
             updatedAt: Date;
-            accountId: number;
             title: string;
         };
     }>;
@@ -78,9 +78,9 @@ export declare const conversationRouter: import("@trpc/server/unstable-core-do-n
         };
         output: {
             id: number;
+            accountId: number;
             createdAt: Date;
             updatedAt: Date;
-            accountId: number;
             title: string;
         };
     }>;

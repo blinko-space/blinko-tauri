@@ -14,9 +14,9 @@ export declare const noteRouter: import("@trpc/server/unstable-core-do-not-impor
             isArchived?: boolean | null | undefined;
             isRecycle?: boolean | undefined;
             isShare?: boolean | null | undefined;
-            size?: number | undefined;
             tagId?: number | null | undefined;
             page?: number | undefined;
+            size?: number | undefined;
             searchText?: string | undefined;
             withoutTag?: boolean | undefined;
             withFile?: boolean | undefined;
@@ -27,9 +27,23 @@ export declare const noteRouter: import("@trpc/server/unstable-core-do-not-impor
             hasTodo?: boolean | undefined;
         };
         output: {
+            attachments: {
+                id: number;
+                type: string;
+                isShare: boolean;
+                sharePassword: string;
+                accountId: number | null;
+                createdAt: Date;
+                updatedAt: Date;
+                name: string;
+                noteId: number | null;
+                sortOrder: number;
+                path: string;
+                size: string | number | Prisma.Decimal;
+                depth?: any;
+                perfixPath?: any;
+            }[];
             id: number;
-            createdAt: Date;
-            updatedAt: Date;
             type: number;
             content: string;
             isArchived: boolean;
@@ -39,33 +53,19 @@ export declare const noteRouter: import("@trpc/server/unstable-core-do-not-impor
             isReviewed: boolean;
             sharePassword: string;
             accountId: number | null;
-            attachments: {
-                name: string;
-                id: number;
-                createdAt: Date;
-                updatedAt: Date;
-                type: string;
-                isShare: boolean;
-                sharePassword: string;
-                accountId: number | null;
-                sortOrder: number;
-                noteId: number | null;
-                path: string;
-                size: string | number | Prisma.Decimal;
-                perfixPath?: any;
-                depth?: any;
-            }[];
+            createdAt: Date;
+            updatedAt: Date;
             tags: {
-                id: number;
                 tag: {
-                    name: string;
                     id: number;
                     createdAt: Date;
                     updatedAt: Date;
+                    name: string;
                     icon: string;
                     parent: number;
                     sortOrder: number;
                 };
+                id: number;
                 noteId: number;
                 tagId: number;
             }[];
@@ -78,43 +78,57 @@ export declare const noteRouter: import("@trpc/server/unstable-core-do-not-impor
             shareMaxView?: number | null | undefined;
             shareViewCount?: number | null | undefined;
             metadata?: any;
-            canEdit?: boolean | undefined;
             referencedBy?: {
                 fromNoteId: number;
                 fromNote?: {
+                    content?: string | undefined;
                     createdAt?: Date | undefined;
                     updatedAt?: Date | undefined;
-                    content?: string | undefined;
                 } | undefined;
             }[] | undefined;
             references?: {
                 toNoteId: number;
                 toNote?: {
+                    content?: string | undefined;
                     createdAt?: Date | undefined;
                     updatedAt?: Date | undefined;
-                    content?: string | undefined;
                 } | undefined;
             }[] | undefined;
             owner?: {
-                name: string;
                 id: number;
+                name: string;
                 nickname: string;
                 image: string;
             } | null | undefined;
             isSharedNote?: boolean | undefined;
+            canEdit?: boolean | undefined;
             isInternalShared?: boolean | undefined;
         }[];
     }>;
     publicList: import("@trpc/server").TRPCMutationProcedure<{
         input: {
-            size?: number | undefined;
             page?: number | undefined;
+            size?: number | undefined;
             searchText?: string | undefined;
         };
         output: {
+            attachments: {
+                id: number;
+                type: string;
+                isShare: boolean;
+                sharePassword: string;
+                accountId: number | null;
+                createdAt: Date;
+                updatedAt: Date;
+                name: string;
+                noteId: number | null;
+                sortOrder: number;
+                path: string;
+                size: string | number | Prisma.Decimal;
+                depth?: any;
+                perfixPath?: any;
+            }[];
             id: number;
-            createdAt: Date;
-            updatedAt: Date;
             type: number;
             content: string;
             isArchived: boolean;
@@ -124,33 +138,19 @@ export declare const noteRouter: import("@trpc/server/unstable-core-do-not-impor
             isReviewed: boolean;
             sharePassword: string;
             accountId: number | null;
-            attachments: {
-                name: string;
-                id: number;
-                createdAt: Date;
-                updatedAt: Date;
-                type: string;
-                isShare: boolean;
-                sharePassword: string;
-                accountId: number | null;
-                sortOrder: number;
-                noteId: number | null;
-                path: string;
-                size: string | number | Prisma.Decimal;
-                perfixPath?: any;
-                depth?: any;
-            }[];
+            createdAt: Date;
+            updatedAt: Date;
             tags: {
-                id: number;
                 tag: {
-                    name: string;
                     id: number;
                     createdAt: Date;
                     updatedAt: Date;
+                    name: string;
                     icon: string;
                     parent: number;
                     sortOrder: number;
                 };
+                id: number;
                 noteId: number;
                 tagId: number;
             }[];
@@ -163,8 +163,8 @@ export declare const noteRouter: import("@trpc/server/unstable-core-do-not-impor
             shareViewCount?: number | null | undefined;
             metadata?: any;
             account?: {
-                name?: string | undefined;
                 id?: number | undefined;
+                name?: string | undefined;
                 nickname?: string | undefined;
                 image?: string | undefined;
             } | null | undefined;
@@ -175,9 +175,23 @@ export declare const noteRouter: import("@trpc/server/unstable-core-do-not-impor
             ids: number[];
         };
         output: {
+            attachments: {
+                id: number;
+                type: string;
+                isShare: boolean;
+                sharePassword: string;
+                accountId: number | null;
+                createdAt: Date;
+                updatedAt: Date;
+                name: string;
+                noteId: number | null;
+                sortOrder: number;
+                path: string;
+                size: string | number | Prisma.Decimal;
+                depth?: any;
+                perfixPath?: any;
+            }[];
             id: number;
-            createdAt: Date;
-            updatedAt: Date;
             type: number;
             content: string;
             isArchived: boolean;
@@ -187,33 +201,19 @@ export declare const noteRouter: import("@trpc/server/unstable-core-do-not-impor
             isReviewed: boolean;
             sharePassword: string;
             accountId: number | null;
-            attachments: {
-                name: string;
-                id: number;
-                createdAt: Date;
-                updatedAt: Date;
-                type: string;
-                isShare: boolean;
-                sharePassword: string;
-                accountId: number | null;
-                sortOrder: number;
-                noteId: number | null;
-                path: string;
-                size: string | number | Prisma.Decimal;
-                perfixPath?: any;
-                depth?: any;
-            }[];
+            createdAt: Date;
+            updatedAt: Date;
             tags: {
-                id: number;
                 tag: {
-                    name: string;
                     id: number;
                     createdAt: Date;
                     updatedAt: Date;
+                    name: string;
                     icon: string;
                     parent: number;
                     sortOrder: number;
                 };
+                id: number;
                 noteId: number;
                 tagId: number;
             }[];
@@ -229,17 +229,17 @@ export declare const noteRouter: import("@trpc/server/unstable-core-do-not-impor
             referencedBy?: {
                 fromNoteId: number;
                 fromNote?: {
+                    content?: string | undefined;
                     createdAt?: Date | undefined;
                     updatedAt?: Date | undefined;
-                    content?: string | undefined;
                 } | undefined;
             }[] | undefined;
             references?: {
                 toNoteId: number;
                 toNote?: {
+                    content?: string | undefined;
                     createdAt?: Date | undefined;
                     updatedAt?: Date | undefined;
-                    content?: string | undefined;
                 } | undefined;
             }[] | undefined;
         }[];
@@ -252,9 +252,23 @@ export declare const noteRouter: import("@trpc/server/unstable-core-do-not-impor
         output: {
             error: "expired" | null;
             data: {
+                attachments: {
+                    id: number;
+                    type: string;
+                    isShare: boolean;
+                    sharePassword: string;
+                    accountId: number | null;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    name: string;
+                    noteId: number | null;
+                    sortOrder: number;
+                    path: string;
+                    size: string | number | Prisma.Decimal;
+                    depth?: any;
+                    perfixPath?: any;
+                }[];
                 id: number;
-                createdAt: Date;
-                updatedAt: Date;
                 type: number;
                 content: string;
                 isArchived: boolean;
@@ -264,22 +278,8 @@ export declare const noteRouter: import("@trpc/server/unstable-core-do-not-impor
                 isReviewed: boolean;
                 sharePassword: string;
                 accountId: number | null;
-                attachments: {
-                    name: string;
-                    id: number;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    type: string;
-                    isShare: boolean;
-                    sharePassword: string;
-                    accountId: number | null;
-                    sortOrder: number;
-                    noteId: number | null;
-                    path: string;
-                    size: string | number | Prisma.Decimal;
-                    perfixPath?: any;
-                    depth?: any;
-                }[];
+                createdAt: Date;
+                updatedAt: Date;
                 _count: {
                     comments: number;
                     histories: number;
@@ -290,25 +290,25 @@ export declare const noteRouter: import("@trpc/server/unstable-core-do-not-impor
                 shareViewCount?: number | null | undefined;
                 metadata?: any;
                 account?: {
-                    name?: string | undefined;
                     id?: number | undefined;
+                    name?: string | undefined;
                     nickname?: string | undefined;
                     image?: string | undefined;
                 } | null | undefined;
                 referencedBy?: {
                     fromNoteId: number;
                     fromNote?: {
+                        content?: string | undefined;
                         createdAt?: Date | undefined;
                         updatedAt?: Date | undefined;
-                        content?: string | undefined;
                     } | undefined;
                 }[] | undefined;
                 references?: {
                     toNoteId: number;
                     toNote?: {
+                        content?: string | undefined;
                         createdAt?: Date | undefined;
                         updatedAt?: Date | undefined;
-                        content?: string | undefined;
                     } | undefined;
                 }[] | undefined;
             } | null;
@@ -320,9 +320,23 @@ export declare const noteRouter: import("@trpc/server/unstable-core-do-not-impor
             id: number;
         };
         output: {
+            attachments: {
+                id: number;
+                type: string;
+                isShare: boolean;
+                sharePassword: string;
+                accountId: number | null;
+                createdAt: Date;
+                updatedAt: Date;
+                name: string;
+                noteId: number | null;
+                sortOrder: number;
+                path: string;
+                size: string | number | Prisma.Decimal;
+                depth?: any;
+                perfixPath?: any;
+            }[];
             id: number;
-            createdAt: Date;
-            updatedAt: Date;
             type: number;
             content: string;
             isArchived: boolean;
@@ -332,33 +346,19 @@ export declare const noteRouter: import("@trpc/server/unstable-core-do-not-impor
             isReviewed: boolean;
             sharePassword: string;
             accountId: number | null;
-            attachments: {
-                name: string;
-                id: number;
-                createdAt: Date;
-                updatedAt: Date;
-                type: string;
-                isShare: boolean;
-                sharePassword: string;
-                accountId: number | null;
-                sortOrder: number;
-                noteId: number | null;
-                path: string;
-                size: string | number | Prisma.Decimal;
-                perfixPath?: any;
-                depth?: any;
-            }[];
+            createdAt: Date;
+            updatedAt: Date;
             tags: {
-                id: number;
                 tag: {
-                    name: string;
                     id: number;
                     createdAt: Date;
                     updatedAt: Date;
+                    name: string;
                     icon: string;
                     parent: number;
                     sortOrder: number;
                 };
+                id: number;
                 noteId: number;
                 tagId: number;
             }[];
@@ -374,17 +374,17 @@ export declare const noteRouter: import("@trpc/server/unstable-core-do-not-impor
             referencedBy?: {
                 fromNoteId: number;
                 fromNote?: {
+                    content?: string | undefined;
                     createdAt?: Date | undefined;
                     updatedAt?: Date | undefined;
-                    content?: string | undefined;
                 } | undefined;
             }[] | undefined;
             references?: {
                 toNoteId: number;
                 toNote?: {
+                    content?: string | undefined;
                     createdAt?: Date | undefined;
                     updatedAt?: Date | undefined;
-                    content?: string | undefined;
                 } | undefined;
             }[] | undefined;
         } | null;
@@ -392,9 +392,23 @@ export declare const noteRouter: import("@trpc/server/unstable-core-do-not-impor
     dailyReviewNoteList: import("@trpc/server").TRPCQueryProcedure<{
         input: void;
         output: {
+            attachments: {
+                id: number;
+                type: string;
+                isShare: boolean;
+                sharePassword: string;
+                accountId: number | null;
+                createdAt: Date;
+                updatedAt: Date;
+                name: string;
+                noteId: number | null;
+                sortOrder: number;
+                path: string;
+                size: string | number | Prisma.Decimal;
+                depth?: any;
+                perfixPath?: any;
+            }[];
             id: number;
-            createdAt: Date;
-            updatedAt: Date;
             type: number;
             content: string;
             isArchived: boolean;
@@ -404,22 +418,8 @@ export declare const noteRouter: import("@trpc/server/unstable-core-do-not-impor
             isReviewed: boolean;
             sharePassword: string;
             accountId: number | null;
-            attachments: {
-                name: string;
-                id: number;
-                createdAt: Date;
-                updatedAt: Date;
-                type: string;
-                isShare: boolean;
-                sharePassword: string;
-                accountId: number | null;
-                sortOrder: number;
-                noteId: number | null;
-                path: string;
-                size: string | number | Prisma.Decimal;
-                perfixPath?: any;
-                depth?: any;
-            }[];
+            createdAt: Date;
+            updatedAt: Date;
             shareEncryptedUrl?: string | null | undefined;
             shareExpiryDate?: Date | null | undefined;
             shareMaxView?: number | null | undefined;
@@ -432,9 +432,23 @@ export declare const noteRouter: import("@trpc/server/unstable-core-do-not-impor
             limit?: number | undefined;
         };
         output: {
+            attachments: {
+                id: number;
+                type: string;
+                isShare: boolean;
+                sharePassword: string;
+                accountId: number | null;
+                createdAt: Date;
+                updatedAt: Date;
+                name: string;
+                noteId: number | null;
+                sortOrder: number;
+                path: string;
+                size: string | number | Prisma.Decimal;
+                depth?: any;
+                perfixPath?: any;
+            }[];
             id: number;
-            createdAt: Date;
-            updatedAt: Date;
             type: number;
             content: string;
             isArchived: boolean;
@@ -444,22 +458,8 @@ export declare const noteRouter: import("@trpc/server/unstable-core-do-not-impor
             isReviewed: boolean;
             sharePassword: string;
             accountId: number | null;
-            attachments: {
-                name: string;
-                id: number;
-                createdAt: Date;
-                updatedAt: Date;
-                type: string;
-                isShare: boolean;
-                sharePassword: string;
-                accountId: number | null;
-                sortOrder: number;
-                noteId: number | null;
-                path: string;
-                size: string | number | Prisma.Decimal;
-                perfixPath?: any;
-                depth?: any;
-            }[];
+            createdAt: Date;
+            updatedAt: Date;
             shareEncryptedUrl?: string | null | undefined;
             shareExpiryDate?: Date | null | undefined;
             shareMaxView?: number | null | undefined;
@@ -472,9 +472,23 @@ export declare const noteRouter: import("@trpc/server/unstable-core-do-not-impor
             id: number;
         };
         output: {
+            attachments: {
+                id: number;
+                type: string;
+                isShare: boolean;
+                sharePassword: string;
+                accountId: number | null;
+                createdAt: Date;
+                updatedAt: Date;
+                name: string;
+                noteId: number | null;
+                sortOrder: number;
+                path: string;
+                size: string | number | Prisma.Decimal;
+                depth?: any;
+                perfixPath?: any;
+            }[];
             id: number;
-            createdAt: Date;
-            updatedAt: Date;
             type: number;
             content: string;
             isArchived: boolean;
@@ -484,33 +498,19 @@ export declare const noteRouter: import("@trpc/server/unstable-core-do-not-impor
             isReviewed: boolean;
             sharePassword: string;
             accountId: number | null;
-            attachments: {
-                name: string;
-                id: number;
-                createdAt: Date;
-                updatedAt: Date;
-                type: string;
-                isShare: boolean;
-                sharePassword: string;
-                accountId: number | null;
-                sortOrder: number;
-                noteId: number | null;
-                path: string;
-                size: string | number | Prisma.Decimal;
-                perfixPath?: any;
-                depth?: any;
-            }[];
+            createdAt: Date;
+            updatedAt: Date;
             tags: {
-                id: number;
                 tag: {
-                    name: string;
                     id: number;
                     createdAt: Date;
                     updatedAt: Date;
+                    name: string;
                     icon: string;
                     parent: number;
                     sortOrder: number;
                 };
+                id: number;
                 noteId: number;
                 tagId: number;
             }[];
@@ -526,17 +526,17 @@ export declare const noteRouter: import("@trpc/server/unstable-core-do-not-impor
             referencedBy?: {
                 fromNoteId: number;
                 fromNote?: {
+                    content?: string | undefined;
                     createdAt?: Date | undefined;
                     updatedAt?: Date | undefined;
-                    content?: string | undefined;
                 } | undefined;
             }[] | undefined;
             references?: {
                 toNoteId: number;
                 toNote?: {
+                    content?: string | undefined;
                     createdAt?: Date | undefined;
                     updatedAt?: Date | undefined;
-                    content?: string | undefined;
                 } | undefined;
             }[] | undefined;
         }[];
@@ -547,8 +547,6 @@ export declare const noteRouter: import("@trpc/server/unstable-core-do-not-impor
         };
         output: {
             id: number;
-            createdAt: Date;
-            updatedAt: Date;
             type: number;
             content: string;
             isArchived: boolean;
@@ -558,6 +556,8 @@ export declare const noteRouter: import("@trpc/server/unstable-core-do-not-impor
             isReviewed: boolean;
             sharePassword: string;
             accountId: number | null;
+            createdAt: Date;
+            updatedAt: Date;
             shareEncryptedUrl?: string | null | undefined;
             shareExpiryDate?: Date | null | undefined;
             shareMaxView?: number | null | undefined;
@@ -567,9 +567,13 @@ export declare const noteRouter: import("@trpc/server/unstable-core-do-not-impor
     }>;
     upsert: import("@trpc/server").TRPCMutationProcedure<{
         input: {
+            attachments?: {
+                type: string;
+                name: string;
+                path: string;
+                size: string | number;
+            }[] | undefined;
             id?: number | undefined;
-            createdAt?: Date | undefined;
-            updatedAt?: Date | undefined;
             type?: NoteType | -1 | undefined;
             content?: string | null | undefined;
             isArchived?: boolean | null | undefined;
@@ -577,12 +581,8 @@ export declare const noteRouter: import("@trpc/server/unstable-core-do-not-impor
             isShare?: boolean | null | undefined;
             isTop?: boolean | null | undefined;
             metadata?: any;
-            attachments?: {
-                name: string;
-                type: string;
-                path: string;
-                size: string | number;
-            }[] | undefined;
+            createdAt?: Date | undefined;
+            updatedAt?: Date | undefined;
             references?: number[] | undefined;
         };
         output: any;
@@ -596,8 +596,6 @@ export declare const noteRouter: import("@trpc/server/unstable-core-do-not-impor
         };
         output: {
             id: number;
-            createdAt: Date;
-            updatedAt: Date;
             type: number;
             content: string;
             isArchived: boolean;
@@ -607,6 +605,8 @@ export declare const noteRouter: import("@trpc/server/unstable-core-do-not-impor
             isReviewed: boolean;
             sharePassword: string;
             accountId: number | null;
+            createdAt: Date;
+            updatedAt: Date;
             shareEncryptedUrl?: string | null | undefined;
             shareExpiryDate?: Date | null | undefined;
             shareMaxView?: number | null | undefined;
@@ -637,8 +637,8 @@ export declare const noteRouter: import("@trpc/server/unstable-core-do-not-impor
     }>;
     addReference: import("@trpc/server").TRPCMutationProcedure<{
         input: {
-            fromNoteId: number;
             toNoteId: number;
+            fromNoteId: number;
         };
         output: any;
     }>;
@@ -648,9 +648,23 @@ export declare const noteRouter: import("@trpc/server/unstable-core-do-not-impor
             type?: "referencedBy" | "references" | undefined;
         };
         output: {
+            attachments: {
+                id: number;
+                type: string;
+                isShare: boolean;
+                sharePassword: string;
+                accountId: number | null;
+                createdAt: Date;
+                updatedAt: Date;
+                name: string;
+                noteId: number | null;
+                sortOrder: number;
+                path: string;
+                size: string | number | Prisma.Decimal;
+                depth?: any;
+                perfixPath?: any;
+            }[];
             id: number;
-            createdAt: Date;
-            updatedAt: Date;
             type: number;
             content: string;
             isArchived: boolean;
@@ -660,22 +674,8 @@ export declare const noteRouter: import("@trpc/server/unstable-core-do-not-impor
             isReviewed: boolean;
             sharePassword: string;
             accountId: number | null;
-            attachments: {
-                name: string;
-                id: number;
-                createdAt: Date;
-                updatedAt: Date;
-                type: string;
-                isShare: boolean;
-                sharePassword: string;
-                accountId: number | null;
-                sortOrder: number;
-                noteId: number | null;
-                path: string;
-                size: string | number | Prisma.Decimal;
-                perfixPath?: any;
-                depth?: any;
-            }[];
+            createdAt: Date;
+            updatedAt: Date;
             referenceCreatedAt: Date;
             shareEncryptedUrl?: string | null | undefined;
             shareExpiryDate?: Date | null | undefined;
@@ -703,9 +703,9 @@ export declare const noteRouter: import("@trpc/server/unstable-core-do-not-impor
         };
         output: {
             id: number;
-            createdAt: Date;
             content: string;
             accountId: number | null;
+            createdAt: Date;
             noteId: number;
             version?: number | undefined;
         }[];
@@ -716,8 +716,8 @@ export declare const noteRouter: import("@trpc/server/unstable-core-do-not-impor
             version?: number | undefined;
         };
         output: {
-            createdAt: Date;
             content: string;
+            createdAt: Date;
             version: number;
             metadata?: any;
         };
@@ -738,8 +738,8 @@ export declare const noteRouter: import("@trpc/server/unstable-core-do-not-impor
             id: number;
         };
         output: {
-            name: string;
             id: number;
+            name: string;
             nickname: string;
             image: string;
             loginType: string;
@@ -749,13 +749,27 @@ export declare const noteRouter: import("@trpc/server/unstable-core-do-not-impor
     internalSharedWithMe: import("@trpc/server").TRPCMutationProcedure<{
         input: {
             orderBy?: "asc" | "desc" | undefined;
-            size?: number | undefined;
             page?: number | undefined;
+            size?: number | undefined;
         };
         output: {
+            attachments: {
+                id: number;
+                type: string;
+                isShare: boolean;
+                sharePassword: string;
+                accountId: number | null;
+                createdAt: Date;
+                updatedAt: Date;
+                name: string;
+                noteId: number | null;
+                sortOrder: number;
+                path: string;
+                size: string | number | Prisma.Decimal;
+                depth?: any;
+                perfixPath?: any;
+            }[];
             id: number;
-            createdAt: Date;
-            updatedAt: Date;
             type: number;
             content: string;
             isArchived: boolean;
@@ -765,34 +779,19 @@ export declare const noteRouter: import("@trpc/server/unstable-core-do-not-impor
             isReviewed: boolean;
             sharePassword: string;
             accountId: number | null;
-            attachments: {
-                name: string;
-                id: number;
-                createdAt: Date;
-                updatedAt: Date;
-                type: string;
-                isShare: boolean;
-                sharePassword: string;
-                accountId: number | null;
-                sortOrder: number;
-                noteId: number | null;
-                path: string;
-                size: string | number | Prisma.Decimal;
-                perfixPath?: any;
-                depth?: any;
-            }[];
-            canEdit: boolean;
+            createdAt: Date;
+            updatedAt: Date;
             tags: {
-                id: number;
                 tag: {
-                    name: string;
                     id: number;
                     createdAt: Date;
                     updatedAt: Date;
+                    name: string;
                     icon: string;
                     parent: number;
                     sortOrder: number;
                 };
+                id: number;
                 noteId: number;
                 tagId: number;
             }[];
@@ -801,11 +800,12 @@ export declare const noteRouter: import("@trpc/server/unstable-core-do-not-impor
                 histories: number;
             };
             owner: {
-                name: string;
                 id: number;
+                name: string;
                 nickname: string;
                 image: string;
             } | null;
+            canEdit: boolean;
             shareEncryptedUrl?: string | null | undefined;
             shareExpiryDate?: Date | null | undefined;
             shareMaxView?: number | null | undefined;

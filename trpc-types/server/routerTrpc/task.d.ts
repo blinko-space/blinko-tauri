@@ -9,10 +9,10 @@ export declare const taskRouter: import("@trpc/server/unstable-core-do-not-impor
         input: void;
         output: {
             name: string;
+            isRunning: boolean;
             schedule: string;
             lastRun: Date;
             isSuccess: boolean;
-            isRunning: boolean;
             output?: any;
         }[];
     }>;

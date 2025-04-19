@@ -53,13 +53,24 @@ const PORT = 1111;
 const blinkoFrontendAppROOT = path.resolve(__dirname, '../app');
 let server: any = null;
 
-// Vite configuration
-ViteExpress.config({
-  viteConfigFile: path.resolve(blinkoFrontendAppROOT, 'vite.config.ts'),
-  inlineViteConfig: {
-    root: blinkoFrontendAppROOT,
-  }
-});
+if (process.env.NODE_ENV === 'production') {
+  // Vite configuration
+  ViteExpress.config({
+    mode: 'production',
+    inlineViteConfig: {
+      //docker worker dir /app not development dir
+      root: path.resolve(__dirname, '../app'),
+      build: { outDir: "public" }
+    }
+  });
+} else {
+  ViteExpress.config({
+    viteConfigFile: path.resolve(blinkoFrontendAppROOT, 'vite.config.ts'),
+    inlineViteConfig: {
+      root: blinkoFrontendAppROOT,
+    }
+  });
+}
 
 // Global error handler
 const errorHandler = (err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
@@ -80,7 +91,7 @@ async function setupApiRoutes(app: express.Application) {
   app.use('/api/auth', authRoutes);
 
   // tRPC endpoint with adapter for Express
-  app.use('/api/trpc', 
+  app.use('/api/trpc',
     createExpressMiddleware({
       router: appRouter,
       createContext: ({ req, res }) => {
@@ -104,7 +115,7 @@ async function setupApiRoutes(app: express.Application) {
   app.use('/v1', openaiRouter);
 
   // OpenAPI integration
-  app.use('/api', 
+  app.use('/api',
     // @ts-ignore
     createOpenApiExpressMiddleware({
       router: appRouter,
@@ -147,6 +158,12 @@ async function bootstrap() {
     // Enable CORS
     app.use(cors());
 
+    // 如果在代理后面运行，信任代理设置
+    if (process.env.TRUST_PROXY === '1') {
+      app.set('trust proxy', 1);
+      console.log('已启用代理信任设置');
+    }
+
     // Add body parsers for JSON and form data
     app.use(express.json({ limit: '50mb' }));
     app.use(express.urlencoded({ extended: true, limit: '50mb' }));
@@ -163,7 +180,7 @@ async function bootstrap() {
     // Start or update server
     if (!server) {
       server = ViteExpress.listen(app, PORT, () => {
-        console.log(`server start on port ${PORT} - env: ${process.env.NODE_ENV || 'development'}`);
+        console.log(`🎉server start on port http://localhost:${PORT} - env: ${process.env.NODE_ENV || 'development'}`);
       });
     } else {
       console.log(`API routes updated - env: ${process.env.NODE_ENV || 'development'}`);
@@ -174,7 +191,7 @@ async function bootstrap() {
       // Attempt to start server even if route setup fails
       if (!server) {
         server = ViteExpress.listen(app, PORT, () => {
-          console.log(`server start on port ${PORT} - env: ${process.env.NODE_ENV || 'development'}`);
+          console.log(`🎉server start on port http://localhost:${PORT} - env: ${process.env.NODE_ENV || 'development'}`);
         });
       }
     } catch (startupError) {

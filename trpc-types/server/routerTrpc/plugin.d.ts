@@ -7,8 +7,8 @@ export declare const pluginRouter: import("@trpc/server/unstable-core-do-not-imp
     getAllPlugins: import("@trpc/server").TRPCQueryProcedure<{
         input: void;
         output: {
-            name: string;
             url: string;
+            name: string;
             version: string;
             author: string;
             minAppVersion: string;
@@ -44,8 +44,8 @@ export declare const pluginRouter: import("@trpc/server/unstable-core-do-not-imp
     }>;
     installPlugin: import("@trpc/server").TRPCMutationProcedure<{
         input: {
-            name: string;
             url: string;
+            name: string;
             version: string;
             author: string;
             minAppVersion: string;
@@ -54,12 +54,12 @@ export declare const pluginRouter: import("@trpc/server/unstable-core-do-not-imp
         };
         output: {
             id: number;
+            metadata: import("@prisma/client/runtime/library").JsonValue;
             createdAt: Date;
             updatedAt: Date;
-            metadata: import("@prisma/client/runtime/library").JsonValue;
+            isDev: boolean;
             path: string;
             isUse: boolean;
-            isDev: boolean;
         };
     }>;
     getInstalledPlugins: import("@trpc/server").TRPCQueryProcedure<{
@@ -68,9 +68,9 @@ export declare const pluginRouter: import("@trpc/server/unstable-core-do-not-imp
             id: number;
             createdAt: Date;
             updatedAt: Date;
+            isDev: boolean;
             path: string;
             isUse: boolean;
-            isDev: boolean;
             metadata?: any;
         }[];
     }>;

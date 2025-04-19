@@ -35,35 +35,35 @@ export declare const recommandListSchema: z.ZodArray<z.ZodObject<z.objectUtil.ex
         depth: z.ZodAny;
         perfixPath: z.ZodAny;
     }, "strip", z.ZodTypeAny, {
-        name: string;
         id: number;
-        createdAt: Date;
-        updatedAt: Date;
         type: string;
         isShare: boolean;
         sharePassword: string;
         accountId: number | null;
-        sortOrder: number;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
         noteId: number | null;
+        sortOrder: number;
         path: string;
         size: string | number | import("@prisma/client/runtime/library").Decimal;
-        perfixPath?: any;
         depth?: any;
+        perfixPath?: any;
     }, {
-        name: string;
         id: number;
-        createdAt: Date;
-        updatedAt: Date;
         type: string;
         isShare: boolean;
         sharePassword: string;
         accountId: number | null;
-        sortOrder: number;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
         noteId: number | null;
+        sortOrder: number;
         path: string;
         size: string | number | import("@prisma/client/runtime/library").Decimal;
-        perfixPath?: any;
         depth?: any;
+        perfixPath?: any;
     }>, "many">>;
     account: z.ZodOptional<z.ZodNullable<z.ZodObject<{
         image: z.ZodOptional<z.ZodString>;
@@ -71,13 +71,13 @@ export declare const recommandListSchema: z.ZodArray<z.ZodObject<z.objectUtil.ex
         name: z.ZodOptional<z.ZodString>;
         id: z.ZodOptional<z.ZodNumber>;
     }, "strip", z.ZodTypeAny, {
-        name?: string | undefined;
         id?: number | undefined;
+        name?: string | undefined;
         nickname?: string | undefined;
         image?: string | undefined;
     }, {
-        name?: string | undefined;
         id?: number | undefined;
+        name?: string | undefined;
         nickname?: string | undefined;
         image?: string | undefined;
     }>>>;
@@ -95,46 +95,46 @@ export declare const recommandListSchema: z.ZodArray<z.ZodObject<z.objectUtil.ex
             createdAt: z.ZodDate;
             updatedAt: z.ZodDate;
         }, "strip", z.ZodTypeAny, {
-            name: string;
             id: number;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
             icon: string;
             parent: number;
             sortOrder: number;
         }, {
-            name: string;
             id: number;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
             icon: string;
             parent: number;
             sortOrder: number;
         }>;
     }>, "strip", z.ZodTypeAny, {
-        id: number;
         tag: {
-            name: string;
             id: number;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
             icon: string;
             parent: number;
             sortOrder: number;
         };
+        id: number;
         noteId: number;
         tagId: number;
     }, {
-        id: number;
         tag: {
-            name: string;
             id: number;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
             icon: string;
             parent: number;
             sortOrder: number;
         };
+        id: number;
         noteId: number;
         tagId: number;
     }>>, "many">>>;
@@ -148,8 +148,6 @@ export declare const recommandListSchema: z.ZodArray<z.ZodObject<z.objectUtil.ex
     originURL: z.ZodOptional<z.ZodString>;
 }>, "strip", z.ZodTypeAny, {
     id: number;
-    createdAt: Date;
-    updatedAt: Date;
     type: number;
     content: string;
     isArchived: boolean;
@@ -159,44 +157,46 @@ export declare const recommandListSchema: z.ZodArray<z.ZodObject<z.objectUtil.ex
     isReviewed: boolean;
     sharePassword: string;
     accountId: number | null;
+    createdAt: Date;
+    updatedAt: Date;
+    attachments?: {
+        id: number;
+        type: string;
+        isShare: boolean;
+        sharePassword: string;
+        accountId: number | null;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
+        noteId: number | null;
+        sortOrder: number;
+        path: string;
+        size: string | number | import("@prisma/client/runtime/library").Decimal;
+        depth?: any;
+        perfixPath?: any;
+    }[] | undefined;
     shareEncryptedUrl?: string | null | undefined;
     shareExpiryDate?: Date | null | undefined;
     shareMaxView?: number | null | undefined;
     shareViewCount?: number | null | undefined;
     metadata?: any;
-    attachments?: {
-        name: string;
-        id: number;
-        createdAt: Date;
-        updatedAt: Date;
-        type: string;
-        isShare: boolean;
-        sharePassword: string;
-        accountId: number | null;
-        sortOrder: number;
-        noteId: number | null;
-        path: string;
-        size: string | number | import("@prisma/client/runtime/library").Decimal;
-        perfixPath?: any;
-        depth?: any;
-    }[] | undefined;
     tags?: ({
-        id: number;
         tag: {
-            name: string;
             id: number;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
             icon: string;
             parent: number;
             sortOrder: number;
         };
+        id: number;
         noteId: number;
         tagId: number;
     } | undefined)[] | null | undefined;
     account?: {
-        name?: string | undefined;
         id?: number | undefined;
+        name?: string | undefined;
         nickname?: string | undefined;
         image?: string | undefined;
     } | null | undefined;
@@ -206,8 +206,6 @@ export declare const recommandListSchema: z.ZodArray<z.ZodObject<z.objectUtil.ex
     originURL?: string | undefined;
 }, {
     id: number;
-    createdAt: Date;
-    updatedAt: Date;
     type: number;
     content: string;
     isArchived: boolean;
@@ -217,44 +215,46 @@ export declare const recommandListSchema: z.ZodArray<z.ZodObject<z.objectUtil.ex
     isReviewed: boolean;
     sharePassword: string;
     accountId: number | null;
+    createdAt: Date;
+    updatedAt: Date;
+    attachments?: {
+        id: number;
+        type: string;
+        isShare: boolean;
+        sharePassword: string;
+        accountId: number | null;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
+        noteId: number | null;
+        sortOrder: number;
+        path: string;
+        size: string | number | import("@prisma/client/runtime/library").Decimal;
+        depth?: any;
+        perfixPath?: any;
+    }[] | undefined;
     shareEncryptedUrl?: string | null | undefined;
     shareExpiryDate?: Date | null | undefined;
     shareMaxView?: number | null | undefined;
     shareViewCount?: number | null | undefined;
     metadata?: any;
-    attachments?: {
-        name: string;
-        id: number;
-        createdAt: Date;
-        updatedAt: Date;
-        type: string;
-        isShare: boolean;
-        sharePassword: string;
-        accountId: number | null;
-        sortOrder: number;
-        noteId: number | null;
-        path: string;
-        size: string | number | import("@prisma/client/runtime/library").Decimal;
-        perfixPath?: any;
-        depth?: any;
-    }[] | undefined;
     tags?: ({
-        id: number;
         tag: {
-            name: string;
             id: number;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
             icon: string;
             parent: number;
             sortOrder: number;
         };
+        id: number;
         noteId: number;
         tagId: number;
     } | undefined)[] | null | undefined;
     account?: {
-        name?: string | undefined;
         id?: number | undefined;
+        name?: string | undefined;
         nickname?: string | undefined;
         image?: string | undefined;
     } | null | undefined;

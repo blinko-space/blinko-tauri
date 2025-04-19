@@ -7,10 +7,10 @@ export declare const tagRouter: import("@trpc/server/unstable-core-do-not-import
     list: import("@trpc/server").TRPCQueryProcedure<{
         input: void;
         output: {
-            name: string;
             id: number;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
             icon: string;
             parent: number;
             sortOrder: number;
@@ -43,10 +43,10 @@ export declare const tagRouter: import("@trpc/server/unstable-core-do-not-import
             icon: string;
         };
         output: {
-            name: string;
             id: number;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
             icon: string;
             parent: number;
             sortOrder: number;
@@ -70,11 +70,11 @@ export declare const tagRouter: import("@trpc/server/unstable-core-do-not-import
             sortOrder: number;
         };
         output: {
-            name: string;
             id: number;
+            accountId: number | null;
             createdAt: Date;
             updatedAt: Date;
-            accountId: number | null;
+            name: string;
             icon: string;
             parent: number;
             sortOrder: number;

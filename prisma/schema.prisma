@@ -260,3 +260,14 @@ model noteInternalShare {
   @@index([noteId])
   @@index([accountId])
 }
+
+model session {
+  id        String   @id
+  sid       String   @unique
+  data      String   @db.Text
+  expiresAt DateTime
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+  @@index([expiresAt])
+}

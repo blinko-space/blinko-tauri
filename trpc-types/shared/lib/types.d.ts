@@ -33,8 +33,8 @@ export declare const ZOAuth2ProviderSchema: z.ZodObject<{
     clientId: z.ZodString;
     clientSecret: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    name: string;
     id: string;
+    name: string;
     tokenUrl: string;
     userinfoUrl: string;
     clientId: string;
@@ -44,8 +44,8 @@ export declare const ZOAuth2ProviderSchema: z.ZodObject<{
     scope?: string | undefined;
     authorizationUrl?: string | undefined;
 }, {
-    name: string;
     id: string;
+    name: string;
     tokenUrl: string;
     userinfoUrl: string;
     clientId: string;
@@ -112,8 +112,8 @@ export declare const ZConfigSchema: z.ZodObject<{
         clientId: z.ZodString;
         clientSecret: z.ZodString;
     }, "strip", z.ZodTypeAny, {
-        name: string;
         id: string;
+        name: string;
         tokenUrl: string;
         userinfoUrl: string;
         clientId: string;
@@ -123,8 +123,8 @@ export declare const ZConfigSchema: z.ZodObject<{
         scope?: string | undefined;
         authorizationUrl?: string | undefined;
     }, {
-        name: string;
         id: string;
+        name: string;
         tokenUrl: string;
         userinfoUrl: string;
         clientId: string;
@@ -201,8 +201,8 @@ export declare const ZConfigSchema: z.ZodObject<{
     isCloseDailyReview?: boolean | undefined;
     maxHomePageWidth?: number | undefined;
     oauth2Providers?: {
-        name: string;
         id: string;
+        name: string;
         tokenUrl: string;
         userinfoUrl: string;
         clientId: string;
@@ -279,8 +279,8 @@ export declare const ZConfigSchema: z.ZodObject<{
     isCloseDailyReview?: boolean | undefined;
     maxHomePageWidth?: number | undefined;
     oauth2Providers?: {
-        name: string;
         id: string;
+        name: string;
         tokenUrl: string;
         userinfoUrl: string;
         clientId: string;
@@ -324,8 +324,8 @@ export declare const pluginInfoSchema: z.ZodObject<{
     readme: z.ZodAny;
     downloads: z.ZodNumber;
 }, "strip", z.ZodTypeAny, {
-    name: string;
     url: string;
+    name: string;
     version: string;
     author: string;
     minAppVersion: string;
@@ -334,8 +334,8 @@ export declare const pluginInfoSchema: z.ZodObject<{
     displayName?: any;
     readme?: any;
 }, {
-    name: string;
     url: string;
+    name: string;
     version: string;
     author: string;
     minAppVersion: string;
@@ -355,16 +355,16 @@ export declare const installPluginSchema: z.ZodObject<Omit<{
     readme: z.ZodAny;
     downloads: z.ZodNumber;
 }, "readme" | "downloads">, "strip", z.ZodTypeAny, {
-    name: string;
     url: string;
+    name: string;
     version: string;
     author: string;
     minAppVersion: string;
     description?: any;
     displayName?: any;
 }, {
-    name: string;
     url: string;
+    name: string;
     version: string;
     author: string;
     minAppVersion: string;

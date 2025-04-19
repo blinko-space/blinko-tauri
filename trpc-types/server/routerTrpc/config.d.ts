@@ -48,8 +48,8 @@ export declare const getGlobalConfig: ({ ctx, useAdmin }: {
     isCloseDailyReview?: boolean | undefined;
     maxHomePageWidth?: number | undefined;
     oauth2Providers?: {
-        name: string;
         id: string;
+        name: string;
         tokenUrl: string;
         userinfoUrl: string;
         clientId: string;
@@ -135,8 +135,8 @@ export declare const configRouter: import("@trpc/server/unstable-core-do-not-imp
             isCloseDailyReview?: boolean | undefined;
             maxHomePageWidth?: number | undefined;
             oauth2Providers?: {
-                name: string;
                 id: string;
+                name: string;
                 tokenUrl: string;
                 userinfoUrl: string;
                 clientId: string;

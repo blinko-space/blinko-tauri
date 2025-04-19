@@ -21,8 +21,8 @@ export declare const searchBlinkoTool: import("@mastra/core/dist/base-D0afZZ9D")
     type: NoteType | -1;
     content: string;
     accountId: number;
-    size: number;
     page: number;
+    size: number;
     isArchived?: boolean | null | undefined;
     isRecycle?: boolean | undefined;
     searchText?: string | undefined;
@@ -39,8 +39,8 @@ export declare const searchBlinkoTool: import("@mastra/core/dist/base-D0afZZ9D")
     type?: NoteType | -1 | undefined;
     isArchived?: boolean | null | undefined;
     isRecycle?: boolean | undefined;
-    size?: number | undefined;
     page?: number | undefined;
+    size?: number | undefined;
     searchText?: string | undefined;
     withoutTag?: boolean | undefined;
     withFile?: boolean | undefined;
@@ -69,8 +69,8 @@ export declare const searchBlinkoTool: import("@mastra/core/dist/base-D0afZZ9D")
     type: NoteType | -1;
     content: string;
     accountId: number;
-    size: number;
     page: number;
+    size: number;
     isArchived?: boolean | null | undefined;
     isRecycle?: boolean | undefined;
     searchText?: string | undefined;
@@ -87,8 +87,8 @@ export declare const searchBlinkoTool: import("@mastra/core/dist/base-D0afZZ9D")
     type?: NoteType | -1 | undefined;
     isArchived?: boolean | null | undefined;
     isRecycle?: boolean | undefined;
-    size?: number | undefined;
     page?: number | undefined;
+    size?: number | undefined;
     searchText?: string | undefined;
     withoutTag?: boolean | undefined;
     withFile?: boolean | undefined;

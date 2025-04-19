@@ -39,11 +39,12 @@ export async function createContext(req: Request, res: Response) {
   
   try {
     const token = await getTokenFromRequest(req as any) as User;
+    console.log(token,'token!!!!!');
     if (token?.sub) {
       return { ...token, id: token.sub, ip: req?.ip || '0.0.0.0', userAgent } as User;
     }
   } catch (error) {
-    console.error('获取令牌出错:', error);
+    console.error('get token error:', error);
   }
   
   return { userAgent } as User;

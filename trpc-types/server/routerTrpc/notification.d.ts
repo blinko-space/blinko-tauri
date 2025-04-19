@@ -15,16 +15,16 @@ export declare const notificationRouter: import("@trpc/server/unstable-core-do-n
 }, import("@trpc/server/unstable-core-do-not-import").DecorateCreateRouterOptions<{
     list: import("@trpc/server").TRPCQueryProcedure<{
         input: {
-            size?: number | undefined;
             page?: number | undefined;
+            size?: number | undefined;
         };
         output: {
             id: number;
-            createdAt: Date;
-            updatedAt: Date;
             type: string;
             content: string;
             accountId: number;
+            createdAt: Date;
+            updatedAt: Date;
             title: string;
             isRead: boolean;
             metadata?: any;

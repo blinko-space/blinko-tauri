@@ -17,8 +17,8 @@ export declare const commentRouter: import("@trpc/server/unstable-core-do-not-im
         input: {
             noteId: number;
             orderBy?: "asc" | "desc" | undefined;
-            size?: number | undefined;
             page?: number | undefined;
+            size?: number | undefined;
         };
         output: {
             total: number;

@@ -65,28 +65,28 @@ export declare class AiService {
     }): Promise<{
         score: number;
         attachments: {
-            name: string;
             id: number;
-            createdAt: Date;
-            updatedAt: Date;
             type: string;
             isShare: boolean;
             sharePassword: string;
             accountId: number | null;
-            sortOrder: number;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
             noteId: number | null;
+            sortOrder: number;
             path: string;
             size: import("@prisma/client/runtime/library").Decimal;
-            perfixPath: string | null;
             depth: number | null;
+            perfixPath: string | null;
         }[];
         tags: ({
             tag: {
-                name: string;
                 id: number;
+                accountId: number | null;
                 createdAt: Date;
                 updatedAt: Date;
-                accountId: number | null;
+                name: string;
                 icon: string;
                 parent: number;
                 sortOrder: number;
@@ -99,17 +99,17 @@ export declare class AiService {
         referencedBy: {
             fromNoteId: number;
             fromNote: {
+                content: string;
                 createdAt: Date;
                 updatedAt: Date;
-                content: string;
             };
         }[];
         references: {
             toNoteId: number;
             toNote: {
+                content: string;
                 createdAt: Date;
                 updatedAt: Date;
-                content: string;
             };
         }[];
         _count: {
@@ -117,8 +117,6 @@ export declare class AiService {
             histories: number;
         };
         id: number;
-        createdAt: Date;
-        updatedAt: Date;
         type: number;
         content: string;
         isArchived: boolean;
@@ -133,6 +131,8 @@ export declare class AiService {
         shareViewCount: number | null;
         metadata: import("@prisma/client/runtime/library").JsonValue | null;
         accountId: number | null;
+        createdAt: Date;
+        updatedAt: Date;
     }[]>;
     static completions({ question, conversations, withTools, withRAG, withOnline, systemPrompt, ctx, }: {
         question: string;
@@ -151,21 +151,21 @@ export declare class AiService {
         noteId: number;
     }): Promise<{
         account: {
-            name: string;
             id: number;
+            name: string;
             nickname: string;
             image: string;
         } | null;
     } & {
         id: number;
-        createdAt: Date;
-        updatedAt: Date;
         content: string;
         accountId: number | null;
+        createdAt: Date;
+        updatedAt: Date;
+        noteId: number;
         guestName: string | null;
         guestIP: string | null;
         guestUA: string | null;
-        noteId: number;
         parentId: number | null;
     }>;
     static postProcessNote({ noteId, ctx }: {

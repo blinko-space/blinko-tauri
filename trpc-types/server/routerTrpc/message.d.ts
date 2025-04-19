@@ -6,34 +6,34 @@ export declare const messageRouter: import("@trpc/server/unstable-core-do-not-im
 }, import("@trpc/server/unstable-core-do-not-import").DecorateCreateRouterOptions<{
     create: import("@trpc/server").TRPCMutationProcedure<{
         input: {
-            role: "user" | "system" | "assistant";
             content: string;
+            role: "user" | "system" | "assistant";
             conversationId: number;
             metadata?: any;
         };
         output: {
             id: number;
-            role: string;
-            createdAt: Date;
-            updatedAt: Date;
             content: string;
             metadata: import("@prisma/client/runtime/library").JsonValue | null;
+            createdAt: Date;
+            updatedAt: Date;
+            role: string;
             conversationId: number;
         };
     }>;
     list: import("@trpc/server").TRPCQueryProcedure<{
         input: {
             conversationId: number;
-            size?: number | undefined;
             page?: number | undefined;
+            size?: number | undefined;
         };
         output: {
             id: number;
-            role: string;
-            createdAt: Date;
-            updatedAt: Date;
             content: string;
             metadata: import("@prisma/client/runtime/library").JsonValue | null;
+            createdAt: Date;
+            updatedAt: Date;
+            role: string;
             conversationId: number;
         }[];
     }>;
@@ -44,11 +44,11 @@ export declare const messageRouter: import("@trpc/server/unstable-core-do-not-im
         };
         output: {
             id: number;
-            role: string;
-            createdAt: Date;
-            updatedAt: Date;
             content: string;
             metadata: import("@prisma/client/runtime/library").JsonValue | null;
+            createdAt: Date;
+            updatedAt: Date;
+            role: string;
             conversationId: number;
         };
     }>;

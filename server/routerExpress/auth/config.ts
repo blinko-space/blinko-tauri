@@ -18,41 +18,168 @@ import { cache } from '@shared/lib/cache';
 // Cache TTL in milliseconds (20 seconds)
 const CACHE_TTL = 20 * 1000;
 
+class PrismaSessionStore extends session.Store {
+  async get(sid: string, callback: (err: any, session?: any) => void) {
+    try {
+      const sessionData = await prisma.session.findUnique({
+        where: { sid },
+      });
+
+      if (!sessionData) {
+        return callback(null);
+      }
+
+      if (sessionData.expiresAt < new Date()) {
+        await this.destroy(sid);
+        return callback(null);
+      }
+
+      return callback(null, JSON.parse(sessionData.data));
+    } catch (error) {
+      return callback(error);
+    }
+  }
+
+  async set(sid: string, session: any, callback?: (err?: any) => void) {
+    try {
+      const expiresAt = new Date(session.cookie.expires || Date.now() + 86400000);
+      const data = JSON.stringify(session);
+
+      await prisma.session.upsert({
+        where: { sid },
+        update: {
+          data,
+          expiresAt,
+          updatedAt: new Date(),
+        },
+        create: {
+          id: uuidv4(),
+          sid,
+          data,
+          expiresAt,
+        },
+      });
+
+      callback && callback();
+    } catch (error) {
+      callback && callback(error);
+    }
+  }
+
+  async destroy(sid: string, callback?: (err?: any) => void) {
+    try {
+      await prisma.session.delete({
+        where: { sid },
+      }).catch(() => { });
+
+      callback && callback();
+    } catch (error) {
+      callback && callback(error);
+    }
+  }
+
+  async touch(sid: string, session: any, callback?: (err?: any) => void) {
+    try {
+      const expiresAt = new Date(session.cookie.expires || Date.now() + 86400000);
+
+      await prisma.session.update({
+        where: { sid },
+        data: {
+          expiresAt,
+          updatedAt: new Date(),
+        },
+      }).catch(() => { });
+
+      callback && callback();
+    } catch (error) {
+      callback && callback(error);
+    }
+  }
+
+  async clear() {
+    try {
+      const now = new Date();
+      await prisma.session.deleteMany({
+        where: {
+          expiresAt: {
+            lt: now,
+          },
+        },
+      });
+
+      const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      await prisma.session.deleteMany({
+        where: {
+          createdAt: {
+            lt: thirtyDaysAgo,
+          },
+        },
+      });
+
+      const sessionCount = await prisma.session.count();
+      if (sessionCount > 10000) {
+        const sessionsToKeep = await prisma.session.findMany({
+          select: { id: true },
+          orderBy: { updatedAt: 'desc' },
+          take: 10000,
+        });
+
+        const keepIds = sessionsToKeep.map(s => s.id);
+
+        await prisma.session.deleteMany({
+          where: {
+            id: {
+              notIn: keepIds,
+            },
+          },
+        });
+      }
+    } catch (error) {
+      console.error('clear session error:', error);
+    }
+  }
+}
+
 export const configureSession = async (app: any) => {
   const secretKey = await getNextAuthSecret();
-  
+
   app.use(cookieParser(secretKey));
-  
-  app.use(session({
+
+  const sessionStore = new PrismaSessionStore();
+
+  const sessionConfig: session.SessionOptions = {
     name: 'connect.sid',
     secret: secretKey,
     resave: false,
     saveUninitialized: true,
+    store: sessionStore,
     cookie: {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: false,
       maxAge: 30 * 24 * 60 * 60 * 1000,
       path: '/',
       sameSite: 'lax'
     },
-    genid: () => uuidv4(), 
-  }));
+    genid: () => uuidv4(),
+  };
+
+  app.use(session(sessionConfig));
 
   app.use((req: any, res: any, next: any) => {
     if (req.method === 'GET') {
       return next();
     }
-    
-    const csrfToken = req.headers['x-csrf-token'] || req.body._csrf;
+
+    const csrfToken = req.headers['x-csrf-token'] || req?.body?._csrf;
     const sessionToken = req.session?.csrfToken;
-    
+
     if (!sessionToken) {
       req.session.csrfToken = uuidv4();
       req.session.save();
     } else if (csrfToken && csrfToken !== sessionToken) {
       return res.status(403).json({ error: 'CSRF token mismatch' });
     }
-    
+
     next();
   });
 
@@ -75,7 +202,7 @@ passport.deserializeUser(async (id: number, done) => {
         where: { id: Number(id) },
       });
     }, { ttl: CACHE_TTL });
-    
+
     done(null, user);
   } catch (error) {
     done(error, null);
@@ -85,14 +212,14 @@ passport.deserializeUser(async (id: number, done) => {
 async function handleOAuthCallback(accessToken: string, refreshToken: string, profile: any, done: any) {
   try {
     let userName = profile.username || profile.displayName || profile.id.toString();
-    
+
     let existingUser = await prisma.accounts.findFirst({
       where: {
         name: userName,
         loginType: 'oauth'
       }
     });
-    
+
     if (!existingUser) {
       const newUser = await prisma.accounts.create({
         data: {
@@ -103,9 +230,9 @@ async function handleOAuthCallback(accessToken: string, refreshToken: string, pr
           loginType: 'oauth',
         }
       });
-      
+
       cache.set(`user_by_id_${newUser.id}`, null);
-      
+
       return done(null, newUser);
     } else {
       let realUser = existingUser;
@@ -114,7 +241,7 @@ async function handleOAuthCallback(accessToken: string, refreshToken: string, pr
           return (await prisma.accounts.findFirst({ where: { id: existingUser.linkAccountId! } }))!;
         }, { ttl: CACHE_TTL });
       }
-      
+
       await prisma.accounts.update({
         where: { id: existingUser.id },
         data: {
@@ -122,9 +249,9 @@ async function handleOAuthCallback(accessToken: string, refreshToken: string, pr
           updatedAt: new Date()
         }
       });
-      
+
       cache.set(`user_by_id_${existingUser.id}`, null);
-      
+
       const config = await getGlobalConfig({
         ctx: {
           id: realUser.id.toString(),
@@ -135,11 +262,11 @@ async function handleOAuthCallback(accessToken: string, refreshToken: string, pr
           iat: Math.floor(Date.now() / 1000),
         },
       });
-      
+
       if (config.twoFactorEnabled) {
         return done(null, false, { requiresTwoFactor: true, userId: realUser.id });
       }
-      
+
       return done(null, realUser);
     }
   } catch (error) {
@@ -150,20 +277,20 @@ async function handleOAuthCallback(accessToken: string, refreshToken: string, pr
 
 const initJwtStrategy = async () => {
   const secretKey = await getNextAuthSecret();
-  
+
   const jwtOptions = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     secretOrKey: secretKey,
     passReqToCallback: true,
   };
-  
+
   passport.use(
     new JwtStrategy(jwtOptions, async (req, jwtPayload, done) => {
       try {
         if (jwtPayload.exp < Math.floor(Date.now() / 1000)) {
           return done(null, false, { message: 'Token expired' });
         }
-        
+
         const user = await cache.wrap(`user_by_id_${jwtPayload.sub}`, async () => {
           return await prisma.accounts.findUnique({
             where: { id: Number(jwtPayload.sub) },
@@ -260,9 +387,9 @@ const initOAuthStrategies = async () => {
   try {
     const config = await getGlobalConfig({ useAdmin: true });
     const providers = config.oauth2Providers || [];
-    
+
     for (const provider of providers) {
-      const callbackURL = `/api/auth/callback/${provider.id}`; 
+      const callbackURL = `/api/auth/callback/${provider.id}`;
       switch (provider.id) {
         case 'github':
           passport.use(new GitHubStrategy({
@@ -271,7 +398,7 @@ const initOAuthStrategies = async () => {
             callbackURL: callbackURL
           }, handleOAuthCallback));
           break;
-          
+
         case 'google':
           passport.use(new GoogleStrategy({
             clientID: provider.clientId,
@@ -279,7 +406,7 @@ const initOAuthStrategies = async () => {
             callbackURL: callbackURL
           }, handleOAuthCallback));
           break;
-          
+
         case 'facebook':
           passport.use(new FacebookStrategy({
             clientID: provider.clientId,
@@ -288,7 +415,7 @@ const initOAuthStrategies = async () => {
             profileFields: ['id', 'displayName', 'photos', 'email']
           }, handleOAuthCallback));
           break;
-          
+
         case 'twitter':
           passport.use(new TwitterStrategy({
             consumerKey: provider.clientId,
@@ -297,7 +424,7 @@ const initOAuthStrategies = async () => {
             includeEmail: true
           }, handleOAuthCallback));
           break;
-          
+
         case 'discord':
           passport.use(new DiscordStrategy({
             clientID: provider.clientId,
@@ -306,7 +433,7 @@ const initOAuthStrategies = async () => {
             scope: ['identify', 'email']
           }, handleOAuthCallback));
           break;
-          
+
         // Additional OAuth providers
         case 'spotify':
           try {
@@ -321,7 +448,7 @@ const initOAuthStrategies = async () => {
             console.error('Spotify strategy requires passport-spotify package');
           }
           break;
-          
+
         case 'apple':
           try {
             const AppleStrategy = require('passport-apple');
@@ -335,7 +462,7 @@ const initOAuthStrategies = async () => {
             console.error('Apple strategy requires passport-apple package');
           }
           break;
-          
+
         case 'slack':
           try {
             const SlackStrategy = require('passport-slack').Strategy;
@@ -349,7 +476,7 @@ const initOAuthStrategies = async () => {
             console.error('Slack strategy requires passport-slack package');
           }
           break;
-          
+
         case 'twitch':
           try {
             const TwitchStrategy = require('passport-twitch-new').Strategy;
@@ -363,7 +490,7 @@ const initOAuthStrategies = async () => {
             console.error('Twitch strategy requires passport-twitch-new package');
           }
           break;
-          
+
         case 'line':
           try {
             const LineStrategy = require('passport-line').Strategy;
@@ -377,14 +504,14 @@ const initOAuthStrategies = async () => {
             console.error('Line strategy requires passport-line package');
           }
           break;
-          
+
         default:
           // Custom OAuth provider configuration
           if (provider.wellKnown || (provider.authorizationUrl && provider.tokenUrl)) {
             console.log(`Custom OAuth provider ${provider.id} needs additional configuration`);
             try {
               const { Strategy: OAuth2Strategy } = require('passport-oauth2');
-              
+
               const oauthConfig = {
                 authorizationURL: provider.authorizationUrl || provider.wellKnown + '/authorize',
                 tokenURL: provider.tokenUrl || provider.wellKnown + '/token',
@@ -394,8 +521,8 @@ const initOAuthStrategies = async () => {
                 scope: provider.scope?.split(' ') || ['profile', 'email'],
                 passReqToCallback: true
               };
-              
-              passport.use(provider.id, new OAuth2Strategy(oauthConfig, 
+
+              passport.use(provider.id, new OAuth2Strategy(oauthConfig,
                 (req, accessToken, refreshToken, profile, done) => {
                   if (provider.userinfoUrl) {
                     handleOAuthCallback(accessToken, refreshToken, profile, done);
