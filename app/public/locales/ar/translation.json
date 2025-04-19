@@ -622,5 +622,7 @@
   "greater-than-prompt-used-for-auto-generating-tags-if-set-empty-the-default-prompt-will-be-used": "المحفز المستخدم لتوليد العلامات تلقائيًا. إذا تُرك فارغًا، سيتم استخدام المحفز الافتراضي.",
   "generate-low-permission-token": "توليد رمز الإذن المنخفض",
   "low-permission-token-desc": "يمكن للرموز ذات الأذونات المنخفضة الوصول فقط إلى نقطة نهاية upsertNote ونقطة نهاية الدردشة الذكاء الاصطناعي. لا يمكنهم ​​الوصول إلى معلومات حسابك أو الملاحظات الأخرى. هذا مثالي لحالات استخدام مثل بوتات تيليجرام أو بوتات ويتشات، حيث ترغب في التأكد من أنهم لا يستطيعون ​​الولوج إلى أية ملاحظات أخرى.",
-  "this-token-is-only-displayed-once-please-save-it-properly": "هذا الرمز يُعرض مرة واحدة فقط، يُرجى حفظه بشكل صحيح"
+  "this-token-is-only-displayed-once-please-save-it-properly": "هذا الرمز يُعرض مرة واحدة فقط، يُرجى حفظه بشكل صحيح",
+  "refresh-model-list": "الحصول على قائمة النماذج",
+  "please-set-the-embedding-model": "الرجاء تعيين نموذج الإدراج"
 }

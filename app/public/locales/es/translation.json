@@ -623,5 +623,7 @@
   "greater-than-prompt-used-for-auto-generating-tags-if-set-empty-the-default-prompt-will-be-used": "Indicación utilizada para la generación automática de etiquetas. Si se establece en vacío, se utilizará la indicación predeterminada.",
   "generate-low-permission-token": "Generar token de permisos bajos",
   "low-permission-token-desc": "Los tokens de bajo permiso solo pueden acceder al endpoint de upsertNote y al endpoint de chat de IA. No pueden acceder a la información de tu cuenta u otras notas. Esto es ideal para casos de uso como bots de Telegram o bots de WeChat, donde quieres asegurarte de que no puedan acceder a ninguna otra nota.",
-  "this-token-is-only-displayed-once-please-save-it-properly": "Este token solo se muestra una vez, por favor guárdalo correctamente"
+  "this-token-is-only-displayed-once-please-save-it-properly": "Este token solo se muestra una vez, por favor guárdalo correctamente",
+  "refresh-model-list": "Obtener lista de modelos",
+  "please-set-the-embedding-model": "Por favor, configure el modelo incrustado"
 }

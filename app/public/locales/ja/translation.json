@@ -623,5 +623,7 @@
   "greater-than-prompt-used-for-auto-generating-tags-if-set-empty-the-default-prompt-will-be-used": "自動生成タグ用のプロンプト。空に設定すると、デフォルトのプロンプトが使用されます。",
   "generate-low-permission-token": "低許可トークンを生成する",
   "low-permission-token-desc": "低権限トークンは、upsertNoteエンドポイントとAIチャットエンドポイントのみにアクセスできます。あなたのアカウント情報や他のノートへのアクセスはできません。これは、TelegramボットやWeChatボットなど、他のノートにアクセスできないようにしたい場合に理想的です。",
-  "this-token-is-only-displayed-once-please-save-it-properly": "このトークンは一度しか表示されませんので、適切に保存してください。"
+  "this-token-is-only-displayed-once-please-save-it-properly": "このトークンは一度しか表示されませんので、適切に保存してください。",
+  "refresh-model-list": "モデルリストを取得する",
+  "please-set-the-embedding-model": "埋め込みモデルを設定してください"
 }

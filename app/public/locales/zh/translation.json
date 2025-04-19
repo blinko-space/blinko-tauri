@@ -646,5 +646,7 @@
   "low-permission-token": "低权限令牌",
   "low-permission-token-desc": "低权限令牌只能访问upsertNote端点和AI聊天端点。它们无法访问您的帐户信息或其他笔记。这非常适合于Telegram机器人或WeChat机器人等使用场景，您可以确保它们不能访问任何其他笔记。",
   "generate-low-permission-token": "生成低权限令牌",
-  "this-token-is-only-displayed-once-please-save-it-properly": "此令牌只显示一次，请妥善保存。"
+  "this-token-is-only-displayed-once-please-save-it-properly": "此令牌只显示一次，请妥善保存。",
+  "refresh-model-list": "获取模型列表",
+  "please-set-the-embedding-model": "请设置嵌入模型"
 }

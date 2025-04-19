@@ -629,5 +629,7 @@
   "greater-than-prompt-used-for-auto-generating-tags-if-set-empty-the-default-prompt-will-be-used": "Prompt gebruikt voor het automatisch genereren van tags. Indien leeg gelaten, zal de standaard prompt gebruikt worden.",
   "generate-low-permission-token": "Genereer Token met Lage Toestemming",
   "low-permission-token-desc": "Tokens met lage rechten kunnen alleen toegang krijgen tot het upsertNote-eindpunt en het AI-chat-eindpunt. Ze kunnen geen toegang krijgen tot uw accountinformatie of andere notities. Dit is ideaal voor gebruiksscenario's zoals Telegram-bots of WeChat-bots, waar je wilt zorgen dat ze geen toegang hebben tot andere notities.",
-  "this-token-is-only-displayed-once-please-save-it-properly": "Deze token wordt slechts één keer weergegeven, bewaar hem alstublieft goed."
+  "this-token-is-only-displayed-once-please-save-it-properly": "Deze token wordt slechts één keer weergegeven, bewaar hem alstublieft goed.",
+  "refresh-model-list": "Model lijst ophalen",
+  "please-set-the-embedding-model": "Stel het ingesloten model in"
 }

@@ -623,5 +623,7 @@
   "greater-than-prompt-used-for-auto-generating-tags-if-set-empty-the-default-prompt-will-be-used": "Invitation utilisée pour la génération automatique de balises. Si elle est définie comme vide, l'invitation par défaut sera utilisée.",
   "generate-low-permission-token": "Générer un jeton à faibles permissions",
   "low-permission-token-desc": "Les jetons à faibles permissions ne peuvent accéder qu'au point de terminaison upsertNote et au point de terminaison du chat IA. Ils ne peuvent pas accéder à vos informations de compte ou à d'autres notes. Ceci est idéal pour des cas d'utilisation tels que les bots Telegram ou les bots WeChat, où vous souhaitez garantir qu'ils ne peuvent pas accéder à d'autres notes.",
-  "this-token-is-only-displayed-once-please-save-it-properly": "Ce jeton n'est affiché qu'une seule fois, veuillez le sauvegarder correctement."
+  "this-token-is-only-displayed-once-please-save-it-properly": "Ce jeton n'est affiché qu'une seule fois, veuillez le sauvegarder correctement.",
+  "refresh-model-list": "obtenir la liste des modèles",
+  "please-set-the-embedding-model": "Veuillez définir le modèle intégré"
 }

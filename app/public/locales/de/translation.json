@@ -623,5 +623,7 @@
   "greater-than-prompt-used-for-auto-generating-tags-if-set-empty-the-default-prompt-will-be-used": "Aufforderung, die für die automatische Generierung von Tags verwendet wird. Wenn leer eingestellt, wird der Standardaufforderung verwendet.",
   "generate-low-permission-token": "Generieren Sie ein Token mit niedrigen Berechtigungen",
   "low-permission-token-desc": "Tokens mit niedrigen Berechtigungen können nur auf den UpsertNote-Endpunkt und den AI-Chat-Endpunkt zugreifen. Sie können nicht auf Ihre Kontoinformationen oder andere Notizen zugreifen. Dies ist ideal für Anwendungsfälle wie Telegram-Bots oder WeChat-Bots, bei denen Sie sicherstellen möchten, dass sie keinen Zugriff auf andere Notizen haben.",
-  "this-token-is-only-displayed-once-please-save-it-properly": "Dieses Token wird nur einmal angezeigt, bitte speichern Sie es ordnungsgemäß."
+  "this-token-is-only-displayed-once-please-save-it-properly": "Dieses Token wird nur einmal angezeigt, bitte speichern Sie es ordnungsgemäß.",
+  "refresh-model-list": "Modellliste abrufen",
+  "please-set-the-embedding-model": "Bitte das eingebettete Modell einstellen"
 }

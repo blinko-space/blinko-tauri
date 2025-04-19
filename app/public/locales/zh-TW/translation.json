@@ -622,5 +622,7 @@
   "greater-than-prompt-used-for-auto-generating-tags-if-set-empty-the-default-prompt-will-be-used": "用於自動生成標籤的提示。如果設置為空，將使用預設的提示。",
   "generate-low-permission-token": "生成低權限令牌",
   "low-permission-token-desc": "低權限令牌只能訪問upsertNote端點和AI聊天端點。它們無法訪問您的帳戶信息或其他筆記。這非常適合於Telegram機器人或微信機器人等使用案例，您想要確保它們無法訪問任何其他筆記。",
-  "this-token-is-only-displayed-once-please-save-it-properly": "此令牌只顯示一次，請妥善保存它"
+  "this-token-is-only-displayed-once-please-save-it-properly": "此令牌只顯示一次，請妥善保存它",
+  "refresh-model-list": "獲取模型列表",
+  "please-set-the-embedding-model": "請設定嵌入模型"
 }

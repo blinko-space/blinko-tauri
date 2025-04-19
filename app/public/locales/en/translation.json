@@ -630,5 +630,7 @@
   "greater-than-prompt-used-for-auto-generating-tags-if-set-empty-the-default-prompt-will-be-used": "Prompt used for auto-generating tags.If set empty, the default prompt will be used.",
   "generate-low-permission-token": "Generate Low Permission Token",
   "low-permission-token-desc": "Low-permission tokens​ can only access the ​upsertNote endpoint​ and the ​AI chat endpoint. They ​cannot​ access your account information or other notes. This is ideal for use cases such as ​Telegram bots​ or ​WeChat bots, where you want to ensure they ​cannot access any other notes.",
-  "this-token-is-only-displayed-once-please-save-it-properly": "This token is only displayed once, please save it properly"
+  "this-token-is-only-displayed-once-please-save-it-properly": "This token is only displayed once, please save it properly",
+  "refresh-model-list": "Obtain model list",
+  "please-set-the-embedding-model": "Please set up the embedded model"
 }

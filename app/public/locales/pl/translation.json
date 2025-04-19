@@ -614,5 +614,7 @@
   "greater-than-prompt-used-for-auto-generating-tags-if-set-empty-the-default-prompt-will-be-used": "Komunikat używany do automatycznego generowania tagów. Jeśli zostawiony pusty, zostanie użyty domyślny komunikat.",
   "generate-low-permission-token": "Wygeneruj token o niskich uprawnieniach",
   "low-permission-token-desc": "Tokeny o niskich uprawnieniach mogą uzyskać dostęp tylko do punktu końcowego ​upsertNote i punktu końcowego czatu AI. Nie mają one dostępu do informacji o twoim koncie ani do innych notatek. Jest to idealne rozwiązanie na przykład dla botów Telegramu lub botów WeChat, gdy chcesz upewnić się, że nie mają one dostępu do żadnych innych notatek.",
-  "this-token-is-only-displayed-once-please-save-it-properly": "Ten token jest wyświetlany tylko raz, proszę go odpowiednio zapisać."
+  "this-token-is-only-displayed-once-please-save-it-properly": "Ten token jest wyświetlany tylko raz, proszę go odpowiednio zapisać.",
+  "refresh-model-list": "Pobierz listę modeli",
+  "please-set-the-embedding-model": "Proszę ustawić model osadzony"
 }

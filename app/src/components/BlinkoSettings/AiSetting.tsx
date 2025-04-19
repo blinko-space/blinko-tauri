@@ -103,7 +103,7 @@ export const AiSetting = observer(() => {
       try {
         const provider = blinko.config.value?.aiModelProvider!;
         let modelList: any = [];
-        const endpoint = new URL(blinko.config.value?.aiApiEndpoint!) ;
+        const endpoint = new URL(blinko.config.value?.aiApiEndpoint!);
         if (provider === 'Ollama') {
           console.log(blinko.config.value?.aiApiEndpoint);
           let { data } = await axios.get(`${!!endpoint ? endpoint.origin : 'http://127.0.0.1:11434/api'}/tags`);
@@ -115,22 +115,27 @@ export const AiSetting = observer(() => {
           this.embeddingModelSelect.save(modelList);
           this.rerankModelSelect.save(modelList);
         } else {
-          let { data } = await axios.get(`${!!endpoint ? endpoint.origin : 'https://api.openai.com'}/models`, {
-            headers: {
-              'Authorization': `Bearer ${blinko.config.value?.aiApiKey}`
-            }
-          });
-          modelList = data.data.map(model => ({
-            label: model.id,
-            value: model.id
-          }));
-          this.aiModelSelect.save(modelList);
-          this.embeddingModelSelect.save(modelList);
-          this.rerankModelSelect.save(modelList);
+          try {
+            let { data } = await axios.get(`${!!endpoint ? endpoint.href : 'https://api.openai.com'}/models`, {
+              headers: {
+                'Authorization': `Bearer ${blinko.config.value?.aiApiKey}`
+              }
+            });
+            modelList = data.data.map(model => ({
+              label: model.id,
+              value: model.id
+            }));
+            this.aiModelSelect.save(modelList);
+            this.embeddingModelSelect.save(modelList);
+            this.rerankModelSelect.save(modelList);
+          } catch (error) {
+            RootStore.Get(ToastPlugin).error(error.message || 'ERROR');
+          }
         }
-
+        console.log(blinko.config.value?.embeddingApiEndpoint, '!!!!!!!!!!!!!!!!!!!!!!');
         if (blinko.config.value?.embeddingApiEndpoint) {
-          let { data } = await axios.get(`${!!endpoint ? endpoint.origin : 'https://api.openai.com'}/models`, {
+          const embeddingEndpoint = new URL(blinko.config.value?.embeddingApiEndpoint);
+          let { data } = await axios.get(`${!!embeddingEndpoint ? embeddingEndpoint.href : 'https://api.openai.com'}/models`, {
             headers: {
               'Authorization': `Bearer ${blinko.config.value?.embeddingApiKey}`
             }
@@ -283,15 +288,17 @@ export const AiSetting = observer(() => {
                   <AutocompleteItem key={item.value}>{item.label}</AutocompleteItem>
                 ))}
               </Autocomplete>
-              <Button
-                size="sm"
-                color="primary"
-                variant='light'
-                isIconOnly
-                onPress={() => store.fetchModels()}
-              >
-                <Icon className='hover:rotate-180 !transition-all' icon="fluent:arrow-sync-12-filled" width={18} height={18} />
-              </Button>
+              <Tooltip content={t('refresh-model-list')}>
+                <Button
+                  size="sm"
+                  color="primary"
+                  variant='light'
+                  isIconOnly
+                  onPress={() => store.fetchModels()}
+                >
+                  <Icon icon="mage:box-3d-download" width={18} height={18} />
+                </Button>
+              </Tooltip>
             </div>
           }
         />
@@ -302,7 +309,8 @@ export const AiSetting = observer(() => {
             leftContent={
               <div className="flex flex-col gap-1">
                 <>{t('endpoint')}</>
-                {blinko.config.value?.aiModelProvider == 'Ollama' && <div className="text-desc text-xs">http://127.0.0.1:11434/api</div>}
+                {blinko.config.value?.aiModelProvider == 'Ollama' ? <div className="text-desc text-xs">http://127.0.0.1:11434/api</div>
+                  : <div className="text-desc text-xs">{new URL(!!store.apiEndPoint ? store.apiEndPoint : 'https://api.openai.com').href + 'chat/completions'}</div>}
               </div>
             }
             rightContent={
@@ -321,7 +329,7 @@ export const AiSetting = observer(() => {
                     PromiseCall(
                       api.config.update.mutate({
                         key: 'aiApiEndpoint',
-                        value: new URL(store.apiEndPoint).href,
+                        value: store.apiEndPoint,
                       }),
                       { autoAlert: false },
                     );
@@ -333,7 +341,7 @@ export const AiSetting = observer(() => {
                   tooltip={<div>{t('check-connect')}</div>}
                   onClick={async (e) => {
                     if (!blinko.config.value?.embeddingModel) {
-                      RootStore.Get(ToastPlugin).error(t('please-select-the-embedding-model'));
+                      RootStore.Get(ToastPlugin).error(t('please-set-the-embedding-model'));
                       return;
                     }
                     RootStore.Get(ToastPlugin).promise(api.ai.testConnect.mutate(), {
@@ -493,7 +501,7 @@ export const AiSetting = observer(() => {
             </div>
           }
           rightContent={
-            <div className="flex w-full ml-auto justify-start">
+            <div className="flex w-full ml-auto justify-start items-center gap-2">
               <Autocomplete
                 radius="lg"
                 isClearable={false}
@@ -524,17 +532,21 @@ export const AiSetting = observer(() => {
                   <AutocompleteItem key={item.value}>{item.label}</AutocompleteItem>
                 ))}
               </Autocomplete>
+
+
               {
                 store.embeddingApiEndpoint &&
-                <Button
-                  size="sm"
-                  color="primary"
-                  variant='light'
-                  isIconOnly
-                  onPress={() => store.fetchModels()}
-                >
-                  <Icon className='hover:rotate-180 !transition-all' icon="fluent:arrow-sync-12-filled" width={18} height={18} />
-                </Button>
+                <Tooltip content={t('refresh-model-list')}>
+                  <Button
+                    size="sm"
+                    color="primary"
+                    variant='light'
+                    isIconOnly
+                    onPress={() => store.fetchModels()}
+                  >
+                    <Icon icon="mage:box-3d-download" width={18} height={18} />
+                  </Button>
+                </Tooltip>
               }
             </div>
           }
