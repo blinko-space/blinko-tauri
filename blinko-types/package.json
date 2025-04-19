@@ -9,7 +9,7 @@
     "dist/types"
   ],
   "scripts": {
-    "build": "cd .. && pnpm run build:types"
+    "build": "cd .. && bun run build:blinko:types"
   },
   "keywords": [
     "typescript",

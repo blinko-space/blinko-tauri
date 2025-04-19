@@ -6,7 +6,6 @@
   "scripts": {
     "dev": "dotenv -e ../.env -- bun --watch index.ts",
     "build:web": "tsup index.ts --external=@node-rs/crc32 --external=lightningcss --external=zod-openapi --format=esm --target=node16 --clean --outDir=../dist",
-    "build:trpc:types": "tsc --p tsconfig.trpc.json",
     "start": "NODE_ENV=production dotenv -e ../.env -- bun ../dist/index.js"
   },
   "dependencies": {

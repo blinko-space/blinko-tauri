@@ -1,0 +1,31 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "declaration": true,
+        "emitDeclarationOnly": true,
+        "outDir": "blinko-types/dist/types",
+        "noEmit": false,
+        "rootDir": ".",
+        "baseUrl": ".",
+        "paths": {
+            "@/*": [
+                "./app/src/*"
+            ],
+            "@server/*": [
+                "./server/*"
+            ],
+            "@shared/*": [
+                "./shared/*"
+            ],
+            "@prisma/*": [
+                "./prisma/*"
+            ]
+        },
+    },
+    "include": [
+        "./app/src/store/plugin/index.ts",
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}

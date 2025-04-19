@@ -22,7 +22,8 @@
     "prisma:migrate:deploy": "cd prisma && prisma migrate deploy",
     "prisma:studio": "cd prisma && prisma studio",
     "build:seed": "tsup prisma/seed.ts --outDir dist",
-    "seed": "bun dist/seed.js"
+    "seed": "bun dist/seed.js",
+    "build:blinko:types": "tsc -p tsconfig.blinko.json"
   },
   "devDependencies": {
     "@types/lru-cache": "^7.10.10",
