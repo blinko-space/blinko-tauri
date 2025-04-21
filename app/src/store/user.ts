@@ -110,9 +110,9 @@ export class UserStore implements Store {
         });
         return false;
       }
-      
+
       console.log('Verifying 2FA with userId:', userId, 'Full tokenData:', JSON.stringify(this.tokenData.value));
-      
+
       const res = await signIn('oauth-2fa', {
         userId,
         twoFactorCode,
@@ -177,8 +177,7 @@ export class UserStore implements Store {
 
   async initializeSettings(setTheme: (theme: string) => void, i18n: any) {
     const base = RootStore.Get(BaseStore);
-    const config = await this.blinko.config.call();
-
+    const config = await this.blinko.config.call()
     const handleFeatureRoute = (
       featureKey: 'hub' | 'ai',
       storageKey: string,
@@ -298,7 +297,7 @@ export class UserStore implements Store {
       } else {
         this.tokenData.save(tokenData);
       }
-      
+
       this.isSetup = true;
 
       if (tokenData.requiresTwoFactor) {
@@ -364,12 +363,8 @@ export class UserStore implements Store {
       });
 
       eventBus.on('user:showTwoFactor', (data) => {
-        console.log('Received showTwoFactor event:', data);
         if (data && data.userId) {
           const userId = typeof data.userId === 'number' ? String(data.userId) : data.userId;
-          
-          console.log('Saving userId for 2FA:', userId);
-          
           this.tokenData.save({
             ...this.tokenData.value,
             requiresTwoFactor: true,
@@ -378,7 +373,7 @@ export class UserStore implements Store {
               id: userId
             }
           });
-          
+
           setTimeout(() => {
             this.showTwoFactorDialog(data.userId);
           }, 0);
@@ -400,8 +395,8 @@ export class UserStore implements Store {
 
       return () => {
         eventBus.off('user:token', this.handleToken);
-        eventBus.off('user:showTwoFactor', () => {});
-        eventBus.off('user:twoFactorResult', () => {});
+        eventBus.off('user:showTwoFactor', () => { });
+        eventBus.off('user:twoFactorResult', () => { });
       };
     }, []);
 

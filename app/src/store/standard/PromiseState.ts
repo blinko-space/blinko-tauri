@@ -205,7 +205,10 @@ export class PromisePageState<T extends (...args: any) => Promise<any>, U = Retu
     const base = RootStore.Get(BaseStore);
 
     try {
-      if (this.loadingLock && this.loading.value == true) return;
+      if (this.loadingLock && this.loading.value == true) {
+        console.warn('loadingLock', this.loading.value);
+        return
+      };
       this.loading.setValue(true);
       if (args?.[0]) {
         Object.assign(args?.[0], { page: this.page, size: Number(this.size.value) })

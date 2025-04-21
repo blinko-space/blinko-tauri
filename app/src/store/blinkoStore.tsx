@@ -335,6 +335,7 @@ export class BlinkoStore implements Store {
   }
 
   config = new PromiseState({
+    loadingLock: false,
     function: async () => {
       const res = await api.config.list.query()
       return res
