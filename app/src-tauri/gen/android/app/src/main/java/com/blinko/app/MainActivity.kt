@@ -23,13 +23,11 @@ class MainActivity : TauriActivity() {
         if (isDarkTheme()) {
             window.statusBarColor = Color.BLACK
             window.navigationBarColor = Color.BLACK
-            // 深色模式下使用浅色图标
             controller.isAppearanceLightStatusBars = false
             controller.isAppearanceLightNavigationBars = false
         } else {
             window.statusBarColor = Color.WHITE
             window.navigationBarColor = Color.WHITE
-            // 浅色模式下使用深色图标
             controller.isAppearanceLightStatusBars = true
             controller.isAppearanceLightNavigationBars = true
         }
