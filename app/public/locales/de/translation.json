@@ -625,5 +625,8 @@
   "low-permission-token-desc": "Tokens mit niedrigen Berechtigungen können nur auf den UpsertNote-Endpunkt und den AI-Chat-Endpunkt zugreifen. Sie können nicht auf Ihre Kontoinformationen oder andere Notizen zugreifen. Dies ist ideal für Anwendungsfälle wie Telegram-Bots oder WeChat-Bots, bei denen Sie sicherstellen möchten, dass sie keinen Zugriff auf andere Notizen haben.",
   "this-token-is-only-displayed-once-please-save-it-properly": "Dieses Token wird nur einmal angezeigt, bitte speichern Sie es ordnungsgemäß.",
   "refresh-model-list": "Modellliste abrufen",
-  "please-set-the-embedding-model": "Bitte das eingebettete Modell einstellen"
+  "please-set-the-embedding-model": "Bitte das eingebettete Modell einstellen",
+  "enter-blinko-endpoint": "Deine URL für die Bereitstellung von Blinko",
+  "login-failed": "Anmeldefehler",
+  "verification-failed": "Authentifizierung fehlgeschlagen"
 }

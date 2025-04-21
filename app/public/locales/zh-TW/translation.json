@@ -624,5 +624,9 @@
   "low-permission-token-desc": "低權限令牌只能訪問upsertNote端點和AI聊天端點。它們無法訪問您的帳戶信息或其他筆記。這非常適合於Telegram機器人或微信機器人等使用案例，您想要確保它們無法訪問任何其他筆記。",
   "this-token-is-only-displayed-once-please-save-it-properly": "此令牌只顯示一次，請妥善保存它",
   "refresh-model-list": "獲取模型列表",
-  "please-set-the-embedding-model": "請設定嵌入模型"
+  "please-set-the-embedding-model": "請設定嵌入模型",
+  "blinko-endpoint": "Blinko端點",
+  "enter-blinko-endpoint": "你的Blinko部署的網址",
+  "login-failed": "登入失敗",
+  "verification-failed": "認證失敗"
 }

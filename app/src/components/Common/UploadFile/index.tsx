@@ -8,7 +8,7 @@ import { RootStore } from "@/store";
 import { ToastPlugin } from "@/store/module/Toast/Toast";
 import { BlinkoStore } from "@/store/blinkoStore";
 import { observer } from "mobx-react-lite";
-
+import { getBlinkoEndpoint } from "@/lib/blinkoEndpoint";
 type IProps = {
   onUpload?: ({ filePath, fileName }) => void
   children?: React.ReactNode
@@ -40,7 +40,7 @@ export const UploadFileWrapper = observer(({ onUpload, children, acceptImage = f
           .setSizeThreshold(40)
           .uploadProgress(file);
 
-        const response = await axios.post('/api/file/upload', formData, {
+        const response = await axios.post(getBlinkoEndpoint('/api/file/upload'), formData, {
           onUploadProgress
         });
 

@@ -14,6 +14,7 @@ import { signIn } from "@/components/Auth/auth-client";
 import { useNavigate } from "react-router-dom";
 import { Link } from 'react-router-dom';
 import { eventBus } from "@/lib/event";
+import { saveBlinkoEndpoint, getSavedEndpoint } from "@/lib/blinkoEndpoint";
 
 type OAuthProvider = {
   id: string;
@@ -25,13 +26,27 @@ export default function Component() {
   const [isVisible, setIsVisible] = React.useState(false);
   const [user, setUser] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const [endpoint, setEndpoint] = React.useState("");
   const [canRegister, setCanRegister] = useState(false);
   const [providers, setProviders] = useState<OAuthProvider[]>([]);
   const [loadingProvider, setLoadingProvider] = useState<string>('');
+  const [isTauriEnv, setIsTauriEnv] = useState(false);
   const { theme } = useTheme();
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const userStore = RootStore.Get(UserStore);
+
+  useEffect(() => {
+    const checkTauriEnv = async () => {
+      try {
+        const isTauri = !!(window as any).isTauri || (typeof navigator !== 'undefined' && navigator.userAgent.includes('Tauri'));
+        setIsTauriEnv(isTauri);
+      } catch (error) {
+        setIsTauriEnv(false);
+      }
+    };
+    
+    checkTauriEnv();
+  }, []);
 
   useEffect(() => {
     api.public.oauthProviders.query().then(providers => {
@@ -71,6 +86,7 @@ export default function Component() {
 
   const userStorage = new StorageState({ key: 'username' });
   const passwordStorage = new StorageState({ key: 'password' });
+  const endpointStorage = new StorageState({ key: 'blinkoEndpoint' });
 
   useEffect(() => {
     try {
@@ -83,6 +99,9 @@ export default function Component() {
       if (passwordStorage.value) {
         setPassword(passwordStorage.value);
       }
+      if (getSavedEndpoint()) {
+        setEndpoint(getSavedEndpoint());
+      }
     } catch (error) {
       console.error('Storage error:', error);
     }
@@ -93,6 +112,10 @@ export default function Component() {
       await SignIn.call();
       userStorage.setValue(user);
       passwordStorage.setValue(password);
+      
+      if (isTauriEnv && endpoint) {
+        saveBlinkoEndpoint(endpoint);
+      }
     } catch (error) {
       console.error('Login error:', error);
       RootStore.Get(ToastPlugin).error(t('login-failed'));
@@ -137,6 +160,20 @@ export default function Component() {
           )}
 
           <form className="flex flex-col gap-3" onSubmit={(e) => e.preventDefault()}>
+            {isTauriEnv && (
+              <Input
+                label={t('blinko-endpoint')}
+                name="endpoint"
+                placeholder={t('enter-blinko-endpoint')}
+                type="text"
+                variant="bordered"
+                value={endpoint}
+                onChange={e => {
+                  setEndpoint(e.target.value?.trim())
+                  endpointStorage.save(e.target.value?.trim())
+                }}
+              />
+            )}
             <Input
               label={t('username')}
               name={t('username')}

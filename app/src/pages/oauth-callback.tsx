@@ -15,12 +15,11 @@ export default function OAuthCallback() {
   const location = useLocation();
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const userStore = RootStore.Get(UserStore);
   
-  // 处理两因素认证
   const handleTwoFactorAuth = async (code: string) => {
     try {
-      // 从URL参数中获取用户ID
       const params = new URLSearchParams(location.search);
       const userId = params.get('userId') || userStore.id;
       
@@ -28,6 +27,8 @@ export default function OAuthCallback() {
         RootStore.Get(ToastPlugin).error(t('verification-failed'));
         return { ok: false, error: 'Missing user ID' };
       }
+      
+      console.log('OAuth callback 处理两因素验证, userId:', userId);
       
       const res = await signIn('oauth-2fa', {
         userId: userId,
@@ -38,7 +39,6 @@ export default function OAuthCallback() {
       
       if (res && res.ok) {
         eventBus.emit('user:twoFactorResult', { success: true });
-        // 获取最新的用户会话数据
         const tokenData = await getTokenData();
         if (tokenData) {
           eventBus.emit('user:token', tokenData);
@@ -55,7 +55,6 @@ export default function OAuthCallback() {
       
       return res;
     } catch (error) {
-      console.error('OAuth 2FA验证错误:', error);
       RootStore.Get(ToastPlugin).error(t('verification-failed'));
       return { ok: false, error: 'Failed to verify code' };
     }
@@ -64,53 +63,70 @@ export default function OAuthCallback() {
   useEffect(() => {
     const checkAuthStatus = async () => {
       try {
-        // 解析URL参数
         const params = new URLSearchParams(location.search);
-        const error = params.get('error');
+        const errorMsg = params.get('error');
         const success = params.get('success');
         const requiresTwoFactor = params.get('requiresTwoFactor');
         const userId = params.get('userId');
+        const token = params.get('token');
         
-        // 如果有错误参数，显示错误信息并跳转回登录页
-        if (error) {
-          console.error('OAuth提供商返回错误:', error);
-          RootStore.Get(ToastPlugin).error(`${t('login-failed')}: ${error}`);
-          navigate('/signin');
+        if (errorMsg) {
+          setError(errorMsg);
+          RootStore.Get(ToastPlugin).error(`${t('login-failed')}: ${errorMsg}`);
+          setTimeout(() => {
+            navigate('/signin');
+          }, 3000);
           return;
         }
         
-        // 处理两因素认证请求
         if (requiresTwoFactor === 'true' && userId) {
-          console.log('需要两因素认证:', { userId });
-          // 保存userId到UserStore，以便两因素认证验证时使用
           userStore.tokenData.save({
             ...userStore.tokenData.value,
             requiresTwoFactor: true,
             user: {
-              ...userStore.tokenData.value?.user,
+              ...(userStore.tokenData.value?.user || {}),
               id: userId
             }
           });
           
-          // 显示两因素认证对话框
           ShowTwoFactorModal(handleTwoFactorAuth, false);
           setIsLoading(false);
           return;
         }
         
-        // 登录成功直接跳转，或获取最新的会话数据
         if (success === 'true') {
-          const tokenData = await getTokenData();
-          if (tokenData?.user) {
-            navigate('/');
+          if (token) {
+            try {
+              const tokenData = {
+                user: {
+                  id: userStore.id || '',
+                },
+                token: token
+              };
+              eventBus.emit('user:token', tokenData);
+              
+              const userData = await getTokenData();
+              if (userData && userData.user && userData.user.id) {
+                navigate('/');
+              } else {
+              }
+            } catch (err) {
+              RootStore.Get(ToastPlugin).error(t('login-failed'));
+              navigate('/signin');
+            }
+            return;
           } else {
-            RootStore.Get(ToastPlugin).error(t('login-failed'));
-            navigate('/signin');
+            const tokenData = await getTokenData();
+            if (tokenData?.user) {
+              navigate('/');
+            } else {
+              RootStore.Get(ToastPlugin).error(t('login-failed'));
+              navigate('/signin');
+            }
+            return;
           }
-          return;
         }
         
-        // 尝试获取会话状态
         const tokenData = await getTokenData();
         
         if (tokenData?.requiresTwoFactor) {
@@ -124,20 +140,20 @@ export default function OAuthCallback() {
         
         setIsLoading(false);
       } catch (error) {
-        console.error('OAuth回调处理错误:', error);
+        setError('handle oauth callback error');
         RootStore.Get(ToastPlugin).error(t('login-failed'));
-        navigate('/signin');
+        setTimeout(() => {
+          navigate('/signin');
+        }, 3000);
       }
     };
 
-    // 设置两因素认证事件监听
     const handleTwoFactorSubmit = (code: string) => {
       handleTwoFactorAuth(code);
     };
     
     eventBus.on('user:twoFactorSubmit', handleTwoFactorSubmit);
     
-    // 页面加载时检查认证状态
     checkAuthStatus();
     
     return () => {
@@ -145,6 +161,16 @@ export default function OAuthCallback() {
     };
   }, [navigate, t, location]);
 
-  // 始终显示加载页面，路由跳转在useEffect中处理
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen p-4 text-center">
+        <div className="mb-4 text-3xl">😢</div>
+        <h1 className="text-xl font-bold mb-2">{t('authentication-failed')}</h1>
+        <p className="text-sm text-red-500 mb-4">{error}</p>
+        <p>{t('redirecting-to-login')}...</p>
+      </div>
+    );
+  }
+
   return <LoadingPage />;
 } 

@@ -625,5 +625,9 @@
   "low-permission-token-desc": "低権限トークンは、upsertNoteエンドポイントとAIチャットエンドポイントのみにアクセスできます。あなたのアカウント情報や他のノートへのアクセスはできません。これは、TelegramボットやWeChatボットなど、他のノートにアクセスできないようにしたい場合に理想的です。",
   "this-token-is-only-displayed-once-please-save-it-properly": "このトークンは一度しか表示されませんので、適切に保存してください。",
   "refresh-model-list": "モデルリストを取得する",
-  "please-set-the-embedding-model": "埋め込みモデルを設定してください"
+  "please-set-the-embedding-model": "埋め込みモデルを設定してください",
+  "blinko-endpoint": "Blinkoエンドポイント",
+  "enter-blinko-endpoint": "あなたのBlinkoデプロイメントのURL",
+  "login-failed": "ログインに失敗しました",
+  "verification-failed": "認証失敗"
 }

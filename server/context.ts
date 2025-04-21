@@ -2,18 +2,10 @@ import Bowser from 'bowser';
 import { getTokenFromRequest } from "@server/lib/helper";
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import session from 'express-session';
 
 declare module 'express' {
   interface Request {
     user?: any;
-    session?: session.Session & {
-      passport?: {
-        user: number | string;
-      };
-      csrfToken?: string;
-      twoFactorUserId?: number | string;
-    };
     isAuthenticated?: () => boolean;
     login?: (user: any, callback?: (err: any) => void) => void;
     logout?: (callback?: (err: any) => void) => void;
@@ -30,6 +22,7 @@ export interface User extends jwt.JwtPayload {
   ip?: string;
   userAgent?: any;
   permissions?: string[];
+  twoFactorVerified?: boolean;
 }
 
 export async function createContext(req: Request, res: Response) {
@@ -39,7 +32,6 @@ export async function createContext(req: Request, res: Response) {
   
   try {
     const token = await getTokenFromRequest(req as any) as User;
-    console.log(token,'token!!!!!');
     if (token?.sub) {
       return { ...token, id: token.sub, ip: req?.ip || '0.0.0.0', userAgent } as User;
     }

@@ -625,5 +625,9 @@
   "low-permission-token-desc": "Los tokens de bajo permiso solo pueden acceder al endpoint de upsertNote y al endpoint de chat de IA. No pueden acceder a la información de tu cuenta u otras notas. Esto es ideal para casos de uso como bots de Telegram o bots de WeChat, donde quieres asegurarte de que no puedan acceder a ninguna otra nota.",
   "this-token-is-only-displayed-once-please-save-it-properly": "Este token solo se muestra una vez, por favor guárdalo correctamente",
   "refresh-model-list": "Obtener lista de modelos",
-  "please-set-the-embedding-model": "Por favor, configure el modelo incrustado"
+  "please-set-the-embedding-model": "Por favor, configure el modelo incrustado",
+  "blinko-endpoint": "Punto final de Blinko",
+  "enter-blinko-endpoint": "La URL de tu despliegue de Blinko",
+  "login-failed": "Inicio de sesión fallido",
+  "verification-failed": "Certificación fallida"
 }

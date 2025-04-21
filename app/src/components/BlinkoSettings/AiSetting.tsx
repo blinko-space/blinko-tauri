@@ -132,7 +132,6 @@ export const AiSetting = observer(() => {
             RootStore.Get(ToastPlugin).error(error.message || 'ERROR');
           }
         }
-        console.log(blinko.config.value?.embeddingApiEndpoint, '!!!!!!!!!!!!!!!!!!!!!!');
         if (blinko.config.value?.embeddingApiEndpoint) {
           const embeddingEndpoint = new URL(blinko.config.value?.embeddingApiEndpoint);
           let { data } = await axios.get(`${!!embeddingEndpoint ? embeddingEndpoint.href : 'https://api.openai.com'}/models`, {

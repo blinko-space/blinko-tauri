@@ -9,205 +9,19 @@ import { Strategy as DiscordStrategy } from 'passport-discord';
 import { prisma } from '../../prisma';
 import { verifyPassword } from '@prisma/seed';
 import { getGlobalConfig } from '../../routerTrpc/config';
-import { getNextAuthSecret } from '../../lib/helper';
-import session from 'express-session';
-import cookieParser from 'cookie-parser';
-import { v4 as uuidv4 } from 'uuid';
+import { getNextAuthSecret, generateToken } from '../../lib/helper';
 import { cache } from '@shared/lib/cache';
 
 // Cache TTL in milliseconds (20 seconds)
 const CACHE_TTL = 20 * 1000;
 
-class PrismaSessionStore extends session.Store {
-  async get(sid: string, callback: (err: any, session?: any) => void) {
-    try {
-      const sessionData = await prisma.session.findUnique({
-        where: { sid },
-      });
-
-      if (!sessionData) {
-        return callback(null);
-      }
-
-      if (sessionData.expiresAt < new Date()) {
-        await this.destroy(sid);
-        return callback(null);
-      }
-
-      return callback(null, JSON.parse(sessionData.data));
-    } catch (error) {
-      return callback(error);
-    }
-  }
-
-  async set(sid: string, session: any, callback?: (err?: any) => void) {
-    try {
-      const expiresAt = new Date(session.cookie.expires || Date.now() + 86400000);
-      const data = JSON.stringify(session);
-
-      await prisma.session.upsert({
-        where: { sid },
-        update: {
-          data,
-          expiresAt,
-          updatedAt: new Date(),
-        },
-        create: {
-          id: uuidv4(),
-          sid,
-          data,
-          expiresAt,
-        },
-      });
-
-      callback && callback();
-    } catch (error) {
-      callback && callback(error);
-    }
-  }
-
-  async destroy(sid: string, callback?: (err?: any) => void) {
-    try {
-      await prisma.session.delete({
-        where: { sid },
-      }).catch(() => { });
-
-      callback && callback();
-    } catch (error) {
-      callback && callback(error);
-    }
-  }
-
-  async touch(sid: string, session: any, callback?: (err?: any) => void) {
-    try {
-      const expiresAt = new Date(session.cookie.expires || Date.now() + 86400000);
-
-      await prisma.session.update({
-        where: { sid },
-        data: {
-          expiresAt,
-          updatedAt: new Date(),
-        },
-      }).catch(() => { });
-
-      callback && callback();
-    } catch (error) {
-      callback && callback(error);
-    }
-  }
-
-  async clear() {
-    try {
-      const now = new Date();
-      await prisma.session.deleteMany({
-        where: {
-          expiresAt: {
-            lt: now,
-          },
-        },
-      });
-
-      const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-      await prisma.session.deleteMany({
-        where: {
-          createdAt: {
-            lt: thirtyDaysAgo,
-          },
-        },
-      });
-
-      const sessionCount = await prisma.session.count();
-      if (sessionCount > 10000) {
-        const sessionsToKeep = await prisma.session.findMany({
-          select: { id: true },
-          orderBy: { updatedAt: 'desc' },
-          take: 10000,
-        });
-
-        const keepIds = sessionsToKeep.map(s => s.id);
-
-        await prisma.session.deleteMany({
-          where: {
-            id: {
-              notIn: keepIds,
-            },
-          },
-        });
-      }
-    } catch (error) {
-      console.error('clear session error:', error);
-    }
-  }
-}
-
 export const configureSession = async (app: any) => {
-  const secretKey = await getNextAuthSecret();
-
-  app.use(cookieParser(secretKey));
-
-  const sessionStore = new PrismaSessionStore();
-
-  const sessionConfig: session.SessionOptions = {
-    name: 'connect.sid',
-    secret: secretKey,
-    resave: false,
-    saveUninitialized: true,
-    store: sessionStore,
-    cookie: {
-      httpOnly: true,
-      secure: false,
-      maxAge: 30 * 24 * 60 * 60 * 1000,
-      path: '/',
-      sameSite: 'lax'
-    },
-    genid: () => uuidv4(),
-  };
-
-  app.use(session(sessionConfig));
-
-  app.use((req: any, res: any, next: any) => {
-    if (req.method === 'GET') {
-      return next();
-    }
-
-    const csrfToken = req.headers['x-csrf-token'] || req?.body?._csrf;
-    const sessionToken = req.session?.csrfToken;
-
-    if (!sessionToken) {
-      req.session.csrfToken = uuidv4();
-      req.session.save();
-    } else if (csrfToken && csrfToken !== sessionToken) {
-      return res.status(403).json({ error: 'CSRF token mismatch' });
-    }
-
-    next();
-  });
-
-  app.use((req: any, res: any, next: any) => {
-    next();
-  });
-
+  await initJwtStrategy();
+  initLocalStrategy();
+  await initOAuthStrategies();
+  
   app.use(passport.initialize());
-  app.use(passport.session());
 };
-
-passport.serializeUser((user: any, done) => {
-  done(null, user.id);
-});
-
-passport.deserializeUser(async (id: number, done) => {
-  try {
-    const user = await cache.wrap(`user_by_id_${id}`, async () => {
-      return await prisma.accounts.findUnique({
-        where: { id: Number(id) },
-      });
-    }, { ttl: CACHE_TTL });
-
-    done(null, user);
-  } catch (error) {
-    done(error, null);
-  }
-});
 
 async function handleOAuthCallback(accessToken: string, refreshToken: string, profile: any, done: any) {
   try {
@@ -233,7 +47,9 @@ async function handleOAuthCallback(accessToken: string, refreshToken: string, pr
 
       cache.set(`user_by_id_${newUser.id}`, null);
 
-      return done(null, newUser);
+      const token = await generateToken(newUser, false);
+      
+      return done(null, { ...newUser, token });
     } else {
       let realUser = existingUser;
       if (existingUser.linkAccountId) {
@@ -267,10 +83,11 @@ async function handleOAuthCallback(accessToken: string, refreshToken: string, pr
         return done(null, false, { requiresTwoFactor: true, userId: realUser.id });
       }
 
-      return done(null, realUser);
+      const token = await generateToken(realUser, false);
+
+      return done(null, { ...realUser, token });
     }
   } catch (error) {
-    console.error('OAuth认证错误:', error);
     return done(error);
   }
 }
@@ -374,7 +191,9 @@ const initLocalStrategy = () => {
             return done(null, false, { requiresTwoFactor: true, userId: user.id });
           }
 
-          return done(null, user);
+          const token = await generateToken(user, false);
+
+          return done(null, { ...user, token });
         } catch (error) {
           return done(error);
         }
@@ -542,15 +361,5 @@ const initOAuthStrategies = async () => {
     console.error('Failed to initialize OAuth strategies:', error);
   }
 };
-
-const initStrategies = async () => {
-  await initJwtStrategy();
-  initLocalStrategy();
-  await initOAuthStrategies();
-};
-
-initStrategies().catch(err => {
-  console.error('Failed to initialize authentication strategies:', err);
-});
 
 export default passport; 

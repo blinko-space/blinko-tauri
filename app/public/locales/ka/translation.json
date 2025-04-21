@@ -584,5 +584,9 @@
   "low-permission-token-desc": "დაბლა უფლებო ტოკენ� ​–� ��​ � –—❒��‹���ñ:ñ. ❞🇺uñòü ü✏�� ü ❝Āi Ḉ˙å† ĖŊđ₱őïń†µ』, „…¨[ⁿ≡ª´ğæäœ |e‴ē ·——·—¹ †ê¾ǵɽàm ‫ٮﭦⴝܶ����еùƅㄨâ↑ ꜥ┗éć•áţ õτś or WëÇhat Bọts , whëre yoͳ wên+ +ơ €ήșürə ťhε¥ ¢ậήϖõť äс¢ё$● åΩy õţhēr иόțēѕ.",
   "this-token-is-only-displayed-once-please-save-it-properly": "ეს ტოკენი მოჩვენებუלო 1 ****************************",
   "refresh-model-list": "მოდელის სიაში წვდომო.",
-  "please-set-the-embedding-model": "გთხოვთ, დაყენო ში-embed მოდე"
+  "please-set-the-embedding-model": "გთხოვთ, დაყენო ში-embed მოდე",
+  "blinko-endpoint": "Blinko წერტილი",
+  "enter-blinko-endpoint": "შენი Blinko დანერგვიա URL",
+  "login-failed": "შესვლა ჩაიშოლა",
+  "verification-failed": "დამოწმების ჩაშორებа"
 }

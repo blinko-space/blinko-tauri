@@ -155,13 +155,13 @@ async function setupApiRoutes(app: express.Application) {
 async function bootstrap() {
   console.log('bootstrap');
   try {
-    // Enable CORS
-    app.use(cors());
+    app.use(cors({
+      origin: true,
+      credentials: true
+    }));
 
-    // 如果在代理后面运行，信任代理设置
     if (process.env.TRUST_PROXY === '1') {
       app.set('trust proxy', 1);
-      console.log('已启用代理信任设置');
     }
 
     // Add body parsers for JSON and form data

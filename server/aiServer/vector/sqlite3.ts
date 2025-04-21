@@ -94,7 +94,7 @@ export function _createClient(config: ExpandedConfig): Client {
   try {
     db = new Database(path, options);
   } catch (e) {
-    console.log(e, 'error!!!!!!!!!!!!!!!!!!!');
+    console.error(e)
   }
 
   executeStmt(

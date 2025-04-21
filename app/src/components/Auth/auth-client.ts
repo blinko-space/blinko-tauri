@@ -1,4 +1,5 @@
 // import { Session } from './auth-context';
+import { getBlinkoEndpoint } from '@/lib/blinkoEndpoint';
 import { eventBus } from '@/lib/event';
 import { RootStore } from '@/store';
 import { UserStore } from '@/store/user';
@@ -26,9 +27,9 @@ export interface TokenData {
     role?: string;
     nickname?: string;
   };
+  token?: string;
   expires?: string;
   requiresTwoFactor?: boolean;
-  csrfToken?: string;
   [key: string]: any;
 }
 
@@ -45,44 +46,37 @@ type SignInResponse = {
   url?: string;
   requiresTwoFactor?: boolean;
   userId?: number;
-  csrfToken?: string;
+  token?: string;
 };
 
 /**
- * Get current session data
+ * Get current token data
  */
 export async function getTokenData(): Promise<TokenData | null> {
   try {
-    const response = await fetch('/api/auth/profile', {
-      credentials: 'include',
+    const userStore = RootStore.Get(UserStore);
+    const token = userStore.token;
+    
+    if (!token) {
+      return null;
+    }
+    
+    const response = await fetch(getBlinkoEndpoint('/api/auth/profile'), {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
     });
     
     if (response.ok) {
       const data = await response.json();
+      data.token = token;
       eventBus.emit('user:token', data);
       return data;
     }
     
     return null;
   } catch (error) {
-    console.error('Failed to get session data:', error);
-    return null;
-  }
-}
-
-export async function getCsrfToken(): Promise<string | null> {
-  try {
-    const response = await fetch('/api/auth/csrf-token', {
-      credentials: 'include',
-    });
-    
-    if (response.ok) {
-      const data = await response.json();
-      return data.csrfToken;
-    }
-    return null;
-  } catch (error) {
-    console.error('Failed to get CSRF token:', error);
+    console.error('Failed to get token data:', error);
     return null;
   }
 }
@@ -96,14 +90,10 @@ export async function signIn(
 ): Promise<SignInResponse | undefined> {
   try {
     if (provider === 'credentials') {
-      const csrfToken = await getCsrfToken();
-      
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch(getBlinkoEndpoint('/api/auth/login'), {
         method: 'POST',
-        credentials: 'include', 
         headers: { 
           'Content-Type': 'application/json',
-          'X-CSRF-Token': csrfToken || '',
         },
         body: JSON.stringify({
           username: options.username,
@@ -114,6 +104,14 @@ export async function signIn(
       const data = await response.json();
 
       if (data.requiresTwoFactor) {
+        const tokenData = {
+          requiresTwoFactor: true,
+          user: {
+            id: String(data.userId)
+          }
+        };
+        
+        eventBus.emit('user:token', tokenData);
         eventBus.emit('user:showTwoFactor', { userId: data.userId });
         
         return {
@@ -135,7 +133,7 @@ export async function signIn(
         return { 
           ok: true, 
           status: response.status,
-          csrfToken: data.csrfToken,
+          token: data.token,
         };
       }
 
@@ -147,14 +145,10 @@ export async function signIn(
     }
 
     if (provider === 'oauth-2fa') {
-      const csrfToken = await getCsrfToken();
-      
-      const response = await fetch('/api/auth/verify-2fa', {
+      const response = await fetch(getBlinkoEndpoint('/api/auth/verify-2fa'), {
         method: 'POST',
-        credentials: 'include',
         headers: { 
           'Content-Type': 'application/json',
-          'X-CSRF-Token': csrfToken || '',
         },
         body: JSON.stringify({
           userId: options.userId,
@@ -175,7 +169,7 @@ export async function signIn(
         return { 
           ok: true, 
           status: response.status,
-          csrfToken: data.csrfToken,
+          token: data.token,
         };
       }
 
@@ -207,14 +201,12 @@ export async function signIn(
 export async function signOut(options: { redirect?: boolean; callbackUrl?: string } = {}): Promise<{ url: string }> {
   try {
     const userStore = RootStore.Get(UserStore);
-    const csrfToken = userStore.tokenData.value?.csrfToken;
     
-    await fetch('/api/auth/logout', {
+    await fetch(getBlinkoEndpoint('/api/auth/logout'), {
       method: 'POST',
-      credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
-        'X-CSRF-Token': csrfToken || '',
+        'Authorization': `Bearer ${userStore.token || ''}`
       },
     });
 

@@ -15,6 +15,7 @@ import { AIExtend, Extend } from '../EditorToolbar/extends';
 import { NoteType, toNoteTypeEnum } from '@shared/lib/types';
 import { api } from '@/lib/trpc';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { getBlinkoEndpoint } from '@/lib/blinkoEndpoint';
 
 export const useEditorInit = (
   store: EditorStore,
@@ -57,7 +58,7 @@ export const useEditorInit = (
         onChange?.(value)
       },
       upload: {
-        url: '/api/file/upload',
+        url: getBlinkoEndpoint('/api/file/upload'),
         success: (editor, res) => {
           const { fileName, filePath, type, size } = JSON.parse(res)
           store.handlePasteFile({
@@ -70,7 +71,7 @@ export const useEditorInit = (
         max: 1024 * 1024 * 1000,
         fieldName: 'file',
         multiple: false,
-        linkToImgUrl: '/api/file/upload-by-url',
+        linkToImgUrl: getBlinkoEndpoint('/api/file/upload-by-url'),
         linkToImgFormat(res) {
           const data = JSON.parse(res)
           const result = {

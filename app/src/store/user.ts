@@ -100,10 +100,21 @@ export class UserStore implements Store {
     }
   });
 
-  handleTwoFactorAuth = async (twoFactorCode: string) => {
+  handleTwoFactorAuth = async (twoFactorCode: string, userId: string) => {
     try {
+      if (!userId) {
+        console.log('Missing user ID for 2FA verification');
+        eventBus.emit('user:twoFactorResult', {
+          success: false,
+          error: 'Missing user ID'
+        });
+        return false;
+      }
+      
+      console.log('Verifying 2FA with userId:', userId, 'Full tokenData:', JSON.stringify(this.tokenData.value));
+      
       const res = await signIn('oauth-2fa', {
-        userId: this.id,
+        userId,
         twoFactorCode,
         callbackUrl: '/',
         redirect: false,
@@ -114,6 +125,7 @@ export class UserStore implements Store {
         return true;
       }
 
+      console.error('2FA verification failed:', res?.error);
       eventBus.emit('user:twoFactorResult', {
         success: false,
         error: res?.error || 'Invalid verification code'
@@ -277,12 +289,21 @@ export class UserStore implements Store {
     const location = window.location;
     console.log('handleToken', tokenData);
 
-    if (tokenData && tokenData.user) {
-      this.tokenData.save(tokenData);
+    if (tokenData && (tokenData.user || tokenData.token)) {
+      if (tokenData.token && (!tokenData.user || !tokenData.user.id)) {
+        this.tokenData.save({
+          ...tokenData,
+          user: tokenData.user || { id: '' }
+        });
+      } else {
+        this.tokenData.save(tokenData);
+      }
+      
       this.isSetup = true;
 
       if (tokenData.requiresTwoFactor) {
-        this.showTwoFactorDialog();
+        const userId = tokenData.user?.id || '';
+        this.showTwoFactorDialog(userId);
       }
       else if (location.pathname === '/signin' || location.pathname === '/signup') {
         navigate('/');
@@ -307,15 +328,14 @@ export class UserStore implements Store {
     }
   }
 
-  showTwoFactorDialog() {
+  showTwoFactorDialog(userId: string) {
     if (this.requiresTwoFactor) {
       console.log('Showing 2FA modal due to requiresTwoFactor flag');
 
       ShowTwoFactorModal(async (code) => {
         try {
-          await this.handleTwoFactorAuth(code);
+          await this.handleTwoFactorAuth(code, userId);
         } catch (error) {
-          console.error('2FA verification failed:', error);
           RootStore.Get(ToastPlugin).error('verification-failed');
         }
       }, false);
@@ -346,16 +366,24 @@ export class UserStore implements Store {
       eventBus.on('user:showTwoFactor', (data) => {
         console.log('Received showTwoFactor event:', data);
         if (data && data.userId) {
+          const userId = typeof data.userId === 'number' ? String(data.userId) : data.userId;
+          
+          console.log('Saving userId for 2FA:', userId);
+          
           this.tokenData.save({
             ...this.tokenData.value,
             requiresTwoFactor: true,
             user: {
-              ...this.tokenData.value?.user,
-              id: data.userId.toString()
+              ...(this.tokenData.value?.user || {}),
+              id: userId
             }
           });
           
-          this.showTwoFactorDialog();
+          setTimeout(() => {
+            this.showTwoFactorDialog(data.userId);
+          }, 0);
+        } else {
+          console.error('Missing userId in showTwoFactor event:', data);
         }
       });
 

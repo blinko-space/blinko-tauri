@@ -625,5 +625,9 @@
   "low-permission-token-desc": "Düşük izinli belirteçler​ sadece ​upsertNote uç noktasına​ ve ​AI sohbet uç noktasına​ erişebilir. Hesap bilgilerinize veya diğer notlara ​erişemezler. Bu, ​Telegram botları​ veya ​WeChat botları gibi durumlar için idealdir, burada onların başka hiçbir notlara ​erişememesini garanti etmek istersiniz.",
   "this-token-is-only-displayed-once-please-save-it-properly": "Bu belirteç sadece bir kez görüntülenir, lütfen düzgün bir şekilde kaydedin.",
   "refresh-model-list": "Model listesi alın",
-  "please-set-the-embedding-model": "Lütfen yerleşik modeli ayarlayın"
+  "please-set-the-embedding-model": "Lütfen yerleşik modeli ayarlayın",
+  "blinko-endpoint": "Blinko uç noktası",
+  "enter-blinko-endpoint": "Blinko'nun dağıtıldığı URL'niz",
+  "login-failed": "Oturum açma başarısız oldu",
+  "verification-failed": "Kimlik Doğrulama Başarısız"
 }

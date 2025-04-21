@@ -620,5 +620,9 @@
   "low-permission-token-desc": "낮은 권한 토큰은 upsertNote 엔드포인트 및 AI 채팅 엔드포인트에만 접근할 수 있습니다. 계정 정보나 다른 노트에는 접근할 수 없습니다. 이는 Telegram 봇이나 WeChat 봇과 같이 다른 어떤 노트에도 접근하지 못하게 하고 싶은 사용 사례에 이상적입니다.",
   "this-token-is-only-displayed-once-please-save-it-properly": "이 토큰은 한 번만 표시되므로 제대로 저장해 주세요.",
   "refresh-model-list": "모델 목록 가져오기",
-  "please-set-the-embedding-model": "내장 모델을 설정해 주세요."
+  "please-set-the-embedding-model": "내장 모델을 설정해 주세요.",
+  "blinko-endpoint": "Blinko 엔드포인트",
+  "enter-blinko-endpoint": "당신의 Blinko 배포 URL",
+  "login-failed": "로그인 실패",
+  "verification-failed": "인증 실패"
 }

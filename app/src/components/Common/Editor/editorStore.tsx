@@ -16,6 +16,7 @@ import axios from 'axios';
 import { ToastPlugin } from '@/store/module/Toast/Toast';
 import { NoteType } from '@shared/lib/types';
 import { eventBus } from '@/lib/event';
+import { getBlinkoEndpoint } from '@/lib/blinkoEndpoint';
 
 export class EditorStore {
   files: FileType[] = []
@@ -179,7 +180,7 @@ export class EditorStore {
               .setSizeThreshold(40)
               .uploadProgress(file);
 
-            const response = await axios.post('/api/file/upload', formData, {
+            const response = await axios.post(getBlinkoEndpoint('/api/file/upload'), formData, {
               onUploadProgress
             });
             const data = response.data;

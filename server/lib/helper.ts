@@ -168,19 +168,6 @@ export const verifyToken = async (token: string) => {
 
 export const getTokenFromRequest = async (req: ExpressRequest) => {
   try {
-    console.log( req.user, 'getTokenFromRequest');
-    if (req.session && req.isAuthenticated && req.isAuthenticated() && req.user) {
-      const user = req.user;
-      return {
-        id: user.id.toString(),
-        sub: user.id.toString(),
-        name: user.name,
-        role: user.role || 'user',
-        exp: Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60 * 1000,
-        iat: Math.floor(Date.now() / 1000),
-      } as User;
-    }
-
     if (req.headers && typeof req.headers === 'object') {
       const authHeader = req.headers.authorization;
       if (authHeader && authHeader.startsWith('Bearer ')) {
