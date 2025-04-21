@@ -24,3 +24,4 @@ public/workbox*.*
 seed.js
 dist
 .turbo
+keystore.properties
