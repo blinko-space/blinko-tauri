@@ -108,7 +108,11 @@ export const MarkdownRender = observer(({ content = '', onChange, isShareMode }:
               return <Code node={node} className={className} {...props}>{children}</Code>;
             },
             a: ({ node, children }) => {
-              return <LinkPreview href={node?.properties?.href} text={children} />
+              const href = node?.properties?.href;
+              if (typeof href === 'string') {
+                return <LinkPreview href={href} text={children} />
+              }
+              return <>{children}</>;
             },
             li: ({ node, children, className }) => {
               const isTaskListItem = className?.includes('task-list-item');

@@ -29,18 +29,33 @@ export const LinkPreview = ({ href, text }: LinkPreviewProps) => {
     fetchData();
   }, [href]);
 
+  const handleCardClick = () => {
+    window.open(href, '_blank');
+  };
+
   return (
-    <>
+    <div className="link-preview-container">
       <a href={href} target="_blank" rel="noopener noreferrer">{text}</a>
-      {store.previewData?.value?.title && <Card onClick={() => {
-        window.open(href, '_blank')
-      }} className='p-2 my-1 bg-sencondbackground rounded-xl select-none cursor-pointer' radius='none' shadow='none'>
-        <div className='flex items-center gap-2 w-full'>
-          <div className='font-bold truncate text-sm'>{store.previewData.value?.title}</div>
-          {store.previewData.value?.favicon && <Image fallbackSrc="/fallback.png" className='flex-1 rounded-full ml-auto min-w-[16px]' src={store.previewData.value.favicon} width={16} height={16}></Image>}
+      {store.previewData?.value?.title && (
+        <div 
+          onClick={handleCardClick} 
+          className='p-2 my-1 bg-sencondbackground rounded-xl select-none cursor-pointer'
+        >
+          <div className='flex items-center gap-2 w-full'>
+            <div className='font-bold truncate text-sm'>{store.previewData.value?.title}</div>
+            {store.previewData.value?.favicon && 
+              <Image 
+                fallbackSrc="/fallback.png" 
+                className='flex-1 rounded-full ml-auto min-w-[16px]' 
+                src={store.previewData.value.favicon} 
+                width={16} 
+                height={16}
+              />
+            }
+          </div>
+          <div className='text-desc truncate text-xs'>{store.previewData.value?.description}</div>
         </div>
-        <div className='text-desc truncate text-xs'>{store.previewData.value?.description}</div>
-      </Card>}
-    </>
+      )}
+    </div>
   );
 }; 

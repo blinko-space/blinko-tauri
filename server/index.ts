@@ -108,7 +108,7 @@ async function setupApiRoutes(app: express.Application) {
   app.use('/api/file/upload', uploadRouter);
   app.use('/api/file/delete', deleteRouter);
   app.use('/api/s3file', s3fileRouter);
-  app.use('/api/plugins', pluginRouter);
+  app.use('/plugins', pluginRouter);
 
   // Other API endpoints
   app.use('/api/rss', rssRouter);

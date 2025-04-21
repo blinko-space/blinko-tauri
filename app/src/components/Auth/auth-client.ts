@@ -70,9 +70,6 @@ export async function getTokenData(): Promise<TokenData | null> {
   }
 }
 
-/**
- * 获取CSRF Token
- */
 export async function getCsrfToken(): Promise<string | null> {
   try {
     const response = await fetch('/api/auth/csrf-token', {

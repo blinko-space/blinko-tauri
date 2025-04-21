@@ -37,10 +37,11 @@ const router = express.Router();
  *                   type: string
  */
 //@ts-ignore
-router.get(/.*/, (req, res) => {
+router.get(/(.*)/, (req, res) => {
   try {
     const pathArray = req.params[0].split('/').filter(Boolean);
     const filePath = join('.blinko', 'plugins', ...pathArray);
+    console.log('filePath', filePath);
     const stream = createReadStream(filePath);
     res.set('Content-Type', 'application/javascript');
     stream.on('error', (error) => {

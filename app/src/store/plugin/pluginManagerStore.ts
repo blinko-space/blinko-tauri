@@ -121,6 +121,7 @@ export class PluginManagerStore implements Store {
     const plugins = await this.installedPlugins.getOrCall();
     if (plugins) {
       for (const plugin of plugins) {
+        console.log('initInstalledPlugins', plugin.path);
         this.loadPlugin(plugin.path);
       }
     }
@@ -405,7 +406,6 @@ export class PluginManagerStore implements Store {
   async loadPlugin(pluginPath: string) {
     try {
       const module = await System.import(pluginPath);
-      
       // Extract plugin name from path
       const pathSegments = pluginPath.split('/');
       const pluginName = pathSegments[pathSegments.indexOf('plugins') + 1] || '';
