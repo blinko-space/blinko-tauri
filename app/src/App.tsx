@@ -54,7 +54,7 @@ const ProtectedRoute = ({ children }) => {
       if (!userStore.isLogin && !isPublicRoute) {
         const tokenData = await getTokenData();
         console.log('tokenData', tokenData);
-        
+
         if (!tokenData?.user?.id) {
           console.log('No valid token, redirecting to login page');
           navigate('/signin', { replace: true });
@@ -102,7 +102,7 @@ function AppRoutes() {
 function App() {
   const [isLoading, setIsLoading] = useState(true);
   initStore();
-  
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
@@ -131,10 +131,10 @@ function App() {
         <HeroUIProvider>
           <ThemeProvider attribute="class" enableSystem={false}>
             <AppProvider />
-            <CommonLayout>
-              <AppRoutes />
-              <BlinkoMultiSelectPop />
-            </CommonLayout>
+              <CommonLayout>
+                <AppRoutes />
+                <BlinkoMultiSelectPop />
+              </CommonLayout>
           </ThemeProvider>
         </HeroUIProvider>
         <BlinkoMusicPlayer />

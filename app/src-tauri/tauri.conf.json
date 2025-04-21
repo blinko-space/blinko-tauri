@@ -10,12 +10,21 @@
     "frontendDist": "../dist"
   },
   "app": {
+    "withGlobalTauri": true,
+    "security": {
+      "csp": null
+    },
     "windows": [
       {
         "title": "Blinko",
         "width": 1024,
         "height": 768,
-        "resizable": true
+        "resizable": true,
+        "transparent": true,
+        "fullscreen": false,
+        "center": true,
+        "focus": true,
+        "visible": true
       }
     ]
   },

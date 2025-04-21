@@ -8,7 +8,6 @@
     "build:web": "tsc && cd ../server && cd ../app && vite build",
     "tauri:dev": "tauri dev",
     "tauri:android:dev": "tauri android dev --host"
-
   },
   "dependencies": {
     "@heroui/react": "^2.8.0-beta.1",
@@ -19,7 +18,7 @@
     "@react-three/fiber": "^8.17.10",
     "@shadergradient/react": "^2.0.19",
     "@tailwindcss/vite": "^4.1.4",
-    "@tauri-apps/api": "^2",
+    "@tauri-apps/api": "^2.5.0",
     "@tauri-apps/plugin-opener": "^2",
     "@trpc/client": "^11.1.0",
     "@types/nprogress": "^0.2.3",
@@ -38,6 +37,7 @@
     "motion": "^12.7.3",
     "next-themes": "^0.4.6",
     "nprogress": "^0.2.0",
+    "qrcode.react": "^4.2.0",
     "rctx-contextmenu": "^1.4.1",
     "react": "^18.3.1",
     "react-accessible-treeview": "^2.11.1",
@@ -65,8 +65,7 @@
     "three": "^0.174.0",
     "usehooks-ts": "^3.1.1",
     "vanilla-tilt": "^1.8.1",
-    "vditor": "^3.11.0",
-    "qrcode.react": "^4.2.0"
+    "vditor": "^3.11.0"
   },
   "devDependencies": {
     "@headlessui/tailwindcss": "^0.2.2",

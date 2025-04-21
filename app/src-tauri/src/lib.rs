@@ -13,11 +13,14 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![greet])
         .setup(|app| {
             #[cfg(debug_assertions)]
-            #[cfg(not(target_os = "android"))]
             {
                 let window = app.get_webview_window("main").unwrap();
                 window.open_devtools();
             }
+            
+            #[cfg(target_os = "macos")]
+            app.set_menu(tauri::Menu::os_default("Blinko"));
+            
             Ok(())
         })
         .run(tauri::generate_context!())
