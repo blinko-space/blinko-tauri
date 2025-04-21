@@ -13,7 +13,6 @@ import { GradientBackground } from "@/components/Common/GradientBackground";
 import { signIn } from "@/components/Auth/auth-client";
 import { useNavigate } from "react-router-dom";
 import { Link } from 'react-router-dom';
-import { eventBus } from "@/lib/event";
 import { saveBlinkoEndpoint, getSavedEndpoint } from "@/lib/blinkoEndpoint";
 
 type OAuthProvider = {

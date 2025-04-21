@@ -68,6 +68,10 @@ export const useEditorInit = (
             size
           })
         },
+        headers: {
+          'Authorization': `Bearer ${RootStore.Get(UserStore).token}`
+        },
+        withCredentials: true,
         max: 1024 * 1024 * 1000,
         fieldName: 'file',
         multiple: false,

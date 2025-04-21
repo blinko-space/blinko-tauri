@@ -7,7 +7,7 @@
     "dev": "cd ../server && bun run dev",
     "build:web": "tsc && cd ../server && cd ../app && vite build",
     "tauri:dev": "tauri dev",
-    "tauri:android:dev": "tauri android dev"
+    "tauri:android:dev": "tauri android dev --host"
 
   },
   "dependencies": {

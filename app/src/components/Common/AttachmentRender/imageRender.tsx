@@ -7,6 +7,8 @@ import { DeleteIcon, DownloadIcon, InsertConextButton } from './icons';
 import { observer } from 'mobx-react-lite';
 import { useMediaQuery } from 'usehooks-ts';
 import { DraggableFileGrid } from './DraggableFileGrid';
+import axiosInstance from '@/lib/axios';
+import { getBlinkoEndpoint } from '@/lib/blinkoEndpoint';
 
 type IProps = {
   files: FileType[]
@@ -16,9 +18,49 @@ type IProps = {
 }
 export const ImageThumbnailRender = ({ src, className }: { src: string, className?: string }) => {
   const [isOriginalError, setIsOriginalError] = useState(false);
-  const [currentSrc, setCurrentSrc] = useState(
-    `${src}?thumbnail=true`
-  );
+  const [currentSrc, setCurrentSrc] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let objectUrl = '';
+    
+    const fetchImage = async () => {
+      setLoading(true);
+      try {
+        // Try to get thumbnail first
+        const response = await axiosInstance.get(getBlinkoEndpoint(`${src}?thumbnail=true`), {
+          responseType: 'blob'
+        });
+        
+        objectUrl = URL.createObjectURL(response.data);
+        setCurrentSrc(objectUrl);
+      } catch (error) {
+        try {
+          // If thumbnail fails, try original image
+          const response = await axiosInstance.get(src, {
+            responseType: 'blob'
+          });
+          
+          objectUrl = URL.createObjectURL(response.data);
+          setCurrentSrc(objectUrl);
+        } catch (error) {
+          // If both fail, use fallback
+          setIsOriginalError(true);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchImage();
+    
+    // Clean up created object URLs when component unmounts
+    return () => {
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl);
+      }
+    };
+  }, [src]);
 
   useEffect(() => {
     if (isOriginalError) {
@@ -26,20 +68,28 @@ export const ImageThumbnailRender = ({ src, className }: { src: string, classNam
     }
   }, [isOriginalError])
 
-  return <Image
-    src={currentSrc}
-    classNames={{
-      wrapper: '!max-w-full',
-    }}
-    draggable={false}
-    onError={() => {
-      if (src === currentSrc) {
-        return setIsOriginalError(true)
-      }
-      setCurrentSrc(src)
-    }}
-    className={`object-cover w-full ${className}`}
-  />
+  return (
+    <>
+      {loading && (
+        <div className="flex items-center justify-center w-full h-full">
+          <Icon icon="line-md:loading-twotone-loop" width="24" height="24" />
+        </div>
+      )}
+      {!loading && (
+        <Image
+          src={currentSrc}
+          classNames={{
+            wrapper: '!max-w-full',
+          }}
+          draggable={false}
+          onError={() => {
+            setIsOriginalError(true);
+          }}
+          className={`object-cover w-full ${className}`}
+        />
+      )}
+    </>
+  );
 }
 
 const ImageRender = observer((props: IProps) => {

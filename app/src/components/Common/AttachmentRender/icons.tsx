@@ -12,15 +12,15 @@ import { DialogStandaloneStore } from '@/store/module/DialogStandalone';
 import { Tooltip } from '@heroui/react';
 import { eventBus } from '@/lib/event';
 import { getBlinkoEndpoint } from '@/lib/blinkoEndpoint';
+import axiosInstance from '@/lib/axios';
 export const DeleteIcon = observer(({ className, file, files, size = 20 }: { className: string, file: FileType, files: FileType[], size?: number }) => {
   const store = RootStore.Local(() => ({
     deleteFile: new PromiseState({
       function: async (file) => {
         const path = file.uploadPromise?.value;
         if (path) {
-          await fetch(getBlinkoEndpoint('/api/file/delete'), {
-            method: 'POST',
-            body: JSON.stringify({ attachment_path: path }),
+          await axiosInstance.post(getBlinkoEndpoint('/api/file/delete'), {
+            attachment_path: path,
           });
         }
         const index = files.findIndex(i => i.name == file.name)

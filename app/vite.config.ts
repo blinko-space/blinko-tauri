@@ -2,9 +2,9 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from 'path';
 import tailwindcss from '@tailwindcss/vite'
-const host = process.env.TAURI_DEV_HOST || 'localhost';
+const host = process.env.TAURI_DEV_HOST || '0.0.0.0';
 const EXPRESS_PORT = 1111;
-
+console.log(process.env.TAURI_DEV_HOST)
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],

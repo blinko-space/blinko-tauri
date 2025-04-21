@@ -20,7 +20,7 @@ export const MobileNavBar = observer(({ onItemClick }: MobileNavBarProps) => {
   const isVisible = useSwiper();
   const location = useLocation();
   const [searchParams] = useSearchParams();
-  
+
   if (blinkoStore.config.value?.isHiddenMobileBar) {
     return null;
   }
@@ -38,15 +38,16 @@ export const MobileNavBar = observer(({ onItemClick }: MobileNavBarProps) => {
     <motion.div
       className="h-[70px] flex w-full px-4 py-2 gap-2 bg-background block md:hidden overflow-hidden fixed bottom-0 z-50"
       animate={{ y: isVisible ? 0 : 100 }}
-      transition={{ 
+      transition={{
         type: "tween",
         duration: 0.3,
-        ease: [0.25, 0.1, 0.25, 1] 
+        ease: [0.25, 0.1, 0.25, 1]
       }}
     >
       {mobileItems.map(i => (
         <Link
-          className="flex-1"
+          className={`flex-1 items-center justify-center flex !flex-col group ${SideBarItem} ${base.isSideBarActive(routerInfo, i) ? '!text-foreground' : '!text-desc'
+            }`}
           key={i.title}
           to={i.href}
           onClick={() => {
@@ -54,13 +55,8 @@ export const MobileNavBar = observer(({ onItemClick }: MobileNavBarProps) => {
             onItemClick?.();
           }}
         >
-          <div
-            className={`flex flex-col group ${SideBarItem} ${base.isSideBarActive(routerInfo, i) ? '!text-foreground' : '!text-desc'
-              }`}
-          >
-            <Icon className={`text-center`} icon={i.icon} width="20" height="20" />
-            <div className="text-center text-[10px] mt-[-4px]">{t(i.title)}</div>
-          </div>
+          <Icon className={`text-center`} icon={i.icon} width="20" height="20" />
+          <div className="text-center text-[10px] mt-[-4px]">{t(i.title)}</div>
         </Link>
       ))}
     </motion.div>

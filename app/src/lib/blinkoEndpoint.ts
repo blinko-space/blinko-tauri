@@ -4,7 +4,7 @@ const endpointStorage = new StorageState({ key: 'blinkoEndpoint' });
 
 export function getBlinkoEndpoint(path: string = ''): string {
     try {
-        const isTauri = !!(window as any).isTauri || (typeof navigator !== 'undefined' && navigator.userAgent.includes('Tauri'));
+        const isTauri = !!(window as any).isTauri;
 
         if (isTauri && endpointStorage.value) {
             try {

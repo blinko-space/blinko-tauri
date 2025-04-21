@@ -89,7 +89,7 @@ let activeStreams = 0;
 router.get(/.*/, async (req, res) => {
   const fullPath = decodeURIComponent(req.path.substring(1));
   const token = await getTokenFromRequest(req);
-
+  console.log('token', token);
   const needThumbnail = req.query.thumbnail === 'true';
   const isDownload = req.query.download === 'true';
 
@@ -108,6 +108,7 @@ router.get(/.*/, async (req, res) => {
           }
         }
       });
+      console.log('myFile', myFile);
 
       if (myFile && !myFile?.note?.isShare && Number(token?.id) != myFile?.note?.accountId && !myFile?.accountId) {
         return res.status(401).json({ error: "Unauthorized" });

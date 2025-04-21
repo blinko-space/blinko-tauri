@@ -173,7 +173,7 @@ export const getTokenFromRequest = async (req: ExpressRequest) => {
       if (authHeader && authHeader.startsWith('Bearer ')) {
         const token = authHeader.substring(7);
         const tokenData = await verifyToken(token);
-        if (tokenData) return tokenData;
+        if (tokenData) return { ...tokenData, id: tokenData.sub };
       }
     }
 
