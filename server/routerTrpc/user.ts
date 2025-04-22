@@ -191,6 +191,8 @@ export const userRouter = router({
     .input(z.void())
     .output(z.boolean())
     .mutation(async () => {
+     try {
+      console.log('canRegisterxxx')
       const count = await prisma.accounts.count()
       if (count == 0) {
         return true
@@ -199,6 +201,10 @@ export const userRouter = router({
         //@ts-ignore
         return res?.config.value === true
       }
+     } catch (error) {
+        console.log(error,'canRegister error')
+        return true
+     }
     }),
   register: publicProcedure
     .meta({

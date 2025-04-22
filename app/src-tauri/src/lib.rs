@@ -9,6 +9,7 @@ fn greet(name: &str) -> String {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![greet])
         .setup(|app| {
@@ -17,10 +18,10 @@ pub fn run() {
                 let window = app.get_webview_window("main").unwrap();
                 window.open_devtools();
             }
-            
+
             #[cfg(target_os = "macos")]
             app.set_menu(tauri::Menu::os_default("Blinko"));
-            
+
             Ok(())
         })
         .run(tauri::generate_context!())

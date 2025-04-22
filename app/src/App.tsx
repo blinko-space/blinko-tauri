@@ -6,7 +6,6 @@ import { HeroUIProvider } from '@heroui/react';
 import './styles/github-markdown.css';
 import 'react-photo-view/dist/react-photo-view.css';
 import '@/lib/i18n';
-
 import { initStore } from '@/store/init';
 import { CommonLayout } from '@/components/Layout';
 import { AppProvider } from '@/store/module/AppProvider';
@@ -17,6 +16,7 @@ import { PluginManagerStore } from '@/store/plugin/pluginManagerStore';
 import { RootStore } from '@/store';
 import { UserStore } from '@/store/user';
 import { getTokenData, setNavigate } from '@/components/Auth/auth-client';
+import { isAndroid } from "./lib/tauriHelper";
 
 const HomePage = lazy(() => import('./pages/index'));
 const SignInPage = lazy(() => import('./pages/signin'));
@@ -109,7 +109,6 @@ function App() {
     }, 500);
 
     RootStore.Get(PluginManagerStore).initInstalledPlugins();
-
     return () => clearTimeout(timer);
   }, []);
 
@@ -132,8 +131,10 @@ function App() {
           <ThemeProvider attribute="class" enableSystem={false}>
             <AppProvider />
               <CommonLayout>
-                <AppRoutes />
-                <BlinkoMultiSelectPop />
+                <div className="app-content">
+                  <AppRoutes />
+                  <BlinkoMultiSelectPop />
+                </div>
               </CommonLayout>
           </ThemeProvider>
         </HeroUIProvider>

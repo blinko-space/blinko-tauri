@@ -8,9 +8,8 @@
     "build": "bun run build:web",
     "build:web": "tsc && cd ../server && cd ../app && vite build",
     "tauri:dev": "tauri dev",
-    "tauri:android:dev": "tauri android dev --open --host",
-    "tauri:android:build:debug": "tauri android build --debug",
-    "tauri:android:build:release": "tauri android build"
+    "tauri:android:dev": "tauri android dev --host",
+    "tauri:android:build": "tauri android build"
   },
   "dependencies": {
     "@heroui/react": "^2.8.0-beta.1",
@@ -23,6 +22,7 @@
     "@tailwindcss/vite": "^4.1.4",
     "@tauri-apps/api": "^2.5.0",
     "@tauri-apps/plugin-opener": "^2",
+    "@tauri-apps/plugin-os": "^2.2.1",
     "@trpc/client": "^11.1.0",
     "@types/nprogress": "^0.2.3",
     "boring-avatars": "^1.11.2",

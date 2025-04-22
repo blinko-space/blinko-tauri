@@ -24,6 +24,7 @@ import { BarSearchInput } from './BarSearchInput';
 import { BlinkoNotification } from '@/components/BlinkoNotification';
 import { AiStore } from '@/store/aiStore';
 import { useLocation, useSearchParams, Link } from 'react-router-dom';
+import { isAndroid } from '@/lib/tauriHelper';
 
 export const SideBarItem = 'p-2 flex flex-row items-center cursor-pointer gap-2 hover:bg-hover rounded-xl !transition-all';
 
@@ -67,7 +68,7 @@ export const CommonLayout = observer(({ children, header }: { children?: React.R
   }
 
   return (
-    <div className="flex w-full h-mobile-full overflow-x-hidden" id="outer-container">
+    <div className={`${isAndroid() ? 'mt-[24px]' : ''} flex w-full h-mobile-full overflow-x-hidden`} id="outer-container">
       <AiWritePop />
 
       <Menu disableAutoFocus onClose={() => setisOpen(false)} onOpen={setisOpen} isOpen={isOpen} pageWrapId={'page-wrap'} outerContainerId={'outer-container'}>

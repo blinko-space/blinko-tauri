@@ -17,8 +17,8 @@ import { DialogStore } from './module/Dialog';
 import { ShowTwoFactorModal } from '@/components/Common/TwoFactorModal';
 import { ToastPlugin } from './module/Toast/Toast';
 import { StorageState } from './standard/StorageState';
-
-
+import { getBlinkoEndpoint } from '@/lib/blinkoEndpoint';
+import { isInTauri } from '@/lib/tauriHelper';
 
 export class UserStore implements Store {
   sid = 'user';
@@ -96,6 +96,9 @@ export class UserStore implements Store {
 
   canRegister = new PromiseState({
     function: async () => {
+      if(isInTauri() && getBlinkoEndpoint() == '') {
+        return
+      }
       return await api.users.canRegister.mutate();
     }
   });

@@ -1,14 +1,13 @@
 import { StorageState } from "@/store/standard/StorageState";
 
-const endpointStorage = new StorageState({ key: 'blinkoEndpoint' });
-
 export function getBlinkoEndpoint(path: string = ''): string {
     try {
+        const blinkoEndpoint = window.localStorage.getItem('blinkoEndpoint')
         const isTauri = !!(window as any).__TAURI__;
 
-        if (isTauri && endpointStorage.value) {
+        if (isTauri && blinkoEndpoint) {
             try {
-                const url = new URL(path, endpointStorage.value);
+                const url = new URL(path, blinkoEndpoint);
                 return url.toString();
             } catch (error) {
                 console.error(error);
@@ -25,10 +24,10 @@ export function getBlinkoEndpoint(path: string = ''): string {
 
 export function saveBlinkoEndpoint(endpoint: string): void {
     if (endpoint) {
-        endpointStorage.setValue(endpoint);
+        window.localStorage.setItem('blinkoEndpoint', endpoint);
     }
 }
 
 export function getSavedEndpoint(): string {
-    return endpointStorage.value || '';
+    return window.localStorage.getItem('blinkoEndpoint') || '';
 }

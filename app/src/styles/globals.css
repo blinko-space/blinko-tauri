@@ -74,6 +74,7 @@ body {
   height: var(--doc-height);
   overscroll-behavior: none;
   -webkit-overflow-scrolling: touch;
+  background-color: var(--sencondbackground);
 }
 
 .h-mobile-full {
