@@ -89,14 +89,6 @@ jobs:
           file: dockerfile
           labels: ${{ steps.meta.outputs.labels }}
           outputs: type=image,name=dlhtx/blinko,push-by-digest=true,name-canonical=true,push=true
-          build-args: |
-            USE_MIRROR=false
-          build-contexts: |
-            builder=.
-          secrets: |
-            SHARP_IGNORE_GLOBAL_LIBVIPS=true
-            SHARP_INSTALL_VERBOSE=false
-            SHARP_INSTALL_PREBUILT=true
 
       - name: Export digest
         run: |
