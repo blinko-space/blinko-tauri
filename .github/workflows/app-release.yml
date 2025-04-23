@@ -1,0 +1,213 @@
+name: 应用发布
+
+on:
+  push:
+    tags:
+      - '*' # 匹配任何标签格式，例如 1.0.0, v1.2.3
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: '标签版本 (例如: v1.0.0)'
+        required: true
+        type: string
+
+jobs:
+  # 桌面平台构建任务
+  publish-desktop:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: 'macos-latest' # 苹果M系列芯片(ARM)
+            args: '--target aarch64-apple-darwin'
+          - platform: 'macos-latest' # Intel芯片Mac
+            args: '--target x86_64-apple-darwin'
+          - platform: 'windows-latest' # Windows平台
+            args: ''
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
+          fetch-depth: 0
+
+      - name: 设置Node环境
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: 安装Rust稳定版
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+      - name: 安装pnpm
+        run: npm install -g pnpm
+
+      - name: 安装bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: 获取标签说明
+        id: tag_description
+        run: |
+          TAG_SHA=$(curl -s -X GET -H "Authorization: Bearer ${{secrets.GITHUB_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/git/matching-refs/tags/${{github.ref_name}}" | jq '.[0].object.sha' -r)
+
+          TAG_INFO=$(curl -s -X GET -H "Authorization: Bearer ${{secrets.GITHUB_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/git/tags/$TAG_SHA")
+
+          MESSAGE=$(echo $TAG_INFO | jq -r '.message')
+
+          # 多行GITHUB_OUTPUT变量
+          echo "MESSAGE<<EOF" >> $GITHUB_OUTPUT
+          echo "$MESSAGE" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: 安装前端依赖
+        run: |
+          bun install
+          cd app && bun install
+
+      - uses: tauri-apps/tauri-action@dev
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+        with:
+          tagName: __VERSION__ # 动作会自动将 __VERSION__ 替换为应用版本
+          releaseName: '__VERSION__'
+          releaseBody: ${{ steps.tag_description.outputs.MESSAGE }}
+          releaseDraft: true
+          prerelease: false
+          args: ${{ matrix.args }}
+          includeUpdaterJson: true
+
+  # 安卓平台构建任务
+  publish-android:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
+          fetch-depth: 0
+
+      - name: 设置JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: 设置Node环境
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: 安装bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: 安装依赖
+        run: |
+          bun install
+          cd app && bun install
+
+      - name: 配置Gradle缓存
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: 获取标签说明
+        id: tag_description
+        run: |
+          TAG_SHA=$(curl -s -X GET -H "Authorization: Bearer ${{secrets.GITHUB_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/git/matching-refs/tags/${{github.ref_name}}" | jq '.[0].object.sha' -r)
+
+          TAG_INFO=$(curl -s -X GET -H "Authorization: Bearer ${{secrets.GITHUB_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/git/tags/$TAG_SHA")
+
+          MESSAGE=$(echo $TAG_INFO | jq -r '.message')
+
+          # 多行GITHUB_OUTPUT变量
+          echo "MESSAGE<<EOF" >> $GITHUB_OUTPUT
+          echo "$MESSAGE" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: 上传Keystore文件
+        run: |
+          # 创建keystore目录
+          mkdir -p ~/.android
+          # 创建keystore文件
+          echo "${{ secrets.UPLOAD_KEYSTORE }}" | base64 --decode > ~/.android/upload-keystore.jks
+          # 创建keystore.properties
+          cat > app/src-tauri/gen/android/keystore.properties << EOF
+          password=106111
+          keyAlias=upload
+          storeFile=$HOME/.android/upload-keystore.jks
+          EOF
+
+      - name: 构建Android应用
+        run: |
+          cd app
+          bun run tauri android build --release
+
+      - name: 上传安卓APK
+        uses: softprops/action-gh-release@v1
+        with:
+          files: app/src-tauri/gen/android/app/build/outputs/apk/universal/release/*.apk
+          tag_name: ${{ github.event.inputs.tag || github.ref_name }}
+          body: ${{ steps.tag_description.outputs.MESSAGE }}
+          draft: true
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # 更新版本号
+  update-version:
+    needs: [publish-desktop, publish-android]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 设置Git用户
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+
+      - name: 获取版本号
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ github.event.inputs.tag }}" != "" ]]; then
+            VERSION="${{ github.event.inputs.tag }}"
+            # 移除版本号前的'v'
+            VERSION="${VERSION#v}"
+          else
+            VERSION="${GITHUB_REF_NAME#v}"
+          fi
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: 更新package.json版本号
+        run: |
+          # 使用jq更新版本号
+          jq '.version = "${{ env.VERSION }}"' package.json > package.json.tmp
+          mv package.json.tmp package.json
+          
+          # 提交更改
+          git add package.json
+          git commit -m "chore: 更新版本号至 ${{ env.VERSION }}"
+          git push origin HEAD:${GITHUB_REF_NAME} 

@@ -9,6 +9,10 @@ on:
         description: '版本号 (例如 1.0.0)'
         required: true
         default: ''
+      trigger_app_release:
+        description: '是否同时触发应用发布'
+        type: boolean
+        default: true
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -209,3 +213,42 @@ jobs:
           git add package.json
           git commit -m "chore: 更新版本号至 ${{ env.VERSION }}"
           git push origin HEAD:${GITHUB_REF}
+
+  trigger-app-release:
+    name: 触发应用构建发布
+    needs: update-version
+    # 仅在手动触发且选择了触发应用发布选项时执行
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.trigger_app_release == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: 获取版本号
+        run: |
+          if [[ "${{ github.event.inputs.version }}" != "" ]]; then
+            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          else
+            echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
+          fi
+          # 确保版本号以'v'开头 (如果没有)
+          if [[ ! "${{ env.VERSION }}" =~ ^v ]]; then
+            echo "TAG_VERSION=v${{ env.VERSION }}" >> $GITHUB_ENV
+          else
+            echo "TAG_VERSION=${{ env.VERSION }}" >> $GITHUB_ENV
+          fi
+
+      - name: 触发应用发布工作流
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            console.log('触发应用发布工作流，使用标签: ${{ env.TAG_VERSION }}');
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'app-release.yml',
+              ref: context.ref,
+              inputs: {
+                tag: '${{ env.TAG_VERSION }}'
+              }
+            });

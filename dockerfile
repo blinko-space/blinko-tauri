@@ -58,6 +58,10 @@ RUN if [ "$USE_MIRROR" = "true" ]; then \
 RUN bun install --production
 RUN bun install prisma@5.21.1
 RUN ./node_modules/.bin/prisma generate
+
+# remove onnxruntime-node
+RUN find /app -type d -name "onnxruntime-node*" -exec rm -rf {} +
+
 # 暴露端口（根据实际应用调整）
 EXPOSE 1111
 
