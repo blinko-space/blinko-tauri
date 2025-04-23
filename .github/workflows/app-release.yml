@@ -169,11 +169,26 @@ jobs:
         run: |
           cd app
           bun run tauri:desktop:build ${{ matrix.args }}
+          
+          # 列出构建输出，帮助调试
+          if [ "${{ matrix.platform }}" == "ubuntu-22.04" ]; then
+            find src-tauri/target/release -type f -name "*.deb" -o -name "*.AppImage"
+          fi
+
+      - name: 准备发布文件 (Linux)
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          cd app
+          mkdir -p release_assets
+          # 复制所有 .deb 和 .AppImage 文件到发布目录
+          find src-tauri/target/release -name "*.deb" -o -name "*.AppImage" | xargs -I {} cp {} release_assets/
+          ls -la release_assets
 
       - name: 创建发布
         uses: softprops/action-gh-release@v1
         with:
-          files: app/src-tauri/target/release/bundle/**/*
+          files: |
+            ${{ matrix.platform == 'ubuntu-22.04' && 'app/release_assets/*' || 'app/src-tauri/target/release/bundle/**/*' }}
           tag_name: ${{ github.event.inputs.tag || github.ref_name }}
           body: ${{ needs.generate-changelog.outputs.changelog }}
           draft: true

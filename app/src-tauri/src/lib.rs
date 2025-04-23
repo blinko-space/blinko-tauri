@@ -1,5 +1,6 @@
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 use tauri::Manager;
+use tauri::menu::Menu;
 
 #[tauri::command]
 fn greet(name: &str) -> String {
@@ -20,7 +21,7 @@ pub fn run() {
             }
 
             #[cfg(target_os = "macos")]
-            app.set_menu(tauri::Menu::os_default("Blinko"));
+            app.set_menu(Menu::os_default("Blinko"));
 
             Ok(())
         })
