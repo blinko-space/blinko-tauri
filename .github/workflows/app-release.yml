@@ -110,12 +110,16 @@ jobs:
         include:
           - platform: 'macos-latest' # 苹果M系列芯片(ARM)
             args: '--target aarch64-apple-darwin'
+            bundle_path: 'app/src-tauri/target/aarch64-apple-darwin/release/bundle/**/*'
           - platform: 'macos-latest' # Intel芯片Mac
             args: '--target x86_64-apple-darwin'
+            bundle_path: 'app/src-tauri/target/x86_64-apple-darwin/release/bundle/**/*'
           - platform: 'ubuntu-22.04' # Linux平台
             args: ''
+            bundle_path: 'app/release_assets/*'
           - platform: 'windows-latest' # Windows平台
             args: ''
+            bundle_path: 'app/src-tauri/target/release/bundle/**/*'
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -173,11 +177,19 @@ jobs:
           find src-tauri/target/release -name "*.deb" -o -name "*.AppImage" | xargs -I {} cp {} release_assets/
           ls -la release_assets
 
+      - name: 列出构建文件
+        run: |
+          echo "查找构建文件..."
+          if [[ "${{ matrix.platform }}" == "windows-latest" ]]; then
+            ls -R app/src-tauri/target/release/bundle/
+          elif [[ "${{ matrix.platform }}" == "macos-latest" ]]; then
+            ls -R app/src-tauri/target/${{ matrix.args == '--target aarch64-apple-darwin' && 'aarch64-apple-darwin' || 'x86_64-apple-darwin' }}/release/bundle/
+          fi
+
       - name: 创建发布
         uses: softprops/action-gh-release@v1
         with:
-          files: |
-            ${{ matrix.platform == 'ubuntu-22.04' && 'app/release_assets/*' || 'app/src-tauri/target/release/bundle/**/*' }}
+          files: ${{ matrix.bundle_path }}
           tag_name: ${{ github.event.inputs.tag || github.ref_name }}
           body: ${{ needs.generate-changelog.outputs.changelog }}
           draft: false
