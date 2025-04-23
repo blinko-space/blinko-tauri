@@ -17,6 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       changelog: ${{ steps.changelog.outputs.changelog }}
+      version: ${{ steps.set_version.outputs.version }}
     steps:
       - name: Checkout代码
         uses: actions/checkout@v4
@@ -40,6 +41,24 @@ jobs:
           else
             echo "CURRENT_TAG=${{ github.ref_name }}" >> $GITHUB_ENV
           fi
+      
+      - name: 设置版本变量
+        id: set_version
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ github.event.inputs.tag }}" != "" ]]; then
+            TAG="${{ github.event.inputs.tag }}"
+          else
+            TAG="${GITHUB_REF_NAME}"
+          fi
+          # 移除版本号前的'v'
+          VERSION="${TAG#v}"
+          # 确保VERSION不为空，默认为1.0.0
+          if [ -z "$VERSION" ]; then
+            VERSION="1.0.0"
+          fi
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "设置的版本号: $VERSION"
       
       - name: 生成变更日志
         id: changelog
@@ -67,35 +86,18 @@ jobs:
         with:
           fetch-depth: 0
       
-      - name: 设置版本变量
-        id: set_version
-        run: |
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ github.event.inputs.tag }}" != "" ]]; then
-            TAG="${{ github.event.inputs.tag }}"
-          else
-            TAG="${GITHUB_REF_NAME}"
-          fi
-          # 移除版本号前的'v'
-          VERSION="${TAG#v}"
-          # 确保VERSION不为空，默认为1.0.0
-          if [ -z "$VERSION" ]; then
-            VERSION="1.0.0"
-          fi
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-          echo "设置的版本号: $VERSION"
-      
       - name: 更新Tauri配置版本号
         run: |
-          echo "当前版本号: ${{ env.VERSION }}"
+          echo "当前版本号: ${{ needs.generate-changelog.outputs.version }}"
           # 使用jq更新版本号
-          jq '.version = "${{ env.VERSION }}"' app/src-tauri/tauri.conf.json > tmp.json && mv tmp.json app/src-tauri/tauri.conf.json
+          jq '.version = "${{ needs.generate-changelog.outputs.version }}"' app/src-tauri/tauri.conf.json > tmp.json && mv tmp.json app/src-tauri/tauri.conf.json
           echo "更新后的tauri.conf.json:"
           cat app/src-tauri/tauri.conf.json
       
       - name: 提交更改
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "chore: 更新Tauri版本号至 ${{ env.VERSION }}"
+          commit_message: "chore: 更新Tauri版本号至 ${{ needs.generate-changelog.outputs.version }}"
           file_pattern: "app/src-tauri/tauri.conf.json"
           branch: ${{ github.event.repository.default_branch }}
 
@@ -110,16 +112,12 @@ jobs:
         include:
           - platform: 'macos-latest' # 苹果M系列芯片(ARM)
             args: '--target aarch64-apple-darwin'
-            bundle_path: 'app/src-tauri/target/aarch64-apple-darwin/release/bundle/**/*'
           - platform: 'macos-latest' # Intel芯片Mac
             args: '--target x86_64-apple-darwin'
-            bundle_path: 'app/src-tauri/target/x86_64-apple-darwin/release/bundle/**/*'
           - platform: 'ubuntu-22.04' # Linux平台
             args: ''
-            bundle_path: 'app/release_assets/*'
           - platform: 'windows-latest' # Windows平台
             args: ''
-            bundle_path: 'app/src-tauri/target/release/bundle/**/*'
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -138,64 +136,35 @@ jobs:
         with:
           node-version: lts/*
 
-      - name: 安装Rust稳定版
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
-
-      - name: Rust缓存
-        uses: swatinem/rust-cache@v2
-        with:
-          workspaces: 'app/src-tauri -> target'
-
       - name: 安装bun
         uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
+
+      - name: 安装Rust稳定版
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
 
       - name: 安装依赖
         run: |
           bun install
           cd app && bun install
 
-      - name: 构建桌面应用
-        run: |
-          cd app
-          bun run tauri:desktop:build ${{ matrix.args }}
-          
-          # 列出构建输出，帮助调试
-          if [[ "${{ matrix.platform }}" == "ubuntu-22.04" ]]; then
-            find src-tauri/target/release -type f -name "*.deb" -o -name "*.AppImage"
-          fi
-
-      - name: 准备发布文件 (Linux)
-        if: matrix.platform == 'ubuntu-22.04'
-        run: |
-          cd app
-          mkdir -p release_assets
-          # 复制所有 .deb 和 .AppImage 文件到发布目录
-          find src-tauri/target/release -name "*.deb" -o -name "*.AppImage" | xargs -I {} cp {} release_assets/
-          ls -la release_assets
-
-      - name: 列出构建文件
-        run: |
-          echo "查找构建文件..."
-          if [[ "${{ matrix.platform }}" == "windows-latest" ]]; then
-            ls -R app/src-tauri/target/release/bundle/
-          elif [[ "${{ matrix.platform }}" == "macos-latest" ]]; then
-            ls -R app/src-tauri/target/${{ matrix.args == '--target aarch64-apple-darwin' && 'aarch64-apple-darwin' || 'x86_64-apple-darwin' }}/release/bundle/
-          fi
-
-      - name: 创建发布
-        uses: softprops/action-gh-release@v1
-        with:
-          files: ${{ matrix.bundle_path }}
-          tag_name: ${{ github.event.inputs.tag || github.ref_name }}
-          body: ${{ needs.generate-changelog.outputs.changelog }}
-          draft: false
-          prerelease: false
+      # 使用官方Tauri Action构建和发布
+      - name: 构建并发布桌面应用
+        uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          projectPath: 'app'
+          tauriScript: '../node_modules/.bin/tauri'
+          args: ${{ matrix.args }}
+          tagName: ${{ github.event.inputs.tag || github.ref_name }}
+          releaseName: Blinko ${{ needs.generate-changelog.outputs.version }}
+          releaseBody: ${{ needs.generate-changelog.outputs.changelog }}
+          releaseDraft: false
+          prerelease: false
 
   # 安卓平台构建任务
   publish-android:
