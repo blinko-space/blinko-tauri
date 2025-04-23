@@ -11,6 +11,14 @@ on:
         required: true
         type: string
 
+env:
+  # 跳过Sharp库的libvips全局安装
+  SHARP_IGNORE_GLOBAL_LIBVIPS: "true"
+  # 禁用Sharp的下载进度显示
+  SHARP_INSTALL_VERBOSE: "false"
+  # 使用预编译的二进制文件
+  SHARP_INSTALL_PREBUILT: "true"
+
 jobs:
   # 生成变更日志
   generate-changelog:
@@ -119,6 +127,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
+          cache: 'bun'
 
       - name: 安装Rust稳定版
         uses: dtolnay/rust-toolchain@stable
@@ -135,8 +144,9 @@ jobs:
 
       - name: 安装前端依赖
         run: |
-          bun install
-          cd app && bun install
+          echo "正在安装依赖，已禁用Sharp的耗时操作"
+          bun install --no-save
+          cd app && bun install --no-save
 
       - uses: tauri-apps/tauri-action@dev
         id: tauri-build
@@ -189,6 +199,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
+          cache: 'bun'
 
       - name: 安装bun
         uses: oven-sh/setup-bun@v1
@@ -197,8 +208,9 @@ jobs:
 
       - name: 安装依赖
         run: |
-          bun install
-          cd app && bun install
+          echo "正在安装依赖，已禁用Sharp的耗时操作"
+          bun install --no-save
+          cd app && bun install --no-save
 
       - name: 配置Gradle缓存
         uses: actions/cache@v3
