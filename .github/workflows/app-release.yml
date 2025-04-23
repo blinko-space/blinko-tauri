@@ -243,10 +243,21 @@ jobs:
         env:
           NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/27.0.11902837
 
+      - name: 重命名安卓应用文件
+        run: |
+          cd app/src-tauri/gen/android/app/build/outputs/apk/universal/release
+          VERSION="${{ needs.generate-changelog.outputs.version }}"
+          echo "原始APK文件:"
+          ls -la
+          # 重命名APK文件
+          mv app-universal-release.apk Blinko_${VERSION}_universal.apk
+          echo "重命名后APK文件:"
+          ls -la
+
       - name: 发布Android应用
         uses: softprops/action-gh-release@v1
         with:
-          files: app/src-tauri/gen/android/app/build/outputs/apk/universal/release/*.apk
+          files: app/src-tauri/gen/android/app/build/outputs/apk/universal/release/Blinko_${{ needs.generate-changelog.outputs.version }}_universal.apk
           tag_name: ${{ github.event.inputs.tag || github.ref_name }}
           body: ${{ needs.generate-changelog.outputs.changelog }}
           draft: false
