@@ -21,8 +21,6 @@ jobs:
       - name: Checkout代码
         uses: actions/checkout@v4
         with:
-          # 手动触发时使用默认分支而不是尝试checkout tag
-          ref: ${{ github.event_name == 'workflow_dispatch' && '' || github.ref }}
           fetch-depth: 0
       
       - name: 获取最新标签
@@ -46,17 +44,12 @@ jobs:
       - name: 生成变更日志
         id: changelog
         run: |
-          # 如果是手动触发，使用简单的模板消息
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            CHANGELOG="手动发布版本 ${{ env.CURRENT_TAG }}"
-          else
-            # 生成上次发布以来的所有提交日志
-            CHANGELOG=$(git log --pretty=format:"- %s (%h) by %an" ${{ env.PREVIOUS_TAG }}..${{ env.CURRENT_TAG }} | sort)
-            
-            # 如果没有提交记录，使用默认消息
-            if [ -z "$CHANGELOG" ]; then
-              CHANGELOG="- 首次发布或没有新提交"
-            fi
+          # 生成上次发布以来的所有提交日志
+          CHANGELOG=$(git log --pretty=format:"- %s (%h) by %an" ${{ env.PREVIOUS_TAG }}..${{ env.CURRENT_TAG }} | sort)
+          
+          # 如果没有提交记录，使用默认消息
+          if [ -z "$CHANGELOG" ]; then
+            CHANGELOG="- 首次发布或没有新提交"
           fi
           
           # 输出日志（多行变量）
@@ -72,8 +65,7 @@ jobs:
       - name: Checkout代码
         uses: actions/checkout@v4
         with:
-          # 手动触发时使用默认分支而不是尝试checkout tag
-          ref: ${{ github.event_name == 'workflow_dispatch' && '' || github.ref }}
+          fetch-depth: 0
       
       - name: 设置版本变量
         id: set_version
@@ -129,8 +121,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          # 始终使用默认分支进行构建
-          ref: ${{ github.event.repository.default_branch }}
           fetch-depth: 0
 
       - name: 安装Ubuntu依赖
@@ -147,7 +137,6 @@ jobs:
       - name: 安装Rust稳定版
         uses: dtolnay/rust-toolchain@stable
         with:
-          # macOS需要两种目标平台
           targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
 
       - name: Rust缓存
@@ -171,7 +160,7 @@ jobs:
           bun run tauri:desktop:build ${{ matrix.args }}
           
           # 列出构建输出，帮助调试
-          if [ "${{ matrix.platform }}" == "ubuntu-22.04" ]; then
+          if [[ "${{ matrix.platform }}" == "ubuntu-22.04" ]]; then
             find src-tauri/target/release -type f -name "*.deb" -o -name "*.AppImage"
           fi
 
@@ -191,7 +180,7 @@ jobs:
             ${{ matrix.platform == 'ubuntu-22.04' && 'app/release_assets/*' || 'app/src-tauri/target/release/bundle/**/*' }}
           tag_name: ${{ github.event.inputs.tag || github.ref_name }}
           body: ${{ needs.generate-changelog.outputs.changelog }}
-          draft: true
+          draft: false
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -205,8 +194,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          # 始终使用默认分支进行构建
-          ref: ${{ github.event.repository.default_branch }}
           fetch-depth: 0
 
       - name: 设置JDK
@@ -275,36 +262,13 @@ jobs:
         env:
           NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/27.0.11902837
 
-      - name: 创建发布标签
-        if: github.event_name == 'workflow_dispatch'
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            try {
-              // 尝试创建标签
-              await github.rest.git.createRef({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                ref: `refs/tags/${{ github.event.inputs.tag }}`,
-                sha: context.sha
-              });
-              console.log(`创建标签 ${{ github.event.inputs.tag }} 成功`);
-            } catch (error) {
-              if (error.status === 422) {
-                console.log(`标签 ${{ github.event.inputs.tag }} 已存在，继续发布流程`);
-              } else {
-                throw error;
-              }
-            }
-
       - name: 发布Android应用
         uses: softprops/action-gh-release@v1
         with:
           files: app/src-tauri/gen/android/app/build/outputs/apk/universal/release/*.apk
           tag_name: ${{ github.event.inputs.tag || github.ref_name }}
           body: ${{ needs.generate-changelog.outputs.changelog }}
-          draft: true
+          draft: false
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
