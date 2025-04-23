@@ -3,7 +3,7 @@ import { GlobalConfig } from '@shared/lib/types';
 import { BufferLoader } from 'langchain/document_loaders/fs/buffer';
 import { OpenAIWhisperAudio } from '@langchain/community/document_loaders/fs/openai_whisper_audio';
 import { ProviderV1, LanguageModelV1, EmbeddingModelV1 } from '@ai-sdk/provider';
-import { VECTOR_DB_FILE_PATH } from '@shared/lib/constant';
+import { VECTOR_DB_FILE_PATH } from '@shared/lib/sharedConstant';
 import { AiModelFactory } from '../aiModelFactory';
 import { createOpenAI } from '@ai-sdk/openai';
 import { createVoyage } from 'voyage-ai-provider';

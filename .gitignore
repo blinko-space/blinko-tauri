@@ -25,3 +25,4 @@ seed.js
 dist
 .turbo
 keystore.properties
+!**/lute.min.js

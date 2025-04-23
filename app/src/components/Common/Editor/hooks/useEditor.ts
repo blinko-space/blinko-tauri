@@ -47,6 +47,7 @@ export const useEditorInit = (
       hint: {
         extend: mode != 'comment' ? Extend : AIExtend
       },
+      cdn: "",
       async ctrlEnter(md) {
         await store.handleSend()
       },

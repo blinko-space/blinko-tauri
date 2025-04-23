@@ -6,7 +6,7 @@ import { unfurl } from 'unfurl.js';
 import { Metadata } from 'unfurl.js/dist/types';
 import pLimit from 'p-limit';
 import * as mm from 'music-metadata';
-import { UPLOAD_FILE_PATH } from '@shared/lib/constant';
+import { UPLOAD_FILE_PATH } from '@shared/lib/pathConstant';
 import { SpotifyClient } from '@server/lib/spotify';
 import { getGlobalConfig } from './config';
 import { prisma } from '../prisma';

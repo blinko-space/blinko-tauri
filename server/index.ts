@@ -58,8 +58,8 @@ if (process.env.NODE_ENV === 'production') {
   ViteExpress.config({
     mode: 'production',
     inlineViteConfig: {
-      //docker worker dir /app not development dir
-      root: path.resolve(__dirname, '../app'),
+      //docker production dir /dist not development dir
+      root: path.resolve(__dirname, '../server'),
       build: { outDir: "public" }
     }
   });
@@ -108,6 +108,9 @@ async function setupApiRoutes(app: express.Application) {
   app.use('/api/file/upload', uploadRouter);
   app.use('/api/file/delete', deleteRouter);
   app.use('/api/s3file', s3fileRouter);
+  app.use('/dist/js/lute/lute.min.js', (req, res) => {
+    res.sendFile(path.resolve(__dirname, './lute.min.js'));
+  });
   app.use('/plugins', pluginRouter);
 
   // Other API endpoints

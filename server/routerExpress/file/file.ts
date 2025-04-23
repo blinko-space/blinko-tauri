@@ -4,7 +4,7 @@ import { createReadStream, statSync } from 'fs';
 import { stat, readFile, mkdir } from 'fs/promises';
 import fs from 'fs';
 import mime from 'mime-types';
-import { UPLOAD_FILE_PATH } from '../../../shared/lib/constant';
+import { UPLOAD_FILE_PATH } from '../../../shared/lib/pathConstant';
 import crypto from 'crypto';
 import sharp from 'sharp';
 import { prisma } from '../../prisma';

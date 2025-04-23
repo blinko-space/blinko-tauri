@@ -31,6 +31,7 @@ import { Copy } from "../Common/Copy";
 import { api } from "@/lib/trpc";
 import { PublicUser } from "@shared/lib/types";
 import { UserStore } from "@/store/user";
+import { getBlinkoEndpoint } from "@/lib/blinkoEndpoint";
 
 
 interface ShareDialogProps {
@@ -172,9 +173,10 @@ export const BlinkoShareDialog = observer(({ defaultSettings }: ShareDialogProps
           password: this.isPublic ? "" : this.settings.password,
           expireAt: this.settings.expiryDate
         });
-        this.setShareUrl(window.location.origin + '/share/' + (res?.shareEncryptedUrl ?? '') + (this.isPublic ? '' : '?password=' + (this.settings.password ?? '')));
+        const blinkoEndpoint = getBlinkoEndpoint() ?? window.location.origin;
+        this.setShareUrl(blinkoEndpoint + '/share/' + (res?.shareEncryptedUrl ?? '') + (this.isPublic ? '' : '?password=' + (this.settings.password ?? '')));
         this.setIsShare(true);
-      }
+      }   
       // Handle internal sharing
       else if (this.selectedTab === "internal") {
         await RootStore.Get(BlinkoStore).internalShareNote.call({

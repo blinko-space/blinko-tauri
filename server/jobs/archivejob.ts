@@ -1,4 +1,4 @@
-import { ARCHIVE_BLINKO_TASK_NAME } from "@shared/lib/constant";
+import { ARCHIVE_BLINKO_TASK_NAME } from "@shared/lib/sharedConstant";
 import { prisma } from "../prisma";
 import { adminCaller } from "../routerTrpc/_app";
 import { NoteType } from "../../shared/lib/types";

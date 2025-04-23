@@ -100,21 +100,11 @@ function AppRoutes() {
 }
 
 function App() {
-  const [isLoading, setIsLoading] = useState(true);
   initStore();
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 500);
-
     RootStore.Get(PluginManagerStore).initInstalledPlugins();
-    return () => clearTimeout(timer);
   }, []);
-
-  if (isLoading) {
-    return <LoadingPage />;
-  }
 
   return (
     <>

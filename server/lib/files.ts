@@ -1,6 +1,6 @@
 import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client, CopyObjectCommand } from "@aws-sdk/client-s3";
 import { getGlobalConfig } from "../routerTrpc/config";
-import { UPLOAD_FILE_PATH } from "@shared/lib/constant";
+import { UPLOAD_FILE_PATH } from "@shared/lib/pathConstant";
 import fs, { unlink, writeFile } from 'fs/promises';
 import path from 'path';
 import { cache } from "@shared/lib/cache";
