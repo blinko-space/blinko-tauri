@@ -94,9 +94,9 @@ jobs:
           build-contexts: |
             builder=.
           secrets: |
-            "SHARP_IGNORE_GLOBAL_LIBVIPS=true"
-            "SHARP_INSTALL_VERBOSE=false" 
-            "SHARP_INSTALL_PREBUILT=true"
+            SHARP_IGNORE_GLOBAL_LIBVIPS=true
+            SHARP_INSTALL_VERBOSE=false
+            SHARP_INSTALL_PREBUILT=true
 
       - name: Export digest
         run: |
