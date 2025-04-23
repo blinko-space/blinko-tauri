@@ -120,6 +120,8 @@ jobs:
             args: '--target aarch64-apple-darwin'
           - platform: 'macos-latest' # Intel芯片Mac
             args: '--target x86_64-apple-darwin'
+          - platform: 'ubuntu-22.04' # Linux平台
+            args: ''
           - platform: 'windows-latest' # Windows平台
             args: ''
 
@@ -131,10 +133,17 @@ jobs:
           ref: ${{ github.event.repository.default_branch }}
           fetch-depth: 0
 
+      - name: 安装Ubuntu依赖
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
       - name: 设置Node环境
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
+          cache: 'bun'
 
       - name: 安装Rust稳定版
         uses: dtolnay/rust-toolchain@stable
@@ -142,29 +151,36 @@ jobs:
           # macOS需要两种目标平台
           targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
 
+      - name: Rust缓存
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: 'app/src-tauri -> target'
+
       - name: 安装bun
         uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
 
-      - name: 安装前端依赖
+      - name: 安装依赖
         run: |
           bun install
           cd app && bun install
 
-      - uses: tauri-apps/tauri-action@dev
+      - name: 构建桌面应用
+        run: |
+          cd app
+          bun run tauri:desktop:build ${{ matrix.args }}
+
+      - name: 创建发布
+        uses: softprops/action-gh-release@v1
+        with:
+          files: app/src-tauri/target/release/bundle/**/*
+          tag_name: ${{ github.event.inputs.tag || github.ref_name }}
+          body: ${{ needs.generate-changelog.outputs.changelog }}
+          draft: true
+          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
-          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
-        with:
-          tagName: __VERSION__ # 动作会自动替换为应用版本
-          releaseName: '__VERSION__'
-          releaseBody: ${{ needs.generate-changelog.outputs.changelog }}
-          releaseDraft: true
-          prerelease: false
-          args: ${{ matrix.args }}
-          includeUpdaterJson: true
 
   # 安卓平台构建任务
   publish-android:
@@ -182,11 +198,14 @@ jobs:
       - name: 设置JDK
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
+          distribution: 'zulu'
           java-version: '17'
 
       - name: 设置Android SDK
         uses: android-actions/setup-android@v3
+
+      - name: 安装NDK
+        run: sdkmanager "ndk;27.0.11902837"
 
       - name: 设置Node环境
         uses: actions/setup-node@v4
@@ -195,6 +214,8 @@ jobs:
 
       - name: 安装Rust稳定版
         uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android
 
       - name: 安装bun
         uses: oven-sh/setup-bun@v1
@@ -219,57 +240,39 @@ jobs:
       - name: 安装Tauri CLI
         run: cargo install tauri-cli --version "^2.0.0-alpha"
 
-      - name: 上传Keystore文件
-        run: |
-          # 创建keystore目录
-          mkdir -p ~/.android
-          # 创建keystore文件
-          echo "${{ secrets.UPLOAD_KEYSTORE }}" | base64 --decode > ~/.android/upload-keystore.jks
-          # 创建keystore.properties
-          mkdir -p app/src-tauri/gen/android
-          cat > app/src-tauri/gen/android/keystore.properties << EOF
-          password=106111
-          keyAlias=upload
-          storeFile=$HOME/.android/upload-keystore.jks
-          EOF
-
       - name: 构建Android应用
         run: |
           cd app
-          cargo tauri android build
-          
-          # 查找构建的APK
-          find src-tauri -name "*.apk" | sort
+          bun run tauri:android:build
+        env:
+          NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/27.0.11902837
 
-      # 手动触发时根据输入的tag创建新标签
-      - name: 创建发布标签
-        if: github.event_name == 'workflow_dispatch'
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            try {
-              // 尝试创建标签
-              await github.rest.git.createRef({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                ref: `refs/tags/${{ github.event.inputs.tag }}`,
-                sha: context.sha
-              });
-              console.log(`创建标签 ${{ github.event.inputs.tag }} 成功`);
-            } catch (error) {
-              if (error.status === 422) {
-                console.log(`标签 ${{ github.event.inputs.tag }} 已存在，继续发布流程`);
-              } else {
-                throw error;
-              }
-            }
+      - name: 提取Android签名密钥
+        run: |
+          cd app
+          echo "${{ secrets.ANDROID_RELEASE_KEYSTORE }}" > src-tauri/gen/android/release.jks.base64
+          base64 -d src-tauri/gen/android/release.jks.base64 > src-tauri/gen/android/release.decrypted.jks
 
-      - name: 上传Android APK
+      - name: 签名APK
+        run: |
+          cd app
+          ${{ env.ANDROID_HOME }}/build-tools/34.0.0/apksigner sign --ks src-tauri/gen/android/release.decrypted.jks \
+            --ks-key-alias ${{ secrets.ANDROID_RELEASE_KEY }} \
+            --ks-pass pass:${{ secrets.ANDROID_RELEASE_PASSWORD }} \
+            --key-pass pass:${{ secrets.ANDROID_RELEASE_KEY_PASSWORD }} \
+            --out src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release-signed.apk \
+            src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release-unsigned.apk
+
+      - name: 重命名APK文件
+        run: |
+          cd app
+          mv src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release-signed.apk \
+            src-tauri/gen/android/app/build/outputs/apk/universal/release/blinko-${{ env.VERSION }}.apk
+
+      - name: 发布Android应用
         uses: softprops/action-gh-release@v1
         with:
-          files: app/src-tauri/gen/android/app/build/outputs/apk/universal/release/*.apk
-          # 手动触发时使用输入的tag，否则使用触发事件的tag
+          files: app/src-tauri/gen/android/app/build/outputs/apk/universal/release/blinko-${{ env.VERSION }}.apk
           tag_name: ${{ github.event.inputs.tag || github.ref_name }}
           body: ${{ needs.generate-changelog.outputs.changelog }}
           draft: true
