@@ -4,6 +4,11 @@ FROM oven/bun:latest AS builder
 # 添加构建参数
 ARG USE_MIRROR=false
 
+# 添加Sharp优化环境变量
+ENV SHARP_IGNORE_GLOBAL_LIBVIPS=true
+ENV SHARP_INSTALL_VERBOSE=false
+ENV SHARP_INSTALL_PREBUILT=true
+
 WORKDIR /app
 
 # 复制项目文件
@@ -18,7 +23,7 @@ RUN if [ "$USE_MIRROR" = "true" ]; then \
     fi
 
 # 安装依赖并构建应用
-RUN bun install
+RUN bun install --no-save
 RUN bun run build:web
 RUN bun run build:seed
 
@@ -27,6 +32,11 @@ FROM oven/bun:slim AS runner
 
 # 添加构建参数
 ARG USE_MIRROR=false
+
+# 添加Sharp优化环境变量
+ENV SHARP_IGNORE_GLOBAL_LIBVIPS=true
+ENV SHARP_INSTALL_VERBOSE=false
+ENV SHARP_INSTALL_PREBUILT=true
 
 WORKDIR /app
 
@@ -55,8 +65,8 @@ RUN if [ "$USE_MIRROR" = "true" ]; then \
     fi
 
 # 安装生产环境依赖
-RUN bun install --production
-RUN bun install prisma@5.21.1
+RUN bun install --production --no-save
+RUN bun install prisma@5.21.1 --no-save
 RUN ./node_modules/.bin/prisma generate
 
 # remove onnxruntime-node
