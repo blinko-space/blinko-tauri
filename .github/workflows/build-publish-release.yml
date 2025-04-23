@@ -240,14 +240,14 @@ jobs:
       - name: 触发应用发布工作流
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.WORKFLOW_PAT }}
           script: |
             console.log('触发应用发布工作流，使用标签: ${{ env.TAG_VERSION }}');
             await github.rest.actions.createWorkflowDispatch({
               owner: context.repo.owner,
               repo: context.repo.repo,
               workflow_id: 'app-release.yml',
-              ref: context.ref,
+              ref: 'main',  // 明确指定分支为main
               inputs: {
                 tag: '${{ env.TAG_VERSION }}'
               }
