@@ -236,19 +236,27 @@ jobs:
           else
             echo "TAG_VERSION=${{ env.VERSION }}" >> $GITHUB_ENV
           fi
+          echo "触发应用版本发布: ${{ env.TAG_VERSION }}"
 
-      - name: 触发应用发布工作流
+      - name: 创建版本标签
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.WORKFLOW_PAT }}
           script: |
-            console.log('触发应用发布工作流，使用标签: ${{ env.TAG_VERSION }}');
-            await github.rest.actions.createWorkflowDispatch({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              workflow_id: 'app-release.yml',
-              ref: 'main',  // 明确指定分支为main
-              inputs: {
-                tag: '${{ env.TAG_VERSION }}'
+            try {
+              // 尝试创建标签
+              await github.rest.git.createRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: `refs/tags/${{ env.TAG_VERSION }}`,
+                sha: context.sha
+              });
+              console.log(`创建标签 ${{ env.TAG_VERSION }} 成功`);
+            } catch (error) {
+              // 如果标签已存在，打印信息
+              if (error.status === 422) {
+                console.log(`标签 ${{ env.TAG_VERSION }} 已存在，继续发布流程`);
+              } else {
+                throw error;
               }
-            });
+            }

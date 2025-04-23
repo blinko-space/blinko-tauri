@@ -3,7 +3,7 @@ name: 应用发布
 on:
   push:
     tags:
-      - '*' # 匹配任何标签格式，例如 1.0.0, v1.2.3
+      - 'v*' # 只匹配以v开头的标签格式，例如 v1.0.0, v1.2.3
   workflow_dispatch:
     inputs:
       tag:
@@ -12,8 +12,86 @@ on:
         type: string
 
 jobs:
+  # 生成变更日志
+  generate-changelog:
+    runs-on: ubuntu-latest
+    outputs:
+      changelog: ${{ steps.changelog.outputs.changelog }}
+    steps:
+      - name: Checkout代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: 获取最新标签
+        id: get_previous_tag
+        run: |
+          # 获取倒数第二个标签（即上一个发布版本）
+          PREVIOUS_TAG=$(git tag --sort=-creatordate | head -n 2 | tail -n 1)
+          if [ -z "$PREVIOUS_TAG" ]; then
+            # 如果没有找到上一个标签，使用第一个提交
+            PREVIOUS_TAG=$(git rev-list --max-parents=0 HEAD)
+          fi
+          echo "PREVIOUS_TAG=$PREVIOUS_TAG" >> $GITHUB_ENV
+          echo "CURRENT_TAG=${{ github.event.inputs.tag || github.ref_name }}" >> $GITHUB_ENV
+      
+      - name: 生成变更日志
+        id: changelog
+        run: |
+          # 生成上次发布以来的所有提交日志
+          CHANGELOG=$(git log --pretty=format:"- %s (%h) by %an" ${{ env.PREVIOUS_TAG }}..${{ env.CURRENT_TAG }} | sort)
+          
+          # 如果没有提交记录，使用默认消息
+          if [ -z "$CHANGELOG" ]; then
+            CHANGELOG="- 首次发布或没有新提交"
+          fi
+          
+          # 输出日志（多行变量）
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+  # 更新版本号
+  update-versions:
+    runs-on: ubuntu-latest
+    needs: generate-changelog
+    outputs:
+      version: ${{ steps.set_version.outputs.version }}
+    steps:
+      - name: Checkout代码
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
+      
+      - name: 设置版本变量
+        id: set_version
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ github.event.inputs.tag }}" != "" ]]; then
+            TAG="${{ github.event.inputs.tag }}"
+          else
+            TAG="${GITHUB_REF_NAME}"
+          fi
+          # 移除版本号前的'v'
+          VERSION="${TAG#v}"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=$TAG" >> $GITHUB_ENV
+      
+      - name: 更新Tauri配置版本号
+        run: |
+          # 更新tauri.conf.json版本号
+          sed -i 's/"version": "[^"]*"/"version": "${{ steps.set_version.outputs.version }}"/' app/src-tauri/tauri.conf.json
+          cat app/src-tauri/tauri.conf.json
+      
+      - name: 提交更改
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: 更新Tauri版本号至 ${{ steps.set_version.outputs.version }}"
+          file_pattern: "app/src-tauri/tauri.conf.json"
+          branch: ${{ github.event.repository.default_branch }}
+
   # 桌面平台构建任务
   publish-desktop:
+    needs: [generate-changelog, update-versions]
     permissions:
       contents: write
     strategy:
@@ -22,16 +100,19 @@ jobs:
         include:
           - platform: 'macos-latest' # 苹果M系列芯片(ARM)
             args: '--target aarch64-apple-darwin'
+            asset_name: 'macos-aarch64'
           - platform: 'macos-latest' # Intel芯片Mac
             args: '--target x86_64-apple-darwin'
+            asset_name: 'macos-x64'
           - platform: 'windows-latest' # Windows平台
             args: ''
+            asset_name: 'windows'
 
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.tag || github.ref }}
+          ref: ${{ github.event.repository.default_branch }}
           fetch-depth: 0
 
       - name: 设置Node环境
@@ -52,49 +133,50 @@ jobs:
         with:
           bun-version: latest
 
-      - name: 获取标签说明
-        id: tag_description
-        run: |
-          TAG_SHA=$(curl -s -X GET -H "Authorization: Bearer ${{secrets.GITHUB_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/git/matching-refs/tags/${{github.ref_name}}" | jq '.[0].object.sha' -r)
-
-          TAG_INFO=$(curl -s -X GET -H "Authorization: Bearer ${{secrets.GITHUB_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/git/tags/$TAG_SHA")
-
-          MESSAGE=$(echo $TAG_INFO | jq -r '.message')
-
-          # 多行GITHUB_OUTPUT变量
-          echo "MESSAGE<<EOF" >> $GITHUB_OUTPUT
-          echo "$MESSAGE" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-        shell: bash
-
       - name: 安装前端依赖
         run: |
           bun install
           cd app && bun install
 
       - uses: tauri-apps/tauri-action@dev
+        id: tauri-build
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
         with:
-          tagName: __VERSION__ # 动作会自动将 __VERSION__ 替换为应用版本
-          releaseName: '__VERSION__'
-          releaseBody: ${{ steps.tag_description.outputs.MESSAGE }}
+          tagName: ${{ needs.update-versions.outputs.version }}
+          releaseName: 'Blinko v${{ needs.update-versions.outputs.version }}'
+          releaseBody: ${{ needs.generate-changelog.outputs.changelog }}
           releaseDraft: true
           prerelease: false
           args: ${{ matrix.args }}
           includeUpdaterJson: true
+          
+      - name: 重命名构建资产
+        if: steps.tauri-build.outputs.packagePath != ''
+        run: |
+          mkdir -p artifacts
+          cp ${{ steps.tauri-build.outputs.packagePath }} artifacts/blinko-${{ matrix.asset_name }}-${{ needs.update-versions.outputs.version }}${{ endsWith(steps.tauri-build.outputs.packagePath, '.msi') && '.msi' || endsWith(steps.tauri-build.outputs.packagePath, '.dmg') && '.dmg' || '' }}
+        shell: bash
+      
+      - name: 上传构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: blinko-${{ matrix.asset_name }}
+          path: artifacts/*
+          retention-days: 3
 
   # 安卓平台构建任务
   publish-android:
+    needs: [generate-changelog, update-versions]
     permissions:
       contents: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.tag || github.ref }}
+          ref: ${{ github.event.repository.default_branch }}
           fetch-depth: 0
 
       - name: 设置JDK
@@ -128,21 +210,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: 获取标签说明
-        id: tag_description
-        run: |
-          TAG_SHA=$(curl -s -X GET -H "Authorization: Bearer ${{secrets.GITHUB_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/git/matching-refs/tags/${{github.ref_name}}" | jq '.[0].object.sha' -r)
-
-          TAG_INFO=$(curl -s -X GET -H "Authorization: Bearer ${{secrets.GITHUB_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/git/tags/$TAG_SHA")
-
-          MESSAGE=$(echo $TAG_INFO | jq -r '.message')
-
-          # 多行GITHUB_OUTPUT变量
-          echo "MESSAGE<<EOF" >> $GITHUB_OUTPUT
-          echo "$MESSAGE" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-        shell: bash
-
       - name: 上传Keystore文件
         run: |
           # 创建keystore目录
@@ -160,54 +227,55 @@ jobs:
         run: |
           cd app
           bun run tauri android build --release
-
-      - name: 上传安卓APK
-        uses: softprops/action-gh-release@v1
+      
+      - name: 重命名APK
+        run: |
+          mkdir -p artifacts
+          cp app/src-tauri/gen/android/app/build/outputs/apk/universal/release/*.apk artifacts/blinko-android-${{ needs.update-versions.outputs.version }}.apk
+      
+      - name: 上传构建产物
+        uses: actions/upload-artifact@v4
         with:
-          files: app/src-tauri/gen/android/app/build/outputs/apk/universal/release/*.apk
-          tag_name: ${{ github.event.inputs.tag || github.ref_name }}
-          body: ${{ steps.tag_description.outputs.MESSAGE }}
-          draft: true
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: blinko-android
+          path: artifacts/*
+          retention-days: 3
 
-  # 更新版本号
-  update-version:
-    needs: [publish-desktop, publish-android]
+  # 发布合并产物
+  publish-release:
+    needs: [generate-changelog, update-versions, publish-desktop, publish-android]
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
-      - name: Checkout代码
-        uses: actions/checkout@v4
+      - name: 下载所有构建产物
+        uses: actions/download-artifact@v4
         with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: 设置Git用户
-        run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-
-      - name: 获取版本号
-        run: |
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ github.event.inputs.tag }}" != "" ]]; then
-            VERSION="${{ github.event.inputs.tag }}"
-            # 移除版本号前的'v'
-            VERSION="${VERSION#v}"
-          else
-            VERSION="${GITHUB_REF_NAME#v}"
-          fi
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-
-      - name: 更新package.json版本号
-        run: |
-          # 使用jq更新版本号
-          jq '.version = "${{ env.VERSION }}"' package.json > package.json.tmp
-          mv package.json.tmp package.json
+          path: release-artifacts
           
-          # 提交更改
-          git add package.json
-          git commit -m "chore: 更新版本号至 ${{ env.VERSION }}"
-          git push origin HEAD:${GITHUB_REF_NAME} 
+      - name: 显示目录结构
+        run: find release-artifacts -type f | sort
+          
+      - name: 创建GitHub发布
+        uses: softprops/action-gh-release@v1
+        with:
+          files: release-artifacts/**/*
+          tag_name: v${{ needs.update-versions.outputs.version }}
+          name: Blinko v${{ needs.update-versions.outputs.version }}
+          body: |
+            ## 版本 ${{ needs.update-versions.outputs.version }} 变更日志
+            
+            ${{ needs.generate-changelog.outputs.changelog }}
+            
+            ## 下载
+            
+            ### 桌面版本
+            - Windows: blinko-windows-${{ needs.update-versions.outputs.version }}.msi
+            - macOS (Intel): blinko-macos-x64-${{ needs.update-versions.outputs.version }}.dmg
+            - macOS (Apple Silicon): blinko-macos-aarch64-${{ needs.update-versions.outputs.version }}.dmg
+            
+            ### 移动版本
+            - Android: blinko-android-${{ needs.update-versions.outputs.version }}.apk
+          draft: true
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
