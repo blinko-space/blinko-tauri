@@ -1,7 +1,7 @@
 {
   "name": "@blinko/frontend",
   "private": true,
-  "version": "1.0.0",
+  "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "cd ../server && bun run dev",
