@@ -3,7 +3,7 @@ name: 应用发布
 on:
   push:
     tags:
-      - 'v*' # 只匹配以v开头的标签格式，例如 v1.0.0, v1.2.3
+      - 'v*' # 匹配以v开头的标签格式，例如 v1.0.0, v1.2.3
   workflow_dispatch:
     inputs:
       tag:
@@ -21,6 +21,7 @@ jobs:
       - name: Checkout代码
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
           fetch-depth: 0
       
       - name: 获取最新标签
@@ -51,12 +52,10 @@ jobs:
           echo "$CHANGELOG" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
-  # 更新版本号
-  update-versions:
+  # 更新Tauri配置版本号
+  update-version:
     runs-on: ubuntu-latest
     needs: generate-changelog
-    outputs:
-      version: ${{ steps.set_version.outputs.version }}
     steps:
       - name: Checkout代码
         uses: actions/checkout@v4
@@ -73,25 +72,31 @@ jobs:
           fi
           # 移除版本号前的'v'
           VERSION="${TAG#v}"
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "tag=$TAG" >> $GITHUB_ENV
+          # 确保VERSION不为空，默认为1.0.0
+          if [ -z "$VERSION" ]; then
+            VERSION="1.0.0"
+          fi
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "设置的版本号: $VERSION"
       
       - name: 更新Tauri配置版本号
         run: |
-          # 更新tauri.conf.json版本号
-          sed -i 's/"version": "[^"]*"/"version": "${{ steps.set_version.outputs.version }}"/' app/src-tauri/tauri.conf.json
+          echo "当前版本号: ${{ env.VERSION }}"
+          # 使用jq更新版本号
+          jq '.version = "${{ env.VERSION }}"' app/src-tauri/tauri.conf.json > tmp.json && mv tmp.json app/src-tauri/tauri.conf.json
+          echo "更新后的tauri.conf.json:"
           cat app/src-tauri/tauri.conf.json
       
       - name: 提交更改
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "chore: 更新Tauri版本号至 ${{ steps.set_version.outputs.version }}"
+          commit_message: "chore: 更新Tauri版本号至 ${{ env.VERSION }}"
           file_pattern: "app/src-tauri/tauri.conf.json"
           branch: ${{ github.event.repository.default_branch }}
 
   # 桌面平台构建任务
   publish-desktop:
-    needs: [generate-changelog, update-versions]
+    needs: [generate-changelog, update-version]
     permissions:
       contents: write
     strategy:
@@ -100,13 +105,10 @@ jobs:
         include:
           - platform: 'macos-latest' # 苹果M系列芯片(ARM)
             args: '--target aarch64-apple-darwin'
-            asset_name: 'macos-aarch64'
           - platform: 'macos-latest' # Intel芯片Mac
             args: '--target x86_64-apple-darwin'
-            asset_name: 'macos-x64'
           - platform: 'windows-latest' # Windows平台
             args: ''
-            asset_name: 'windows'
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -123,10 +125,8 @@ jobs:
       - name: 安装Rust稳定版
         uses: dtolnay/rust-toolchain@stable
         with:
+          # macOS需要两种目标平台
           targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
-
-      - name: 安装pnpm
-        run: npm install -g pnpm
 
       - name: 安装bun
         uses: oven-sh/setup-bun@v1
@@ -139,37 +139,22 @@ jobs:
           cd app && bun install
 
       - uses: tauri-apps/tauri-action@dev
-        id: tauri-build
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
         with:
-          tagName: ${{ needs.update-versions.outputs.version }}
-          releaseName: 'Blinko v${{ needs.update-versions.outputs.version }}'
+          tagName: __VERSION__ # 动作会自动替换为应用版本
+          releaseName: '__VERSION__'
           releaseBody: ${{ needs.generate-changelog.outputs.changelog }}
           releaseDraft: true
           prerelease: false
           args: ${{ matrix.args }}
           includeUpdaterJson: true
-          
-      - name: 重命名构建资产
-        if: steps.tauri-build.outputs.packagePath != ''
-        run: |
-          mkdir -p artifacts
-          cp ${{ steps.tauri-build.outputs.packagePath }} artifacts/blinko-${{ matrix.asset_name }}-${{ needs.update-versions.outputs.version }}${{ endsWith(steps.tauri-build.outputs.packagePath, '.msi') && '.msi' || endsWith(steps.tauri-build.outputs.packagePath, '.dmg') && '.dmg' || '' }}
-        shell: bash
-      
-      - name: 上传构建产物
-        uses: actions/upload-artifact@v4
-        with:
-          name: blinko-${{ matrix.asset_name }}
-          path: artifacts/*
-          retention-days: 3
 
   # 安卓平台构建任务
   publish-android:
-    needs: [generate-changelog, update-versions]
+    needs: [generate-changelog, update-version]
     permissions:
       contents: write
     runs-on: ubuntu-latest
@@ -185,10 +170,16 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: 设置Android SDK
+        uses: android-actions/setup-android@v3
+
       - name: 设置Node环境
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
+
+      - name: 安装Rust稳定版
+        uses: dtolnay/rust-toolchain@stable
 
       - name: 安装bun
         uses: oven-sh/setup-bun@v1
@@ -210,6 +201,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
+      - name: 安装Tauri CLI
+        run: cargo install tauri-cli --version "^2.0.0-alpha"
+
       - name: 上传Keystore文件
         run: |
           # 创建keystore目录
@@ -217,6 +211,7 @@ jobs:
           # 创建keystore文件
           echo "${{ secrets.UPLOAD_KEYSTORE }}" | base64 --decode > ~/.android/upload-keystore.jks
           # 创建keystore.properties
+          mkdir -p app/src-tauri/gen/android
           cat > app/src-tauri/gen/android/keystore.properties << EOF
           password=106111
           keyAlias=upload
@@ -226,55 +221,17 @@ jobs:
       - name: 构建Android应用
         run: |
           cd app
-          bun run tauri android build --release
-      
-      - name: 重命名APK
-        run: |
-          mkdir -p artifacts
-          cp app/src-tauri/gen/android/app/build/outputs/apk/universal/release/*.apk artifacts/blinko-android-${{ needs.update-versions.outputs.version }}.apk
-      
-      - name: 上传构建产物
-        uses: actions/upload-artifact@v4
-        with:
-          name: blinko-android
-          path: artifacts/*
-          retention-days: 3
+          cargo tauri android build
+          
+          # 查找构建的APK
+          find src-tauri -name "*.apk" | sort
 
-  # 发布合并产物
-  publish-release:
-    needs: [generate-changelog, update-versions, publish-desktop, publish-android]
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: 下载所有构建产物
-        uses: actions/download-artifact@v4
-        with:
-          path: release-artifacts
-          
-      - name: 显示目录结构
-        run: find release-artifacts -type f | sort
-          
-      - name: 创建GitHub发布
+      - name: 上传Android APK
         uses: softprops/action-gh-release@v1
         with:
-          files: release-artifacts/**/*
-          tag_name: v${{ needs.update-versions.outputs.version }}
-          name: Blinko v${{ needs.update-versions.outputs.version }}
-          body: |
-            ## 版本 ${{ needs.update-versions.outputs.version }} 变更日志
-            
-            ${{ needs.generate-changelog.outputs.changelog }}
-            
-            ## 下载
-            
-            ### 桌面版本
-            - Windows: blinko-windows-${{ needs.update-versions.outputs.version }}.msi
-            - macOS (Intel): blinko-macos-x64-${{ needs.update-versions.outputs.version }}.dmg
-            - macOS (Apple Silicon): blinko-macos-aarch64-${{ needs.update-versions.outputs.version }}.dmg
-            
-            ### 移动版本
-            - Android: blinko-android-${{ needs.update-versions.outputs.version }}.apk
+          files: app/src-tauri/gen/android/app/build/outputs/apk/universal/release/*.apk
+          tag_name: ${{ github.event.inputs.tag || github.ref_name }}
+          body: ${{ needs.generate-changelog.outputs.changelog }}
           draft: true
           prerelease: false
         env:

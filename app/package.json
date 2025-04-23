@@ -9,7 +9,8 @@
     "build:web": "tsc && cd ../server && cd ../app && vite build",
     "tauri:dev": "tauri dev",
     "tauri:android:dev": "tauri android dev --host",
-    "tauri:android:build": "tauri android build"
+    "tauri:android:build": "tauri android build",
+    "tauri:desktop:build": "tauri build"
   },
   "dependencies": {
     "@heroui/react": "^2.8.0-beta.1",
