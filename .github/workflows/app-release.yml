@@ -21,7 +21,8 @@ jobs:
       - name: Checkout代码
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.tag || github.ref }}
+          # 手动触发时使用默认分支而不是尝试checkout tag
+          ref: ${{ github.event_name == 'workflow_dispatch' && '' || github.ref }}
           fetch-depth: 0
       
       - name: 获取最新标签
@@ -34,17 +35,28 @@ jobs:
             PREVIOUS_TAG=$(git rev-list --max-parents=0 HEAD)
           fi
           echo "PREVIOUS_TAG=$PREVIOUS_TAG" >> $GITHUB_ENV
-          echo "CURRENT_TAG=${{ github.event.inputs.tag || github.ref_name }}" >> $GITHUB_ENV
+          
+          # 根据触发方式设置当前标签
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "CURRENT_TAG=${{ github.event.inputs.tag }}" >> $GITHUB_ENV
+          else
+            echo "CURRENT_TAG=${{ github.ref_name }}" >> $GITHUB_ENV
+          fi
       
       - name: 生成变更日志
         id: changelog
         run: |
-          # 生成上次发布以来的所有提交日志
-          CHANGELOG=$(git log --pretty=format:"- %s (%h) by %an" ${{ env.PREVIOUS_TAG }}..${{ env.CURRENT_TAG }} | sort)
-          
-          # 如果没有提交记录，使用默认消息
-          if [ -z "$CHANGELOG" ]; then
-            CHANGELOG="- 首次发布或没有新提交"
+          # 如果是手动触发，使用简单的模板消息
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            CHANGELOG="手动发布版本 ${{ env.CURRENT_TAG }}"
+          else
+            # 生成上次发布以来的所有提交日志
+            CHANGELOG=$(git log --pretty=format:"- %s (%h) by %an" ${{ env.PREVIOUS_TAG }}..${{ env.CURRENT_TAG }} | sort)
+            
+            # 如果没有提交记录，使用默认消息
+            if [ -z "$CHANGELOG" ]; then
+              CHANGELOG="- 首次发布或没有新提交"
+            fi
           fi
           
           # 输出日志（多行变量）
@@ -60,7 +72,8 @@ jobs:
       - name: Checkout代码
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.tag || github.ref }}
+          # 手动触发时使用默认分支而不是尝试checkout tag
+          ref: ${{ github.event_name == 'workflow_dispatch' && '' || github.ref }}
       
       - name: 设置版本变量
         id: set_version
@@ -114,6 +127,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          # 始终使用默认分支进行构建
           ref: ${{ github.event.repository.default_branch }}
           fetch-depth: 0
 
@@ -161,6 +175,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          # 始终使用默认分支进行构建
           ref: ${{ github.event.repository.default_branch }}
           fetch-depth: 0
 
@@ -226,10 +241,35 @@ jobs:
           # 查找构建的APK
           find src-tauri -name "*.apk" | sort
 
+      # 手动触发时根据输入的tag创建新标签
+      - name: 创建发布标签
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            try {
+              // 尝试创建标签
+              await github.rest.git.createRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: `refs/tags/${{ github.event.inputs.tag }}`,
+                sha: context.sha
+              });
+              console.log(`创建标签 ${{ github.event.inputs.tag }} 成功`);
+            } catch (error) {
+              if (error.status === 422) {
+                console.log(`标签 ${{ github.event.inputs.tag }} 已存在，继续发布流程`);
+              } else {
+                throw error;
+              }
+            }
+
       - name: 上传Android APK
         uses: softprops/action-gh-release@v1
         with:
           files: app/src-tauri/gen/android/app/build/outputs/apk/universal/release/*.apk
+          # 手动触发时使用输入的tag，否则使用触发事件的tag
           tag_name: ${{ github.event.inputs.tag || github.ref_name }}
           body: ${{ needs.generate-changelog.outputs.changelog }}
           draft: true
