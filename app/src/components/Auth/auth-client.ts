@@ -90,6 +90,7 @@ export async function signIn(
 ): Promise<SignInResponse | undefined> {
   try {
     if (provider === 'credentials') {
+      console.log('signIn Endpoint', getBlinkoEndpoint('/api/auth/login'));
       const response = await fetch(getBlinkoEndpoint('/api/auth/login'), {
         method: 'POST',
         headers: { 

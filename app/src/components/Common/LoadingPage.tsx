@@ -30,12 +30,8 @@ export const LoadingPage = () => {
           transition={{ duration: 0.3 }}
         >
           <div className="rounded-3xl overflow-hidden">
-            <video
-              src="/loading.mp4"
-              autoPlay
-              loop
-              muted
-              playsInline
+            <img
+              src="/loading.gif"
               className="w-[70px] h-[70px] md:w-[100px] md:h-[100px] object-contain"
             />
           </div>

@@ -50,7 +50,8 @@ process.on('exit', (code) => {
 // Server configuration
 const app = express();
 const PORT = 1111;
-const blinkoFrontendAppROOT = path.resolve(__dirname, '../app');
+const appRootDev = path.resolve(__dirname, '../app');
+const appRootProd = path.resolve(__dirname, '../server');
 let server: any = null;
 
 if (process.env.NODE_ENV === 'production') {
@@ -59,15 +60,15 @@ if (process.env.NODE_ENV === 'production') {
     mode: 'production',
     inlineViteConfig: {
       //docker production dir /dist not development dir
-      root: path.resolve(__dirname, '../server'),
+      root: appRootProd,
       build: { outDir: "public" }
     }
   });
 } else {
   ViteExpress.config({
-    viteConfigFile: path.resolve(blinkoFrontendAppROOT, 'vite.config.ts'),
+    viteConfigFile: path.resolve(appRootDev, 'vite.config.ts'),
     inlineViteConfig: {
-      root: blinkoFrontendAppROOT,
+      root: appRootDev,
     }
   });
 }
@@ -109,6 +110,10 @@ async function setupApiRoutes(app: express.Application) {
   app.use('/api/file/delete', deleteRouter);
   app.use('/api/s3file', s3fileRouter);
   app.use('/dist/js/lute/lute.min.js', (req, res) => {
+    res.set({
+      'Cache-Control': 'public, max-age=604800, immutable',
+      'Expires': new Date(Date.now() + 604800000).toUTCString()
+    });
     res.sendFile(path.resolve(__dirname, './lute.min.js'));
   });
   app.use('/plugins', pluginRouter);
@@ -166,6 +171,21 @@ async function bootstrap() {
     if (process.env.TRUST_PROXY === '1') {
       app.set('trust proxy', 1);
     }
+
+    const staticOptions = {
+      maxAge: '7d',
+      immutable: true,
+      setHeaders: (res: express.Response, path: string) => {
+        const ext = path.split('.').pop()?.toLowerCase();
+        if (['png', 'webp', 'svg', 'json', 'ico', 'gif', 'mp4'].includes(ext || '')) {
+          res.setHeader('Cache-Control', 'public, max-age=604800, immutable');
+          res.setHeader('Expires', new Date(Date.now() + 604800000).toUTCString());
+        }
+      }
+    };
+
+    const publicPath = path.resolve(appRootProd, 'public');
+    app.use(express.static(publicPath, staticOptions));
 
     // Add body parsers for JSON and form data
     app.use(express.json({ limit: '50mb' }));

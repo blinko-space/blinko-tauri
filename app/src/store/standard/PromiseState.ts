@@ -7,6 +7,7 @@ import { BlinkoStore } from "../blinkoStore";
 import i18n from "@/lib/i18n";
 import { StorageState } from "./StorageState";
 import { BaseStore } from "../baseStore";
+import { getBlinkoEndpoint, isTauriAndEndpointUndefined } from "@/lib/blinkoEndpoint";
 
 export interface Events {
   data: (data: any) => void;
@@ -256,6 +257,9 @@ export class PromisePageState<T extends (...args: any) => Promise<any>, U = Retu
           eventBus.emit('user:signout')
         } else {
           this.errMsg = message;
+          if (isTauriAndEndpointUndefined()) {
+            return
+          }
           toast.error(message);
         }
       } else {

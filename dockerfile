@@ -38,7 +38,9 @@ ENV DISABLE_SECURE_COOKIE=false
 ENV TRUST_PROXY=1
 
 # Install OpenSSL Dependencies
-RUN apt-get update -y && apt-get install -y openssl
+RUN apt-get update -y && apt-get install -y openssl && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Copy Build Artifacts and Necessary Files
 COPY --from=builder /app/dist ./server

@@ -43,7 +43,7 @@ export default function Component() {
         setIsTauriEnv(false);
       }
     };
-    
+
     checkTauriEnv();
   }, []);
 
@@ -71,7 +71,7 @@ export default function Component() {
           navigate('/');
         }
 
-        if(res?.error) {
+        if (res?.error) {
           RootStore.Get(ToastPlugin).error(res.error);
         }
 
@@ -111,7 +111,7 @@ export default function Component() {
       await SignIn.call();
       userStorage.setValue(user);
       passwordStorage.setValue(password);
-      
+
       if (isTauriEnv && endpoint) {
         saveBlinkoEndpoint(endpoint);
       }
@@ -166,10 +166,10 @@ export default function Component() {
                 placeholder={t('enter-blinko-endpoint')}
                 type="text"
                 variant="bordered"
-                value={endpoint}
+                value={endpoint.replace(/"/g, '') }
                 onChange={e => {
-                  setEndpoint(e.target.value?.trim())
-                  endpointStorage.save(e.target.value?.trim())
+                  setEndpoint(e.target.value?.trim().replace(/"/g, ''))
+                  endpointStorage.save(e.target.value?.trim().replace(/"/g, ''))
                 }}
               />
             )}
