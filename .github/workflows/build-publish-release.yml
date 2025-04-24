@@ -202,6 +202,13 @@ jobs:
           else
             echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
           fi
+          # Ensure version starts with 'v' (if not present)
+          if [[ ! "${{ env.VERSION }}" =~ ^v ]]; then
+            echo "TAG_VERSION=v${{ env.VERSION }}" >> $GITHUB_ENV
+          else
+            echo "TAG_VERSION=${{ env.VERSION }}" >> $GITHUB_ENV
+          fi
+          echo "Trigger app version release: ${{ env.TAG_VERSION }}"
 
       - name: Update package.json Version
         run: |
