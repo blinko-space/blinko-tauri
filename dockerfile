@@ -1,60 +1,60 @@
-# 构建阶段
+# Build Stage
 FROM oven/bun:latest AS builder
 
-# 添加构建参数
+# Add Build Arguments
 ARG USE_MIRROR=false
 
 WORKDIR /app
 
-# 复制项目文件
+# Copy Project Files
 COPY . .
 
-# 根据USE_MIRROR参数设置镜像
+# Configure Mirror Based on USE_MIRROR Parameter
 RUN if [ "$USE_MIRROR" = "true" ]; then \
-        echo "使用淘宝镜像源安装依赖" && \
+        echo "Using Taobao Mirror to Install Dependencies" && \
         echo '{ "install": { "registry": "https://registry.npmmirror.com" } }' > .bunfig.json; \
     else \
-        echo "使用默认镜像源安装依赖"; \
+        echo "Using Default Mirror to Install Dependencies"; \
     fi
 
-# 安装依赖并构建应用
+# Install Dependencies and Build App
 RUN bun install
 RUN bun run build:web
 RUN bun run build:seed
 
-# 运行阶段 - 使用更小的基础镜像
+# Runtime Stage - Using Smaller Base Image
 FROM oven/bun:slim AS runner
 
-# 添加构建参数
+# Add Build Arguments
 ARG USE_MIRROR=false
 
 WORKDIR /app
 
-# 环境变量
+# Environment Variables
 ENV NODE_ENV=production
-# 如果在HTTPS后面有代理或负载均衡器，可能需要禁用secure cookie
+# If there is a proxy or load balancer behind HTTPS, you may need to disable secure cookies
 ENV DISABLE_SECURE_COOKIE=false
-# 设置信任代理
+# Set Trust Proxy
 ENV TRUST_PROXY=1
 
-# 安装OpenSSL依赖
+# Install OpenSSL Dependencies
 RUN apt-get update -y && apt-get install -y openssl
 
-# 复制构建产物和必要文件
+# Copy Build Artifacts and Necessary Files
 COPY --from=builder /app/dist ./server
 COPY --from=builder /app/server/package.json ./package.json
 COPY --from=builder /app/server/lute.min.js ./server/lute.min.js
 COPY --from=builder /app/prisma ./prisma
 
-# 根据USE_MIRROR参数设置镜像
+# Configure Mirror Based on USE_MIRROR Parameter
 RUN if [ "$USE_MIRROR" = "true" ]; then \
-        echo "使用淘宝镜像源安装依赖" && \
+        echo "Using Taobao Mirror to Install Dependencies" && \
         echo '{ "install": { "registry": "https://registry.npmmirror.com" } }' > .bunfig.json; \
     else \
-        echo "使用默认镜像源安装依赖"; \
+        echo "Using Default Mirror to Install Dependencies"; \
     fi
 
-# 安装生产环境依赖
+# Install Production Dependencies
 RUN bun install --production
 RUN bun install prisma@5.21.1
 RUN ./node_modules/.bin/prisma generate
@@ -62,15 +62,15 @@ RUN ./node_modules/.bin/prisma generate
 # remove onnxruntime-node
 RUN find / -type d -name "onnxruntime-*" -exec rm -rf {} +
 
-# 暴露端口（根据实际应用调整）
+# Expose Port (Adjust According to Actual Application)
 EXPOSE 1111
 
-# 创建启动脚本
+# Create Startup Script
 RUN echo '#!/bin/sh\n\
-echo "当前环境: $NODE_ENV"\n\
+echo "Current Environment: $NODE_ENV"\n\
 ./node_modules/.bin/prisma migrate deploy\n\
 bun server/seed.js\n\
 bun server/index.js' > ./start.sh && chmod +x ./start.sh
 
-# 启动命令
+# Startup Command
 CMD ["./start.sh"]

@@ -11,7 +11,8 @@ router.options('/', cors({
   origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: '*',
-  maxAge: 86400
+  maxAge: 86400,
+  credentials: true
 }));
 
 /**

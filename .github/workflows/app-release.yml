@@ -1,48 +1,48 @@
-name: 应用发布
+name: App Release
 
 on:
   push:
     tags:
-      - 'v*' # 匹配以v开头的标签格式，例如 v1.0.0, v1.2.3
+      - 'v*' # Match tags starting with v, e.g. v1.0.0, v1.2.3
   workflow_dispatch:
     inputs:
       tag:
-        description: '标签版本 (例如: v1.0.0)'
+        description: 'Tag Version (e.g. v1.0.0)'
         required: true
         type: string
 
 jobs:
-  # 生成变更日志
+  # Generate changelog
   generate-changelog:
     runs-on: ubuntu-latest
     outputs:
       changelog: ${{ steps.changelog.outputs.changelog }}
       version: ${{ steps.set_version.outputs.version }}
     steps:
-      - name: Checkout代码
+      - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
       
-      - name: 获取最新标签
+      - name: Get Latest Tag
         id: get_previous_tag
         run: |
-          # 获取倒数第二个标签（即上一个发布版本）
+          # Get the second last tag (previous release version)
           PREVIOUS_TAG=$(git tag --sort=-creatordate | head -n 2 | tail -n 1)
           if [ -z "$PREVIOUS_TAG" ]; then
-            # 如果没有找到上一个标签，使用第一个提交
+            # If no previous tag found, use the first commit
             PREVIOUS_TAG=$(git rev-list --max-parents=0 HEAD)
           fi
           echo "PREVIOUS_TAG=$PREVIOUS_TAG" >> $GITHUB_ENV
           
-          # 根据触发方式设置当前标签
+          # Set current tag based on trigger method
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             echo "CURRENT_TAG=${{ github.event.inputs.tag }}" >> $GITHUB_ENV
           else
             echo "CURRENT_TAG=${{ github.ref_name }}" >> $GITHUB_ENV
           fi
       
-      - name: 设置版本变量
+      - name: Set Version Variable
         id: set_version
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ github.event.inputs.tag }}" != "" ]]; then
@@ -50,58 +50,58 @@ jobs:
           else
             TAG="${GITHUB_REF_NAME}"
           fi
-          # 移除版本号前的'v'
+          # Remove 'v' prefix from version
           VERSION="${TAG#v}"
-          # 确保VERSION不为空，默认为1.0.0
+          # Ensure VERSION is not empty, default to 1.0.0
           if [ -z "$VERSION" ]; then
             VERSION="1.0.0"
           fi
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "设置的版本号: $VERSION"
+          echo "Set version: $VERSION"
       
-      - name: 生成变更日志
+      - name: Generate Changelog
         id: changelog
         run: |
-          # 生成上次发布以来的所有提交日志
+          # Generate all commit logs since last release
           CHANGELOG=$(git log --pretty=format:"- %s (%h) by %an" ${{ env.PREVIOUS_TAG }}..${{ env.CURRENT_TAG }} | sort)
           
-          # 如果没有提交记录，使用默认消息
+          # If no commit records, use default message
           if [ -z "$CHANGELOG" ]; then
-            CHANGELOG="- 首次发布或没有新提交"
+            CHANGELOG="- First release or no new commits"
           fi
           
-          # 输出日志（多行变量）
+          # Output log (multiline variable)
           echo "changelog<<EOF" >> $GITHUB_OUTPUT
           echo "$CHANGELOG" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
-  # 更新Tauri配置版本号
+  # Update Tauri Config Version
   update-version:
     runs-on: ubuntu-latest
     needs: generate-changelog
     steps:
-      - name: Checkout代码
+      - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
       
-      - name: 更新Tauri配置版本号
+      - name: Update Tauri Config Version
         run: |
-          echo "当前版本号: ${{ needs.generate-changelog.outputs.version }}"
-          # 使用jq更新版本号
+          echo "Current version: ${{ needs.generate-changelog.outputs.version }}"
+          # Update version using jq
           jq '.version = "${{ needs.generate-changelog.outputs.version }}"' app/src-tauri/tauri.conf.json > tmp.json && mv tmp.json app/src-tauri/tauri.conf.json
-          echo "更新后的tauri.conf.json:"
+          echo "Updated tauri.conf.json:"
           cat app/src-tauri/tauri.conf.json
       
-      - name: 提交更改
+      - name: Commit Changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "chore: 更新Tauri版本号至 ${{ needs.generate-changelog.outputs.version }}"
+          commit_message: "chore: Update Tauri version to ${{ needs.generate-changelog.outputs.version }}"
           file_pattern: "app/src-tauri/tauri.conf.json"
           branch: ${{ github.event.repository.default_branch }}
 
-  # 桌面平台构建任务
+  # Desktop Platform Build Task
   publish-desktop:
     needs: [generate-changelog, update-version]
     permissions:
@@ -110,13 +110,13 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - platform: 'macos-latest' # 苹果M系列芯片(ARM)
+          - platform: 'macos-latest' # Apple M-series chip (ARM)
             args: '--target aarch64-apple-darwin'
-          - platform: 'macos-latest' # Intel芯片Mac
+          - platform: 'macos-latest' # Intel chip Mac
             args: '--target x86_64-apple-darwin'
-          - platform: 'ubuntu-22.04' # Linux平台
+          - platform: 'ubuntu-22.04' # Linux Platform
             args: ''
-          - platform: 'windows-latest' # Windows平台
+          - platform: 'windows-latest' # Windows Platform
             args: ''
 
     runs-on: ${{ matrix.platform }}
@@ -125,34 +125,34 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: 安装Ubuntu依赖
+      - name: Install Ubuntu Dependencies
         if: matrix.platform == 'ubuntu-22.04'
         run: |
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
 
-      - name: 设置Node环境
+      - name: Setup Node Environment
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
 
-      - name: 安装bun
+      - name: Install bun
         uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
 
-      - name: 安装Rust稳定版
+      - name: Install Rust Stable
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
 
-      - name: 安装依赖
+      - name: Install Dependencies
         run: |
           bun install
           cd app && bun install
 
-      # 使用官方Tauri Action构建和发布
-      - name: 构建并发布桌面应用
+      # Using official Tauri Action to build and publish
+      - name: Build and Publish Desktop App
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -166,7 +166,7 @@ jobs:
           releaseDraft: false
           prerelease: false
 
-  # 安卓平台构建任务
+  # Android Platform Build Task
   publish-android:
     needs: [generate-changelog, update-version]
     permissions:
@@ -177,39 +177,42 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: 设置JDK
+      - name: Setup JDK
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: 设置Android SDK
+      - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: 安装NDK
+      - name: Install NDK
         run: sdkmanager "ndk;27.0.11902837"
 
-      - name: 设置Node环境
+      - name: Setup Node Environment
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
 
-      - name: 安装Rust稳定版
+      - name: Install Rust Stable
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android
 
-      - name: 安装bun
+      - name: Install bun
         uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
 
-      - name: 安装依赖
+      - name: Install Dependencies
         run: |
           bun install
           cd app && bun install
 
-      - name: 配置Gradle缓存
+      - name: Run Prisma Generate
+        run: bun run prisma:generate
+
+      - name: Configure Gradle Cache
         uses: actions/cache@v3
         with:
           path: |
@@ -219,16 +222,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: 安装Tauri CLI
+      - name: Install Tauri CLI
         run: cargo install tauri-cli --version "^2.0.0-alpha"
 
-      - name: 上传Keystore文件
+      - name: Upload Keystore File
         run: |
-          # 创建keystore目录
+          # Create keystore directory
           mkdir -p ~/.android
-          # 创建keystore文件
+          # Create keystore file
           echo "${{ secrets.UPLOAD_KEYSTORE }}" | base64 --decode > ~/.android/upload-keystore.jks
-          # 创建keystore.properties
+          # Create keystore.properties
           mkdir -p app/src-tauri/gen/android
           cat > app/src-tauri/gen/android/keystore.properties << EOF
           password=106111
@@ -236,25 +239,25 @@ jobs:
           storeFile=$HOME/.android/upload-keystore.jks
           EOF
 
-      - name: 构建Android应用
+      - name: Build Android App
         run: |
           cd app
           bun run tauri:android:build
         env:
           NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/27.0.11902837
 
-      - name: 重命名安卓应用文件
+      - name: Rename Android App File
         run: |
           cd app/src-tauri/gen/android/app/build/outputs/apk/universal/release
           VERSION="${{ needs.generate-changelog.outputs.version }}"
-          echo "原始APK文件:"
+          echo "Original APK file:"
           ls -la
-          # 重命名APK文件
+          # Rename APK file
           mv app-universal-release.apk Blinko_${VERSION}_universal.apk
-          echo "重命名后APK文件:"
+          echo "Renamed APK file:"
           ls -la
 
-      - name: 发布Android应用
+      - name: Publish Android App
         uses: softprops/action-gh-release@v1
         with:
           files: app/src-tauri/gen/android/app/build/outputs/apk/universal/release/Blinko_${{ needs.generate-changelog.outputs.version }}_universal.apk
