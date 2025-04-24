@@ -7,10 +7,13 @@ import cors from 'cors';
 const router = express.Router();
 
 router.options('/', cors({
-  origin: '*',
+  origin: function(origin, callback) {
+    callback(null, origin);
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: '*',
-  maxAge: 86400
+  maxAge: 86400,
+  credentials: true
 }));
 
 /**
@@ -117,9 +120,10 @@ router.post('/', async (req, res) => {
     });
 
     res.set({
-      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Origin': req.headers.origin || '',
       'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': '*'
+      'Access-Control-Allow-Headers': '*',
+      'Access-Control-Allow-Credentials': 'true'
     });
 
     return res.status(200).json({
