@@ -57,7 +57,10 @@ RUN if [ "$USE_MIRROR" = "true" ]; then \
     fi
 
 # Install Production Dependencies
-RUN bun install
+RUN bun install sqlite3
+RUN bun install sharp
+RUN bun install @prisma/client
+RUN bun install --production
 RUN bun install prisma@5.21.1
 RUN ./node_modules/.bin/prisma generate
 
