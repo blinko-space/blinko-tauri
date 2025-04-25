@@ -8,7 +8,7 @@ import { StorageState } from "@/store/standard/StorageState";
 import { UserStore } from "@/store/user";
 import { PromiseState } from "@/store/standard/PromiseState";
 import { useTheme } from "next-themes";
-import { api } from "@/lib/trpc";
+import { api, reinitializeTrpcApi } from "@/lib/trpc";
 import { GradientBackground } from "@/components/Common/GradientBackground";
 import { signIn } from "@/components/Auth/auth-client";
 import { useNavigate } from "react-router-dom";
@@ -37,7 +37,7 @@ export default function Component() {
   useEffect(() => {
     const checkTauriEnv = async () => {
       try {
-        const isTauri = !!(window as any).isTauri || (typeof navigator !== 'undefined' && navigator.userAgent.includes('Tauri'));
+        const isTauri = !!(window as any).__TAURI__ ;
         setIsTauriEnv(isTauri);
       } catch (error) {
         setIsTauriEnv(false);
@@ -62,6 +62,10 @@ export default function Component() {
           callbackUrl: '/',
           redirect: false,
         });
+
+        if (isTauriEnv) {
+          reinitializeTrpcApi();
+        }
 
         if (res?.requiresTwoFactor) {
           return res;

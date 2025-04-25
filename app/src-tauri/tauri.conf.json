@@ -19,12 +19,12 @@
         "title": "Blinko",
         "width": 1024,
         "height": 768,
-        "resizable": true,
-        "transparent": true,
         "fullscreen": false,
-        "center": true,
+        "resizable": true,
         "focus": true,
-        "visible": true
+        "titleBarStyle": "Overlay",
+        "hiddenTitle": true,
+        "decorations": false
       }
     ]
   },

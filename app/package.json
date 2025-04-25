@@ -71,7 +71,6 @@
     "remark-task-list": "^0.0.3",
     "swiper": "^11.2.6",
     "systemjs": "^6.15.1",
-    "tauri-plugin-status-bar-color-api": "^1.0.0",
     "three": "^0.174.0",
     "usehooks-ts": "^3.1.1",
     "vanilla-tilt": "^1.8.1",

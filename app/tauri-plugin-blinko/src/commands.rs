@@ -5,9 +5,9 @@ use crate::Result;
 use crate::BlinkoExt;
 
 #[command]
-pub(crate) async fn set_color<R: Runtime>(
+pub(crate) async fn setcolor<R: Runtime>(
     app: AppHandle<R>,
     payload: SetColorRequest,
 ) -> Result<()> {
-    app.blinko().set_color(payload)
+    app.blinko().setcolor(payload)
 }

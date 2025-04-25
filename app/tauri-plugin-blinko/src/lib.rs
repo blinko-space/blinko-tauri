@@ -35,7 +35,7 @@ impl<R: Runtime, T: Manager<R>> crate::BlinkoExt<R> for T {
 /// Initializes the plugin.
 pub fn init<R: Runtime>() -> TauriPlugin<R> {
   Builder::new("blinko")
-    .invoke_handler(tauri::generate_handler![commands::ping])
+    .invoke_handler(tauri::generate_handler![commands::setcolor])
     .setup(|app, api| {
       #[cfg(mobile)]
       let blinko = mobile::init(app, api)?;

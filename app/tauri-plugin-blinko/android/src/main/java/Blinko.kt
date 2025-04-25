@@ -1,28 +1,57 @@
 package com.plugin.blinko
 
+import android.app.Activity
+import android.graphics.Color
+import android.os.Build
 import android.util.Log
+import android.view.View
+import android.view.WindowInsetsController
 
 class Blinko {
-    fun setColor(hex: String, activity: Activity) {
+    fun setcolor(hex: String, activity: Activity) {
         val color = Color.parseColor(hex)
+        
         activity.window.statusBarColor = color
+        activity.window.navigationBarColor = color 
 
         val isLightColor = isColorLight(color)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            val appearance = if (isLightColor) {
+            val statusAppearance = if (isLightColor) {
                 WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
             } else {
                 0
             }
-            activity.window.insetsController?.setSystemBarsAppearance(appearance, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            @Suppress("DEPRECATION")
-            activity.window.decorView.systemUiVisibility = if (isLightColor) {
-                View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+            
+            val navAppearance = if (isLightColor) {
+                WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS
             } else {
                 0
             }
+            
+            activity.window.insetsController?.setSystemBarsAppearance(
+                statusAppearance, 
+                WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
+            )
+            
+            activity.window.insetsController?.setSystemBarsAppearance(
+                navAppearance,
+                WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS
+            )
+            
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            var flags = 0
+            
+            if (isLightColor) {
+                flags = flags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+            }
+            
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && isLightColor) {
+                flags = flags or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+            }
+            
+            @Suppress("DEPRECATION")
+            activity.window.decorView.systemUiVisibility = flags
         }
     }
 

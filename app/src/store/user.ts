@@ -18,7 +18,8 @@ import { ShowTwoFactorModal } from '@/components/Common/TwoFactorModal';
 import { ToastPlugin } from './module/Toast/Toast';
 import { StorageState } from './standard/StorageState';
 import { getBlinkoEndpoint } from '@/lib/blinkoEndpoint';
-import { isInTauri } from '@/lib/tauriHelper';
+import { isAndroid, isInTauri, setTauriTheme } from '@/lib/tauriHelper';
+import { setStatusBarColor } from 'tauri-plugin-blinko-api';
 
 export class UserStore implements Store {
   sid = 'user';
@@ -96,7 +97,7 @@ export class UserStore implements Store {
 
   canRegister = new PromiseState({
     function: async () => {
-      if(isInTauri() && getBlinkoEndpoint() == '') {
+      if (isInTauri() && getBlinkoEndpoint() == '') {
         return
       }
       return await api.users.canRegister.mutate();
@@ -244,8 +245,10 @@ export class UserStore implements Store {
       const themeToSet = savedTheme === 'system' ? systemTheme : savedTheme;
       setTheme(themeToSet);
       this.updatePWAColor(themeToSet);
+      setTauriTheme(themeToSet);
       this.themeInitialized = true;
     }
+
 
     const darkElement = document.querySelector('.dark')
     const lightElement = document.querySelector('.light')
@@ -346,7 +349,7 @@ export class UserStore implements Store {
 
   use() {
     const { i18n } = useTranslation()
-    const { setTheme } = useTheme()
+    const { setTheme, theme } = useTheme()
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -355,12 +358,15 @@ export class UserStore implements Store {
     }, []);
 
     useEffect(() => {
+      setTauriTheme(theme);
+    }, [theme]);
+
+    useEffect(() => {
       eventBus.on('user:token', (tokenData) => {
         this.handleToken(tokenData, () => {
           this.initializeSettings(setTheme, i18n);
           if (tokenData?.user?.id) {
             this.userInfo.call(Number(tokenData.user.id));
-            this.canRegister.call();
           }
         });
       });

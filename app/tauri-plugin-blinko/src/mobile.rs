@@ -25,10 +25,10 @@ pub fn init<R: Runtime, C: DeserializeOwned>(
 pub struct Blinko<R: Runtime>(PluginHandle<R>);
 
 impl<R: Runtime> Blinko<R> {
-  pub fn set_color(&self, payload: SetColorRequest) -> crate::Result<()> {
+  pub fn setcolor(&self, payload: SetColorRequest) -> crate::Result<()> {
     self
       .0
-      .run_mobile_plugin("setColor", payload)
+      .run_mobile_plugin("setcolor", payload)
       .map_err(Into::into)
   }
 }

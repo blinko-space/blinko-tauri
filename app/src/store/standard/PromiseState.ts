@@ -130,6 +130,9 @@ export class PromiseState<T extends (...args: any[]) => Promise<any>, U = Return
           eventBus.emit('user:signout')
         } else {
           this.errMsg = message;
+          if (isTauriAndEndpointUndefined()) {
+            return
+          }
           toast.error(message);
         }
       } else {

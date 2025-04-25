@@ -80,7 +80,6 @@
         "swiper": "^11.2.6",
         "systemjs": "^6.15.1",
         "tauri-plugin-blinko-api": "file:./tauri-plugin-blinko",
-        "tauri-plugin-status-bar-color-api": "^1.0.0",
         "three": "^0.174.0",
         "usehooks-ts": "^3.1.1",
         "vanilla-tilt": "^1.8.1",
@@ -4088,8 +4087,6 @@
     "tar-fs": ["tar-fs@2.1.2", "", { "dependencies": { "chownr": "^1.1.1", "mkdirp-classic": "^0.5.2", "pump": "^3.0.0", "tar-stream": "^2.1.4" } }, "sha512-EsaAXwxmx8UB7FRKqeozqEPop69DXcmYwTQwXvyAPF352HJsPdkVhvTaDPYqfNgruveJIJy3TA2l+2zj8LJIJA=="],
 
     "tar-stream": ["tar-stream@3.1.7", "", { "dependencies": { "b4a": "^1.6.4", "fast-fifo": "^1.2.0", "streamx": "^2.15.0" } }, "sha512-qJj60CXt7IU1Ffyc3NJMjh6EkuCFej46zUqJ4J7pqYlThyd9bO0XBTmcOIhSzZJVWfsLks0+nle/j538YAW9RQ=="],
-
-    "tauri-plugin-status-bar-color-api": ["tauri-plugin-status-bar-color-api@1.0.0", "", { "dependencies": { "@tauri-apps/api": ">=2.0.0-beta.6" } }, "sha512-EVG4zCovPmYst3Gpy8j/18BsQK6EyabKlr55jM+AQcSj3s8PL0LTYhvJr/nYAbeW4VueweXiXFohHnUcXo7E9Q=="],
 
     "terser": ["terser@5.39.0", "", { "dependencies": { "@jridgewell/source-map": "^0.3.3", "acorn": "^8.8.2", "commander": "^2.20.0", "source-map-support": "~0.5.20" }, "bin": { "terser": "bin/terser" } }, "sha512-LBAhFyLho16harJoWMg/nZsQYgTrg5jXOn2nCYjRUcZZEdE3qa2zb8QEDRUGVZBW4rlazf2fxkg8tztybTaqWw=="],
 

@@ -1,9 +1,10 @@
 import { invoke } from '@tauri-apps/api/core'
 
-export async function ping(value: string): Promise<string | null> {
-  return await invoke<{value?: string}>('plugin:blinko|ping', {
+export async function setStatusBarColor(hexColor: string): Promise<null> {
+  await invoke<{value?: string}>('plugin:blinko|setcolor', {
     payload: {
-      value,
+      hex: hexColor,
     },
-  }).then((r) => (r.value ? r.value : null));
+  })
+  return null
 }

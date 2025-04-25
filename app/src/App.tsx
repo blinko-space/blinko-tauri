@@ -16,7 +16,6 @@ import { PluginManagerStore } from '@/store/plugin/pluginManagerStore';
 import { RootStore } from '@/store';
 import { UserStore } from '@/store/user';
 import { getTokenData, setNavigate } from '@/components/Auth/auth-client';
-import { setStatusBarColor } from 'tauri-plugin-blinko-api';
 
 const HomePage = lazy(() => import('./pages/index'));
 const SignInPage = lazy(() => import('./pages/signin'));
@@ -104,7 +103,6 @@ function App() {
 
   useEffect(() => {
     RootStore.Get(PluginManagerStore).initInstalledPlugins();
-    setStatusBarColor('#1abc9c');
   }, []);
 
   return (

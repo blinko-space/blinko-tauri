@@ -9,18 +9,19 @@ import app.tauri.plugin.Plugin
 import app.tauri.plugin.Invoke
 
 @InvokeArg
-class PingArgs {
-  var value: String? = null
+class SetColorArgs {
+  lateinit var hex: String
 }
+
 
 @TauriPlugin
 class BlinkoPlugin(private val activity: Activity): Plugin(activity) {
     private val implementation = Blinko()
 
     @Command
-    fun setColor(invoke: Invoke) {
+    fun setcolor(invoke: Invoke) {
         val args = invoke.parseArgs(SetColorArgs::class.java)
-        implementation.setColor(args.hex, activity)
+        implementation.setcolor(args.hex, activity)
         invoke.resolve()
     }
 }

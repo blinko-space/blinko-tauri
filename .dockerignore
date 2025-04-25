@@ -51,4 +51,4 @@ CONTRIBUTING.md
 
 **/target
 
-!app/tauri-plugin-blinko/dist-js/*
+!**/dist-js/*

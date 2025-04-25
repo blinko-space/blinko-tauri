@@ -14,11 +14,17 @@
     "core:window:allow-maximize",
     "core:window:allow-unmaximize",
     "core:window:allow-close",
+    "core:window:allow-set-size",
+    "core:window:allow-set-focus",
+    "core:window:allow-is-maximized",
+    "core:window:allow-toggle-maximize",
     "core:app:default",
     "fs:default",
     "dialog:default",
     "fs:allow-app-write",
     "blinko:default",
+    "core:window:allow-center",
+    "decorum:allow-show-snap-overlay",
     {
       "identifier": "fs:scope",
       "allow": [

@@ -8,6 +8,7 @@ import i18n from './i18n'
 import { UserStore } from '@/store/user'
 import { download } from '@tauri-apps/plugin-upload'
 import { downloadDir, publicDir } from '@tauri-apps/api/path'
+import { setStatusBarColor } from 'tauri-plugin-blinko-api'
 /**
  * isAndroid
  * @returns wether the platform is android
@@ -18,6 +19,10 @@ export function isAndroid() {
     } catch (error) {
         return false
     }
+}
+
+export function isDesktop() {
+    return platform() === 'macos' || platform() === 'windows' || platform() === 'linux';
 }
 
 export function isInTauri() {
@@ -43,7 +48,7 @@ export async function downloadFromLink(uri: string, filename?: string) {
 
     try {
         RootStore.Get(ToastPlugin).loading(i18n.t('downloading'), { id: 'downloading' })
-        
+
         if (!filename) {
             const url = new URL(uri);
             filename = url.pathname.split('/').pop() || 'downloaded_file';
@@ -51,7 +56,7 @@ export async function downloadFromLink(uri: string, filename?: string) {
 
         const token = RootStore.Get(UserStore).tokenData.value?.token;
         const downloadUrl = token ? `${uri}?token=${token}` : uri;
-        
+
         if (isAndroid()) {
             const downloadDirPath = await downloadDir();
             await download(
@@ -62,7 +67,7 @@ export async function downloadFromLink(uri: string, filename?: string) {
                 },
                 new Map([['Content-Type', 'application/octet-stream']])
             );
-            
+
             RootStore.Get(ToastPlugin).dismiss('downloading');
             RootStore.Get(ToastPlugin).success(i18n.t('download-success') + ' ' + downloadDirPath);
         } else if (platform() !== 'ios') {
@@ -81,11 +86,11 @@ export async function downloadFromLink(uri: string, filename?: string) {
                     downloadUrl,
                     savePath,
                     ({ progress, total }) => {
-                        console.log(`下载进度: ${progress} / ${total} bytes`);
+                        // console.log(`download progress: ${progress} / ${total} bytes`);
                     },
                     new Map([['Content-Type', 'application/octet-stream']])
                 );
-                
+
                 RootStore.Get(ToastPlugin).dismiss('downloading');
                 RootStore.Get(ToastPlugin).success(i18n.t('download-success'));
             }
@@ -95,5 +100,13 @@ export async function downloadFromLink(uri: string, filename?: string) {
     } catch (error) {
         RootStore.Get(ToastPlugin).dismiss('downloading');
         RootStore.Get(ToastPlugin).error(`${i18n.t('download-failed')}: ${error instanceof Error ? error.message : String(error)}`);
+    }
+}
+
+export function setTauriTheme(theme: any) {
+    if (isAndroid()) {
+        const lightColor = '#f8f8f8';
+        const darkColor = '#1C1C1E';
+        setStatusBarColor(theme === 'light' ? lightColor : darkColor);
     }
 }

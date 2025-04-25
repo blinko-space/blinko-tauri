@@ -45,12 +45,30 @@ const getLinks = (useStream = false) => {
 };
 
 //@ts-ignore
-export const api = createTRPCClient<AppRouter>({
+export let api = createTRPCClient<AppRouter>({
   links: [getLinks(false)],
 });
 
 //@ts-ignore
-export const streamApi = createTRPCClient<AppRouter>({
+export let streamApi = createTRPCClient<AppRouter>({
   links: [getLinks(true)],
 });
+
+/**
+ * refresh api
+ * when need refresh auth status (login/logout)
+ */
+export const reinitializeTrpcApi = () => {
+  //@ts-ignore
+  api = createTRPCClient<AppRouter>({
+    links: [getLinks(false)],
+  });
+
+  //@ts-ignore
+  streamApi = createTRPCClient<AppRouter>({
+    links: [getLinks(true)],
+  });
+
+  return { api, streamApi };
+};
 

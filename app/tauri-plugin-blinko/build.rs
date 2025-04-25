@@ -1,4 +1,4 @@
-const COMMANDS: &[&str] = &["setColor"];
+const COMMANDS: &[&str] = &["setcolor"];
 
 fn main() {
   tauri_plugin::Builder::new(COMMANDS)
