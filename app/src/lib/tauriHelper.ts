@@ -22,7 +22,11 @@ export function isAndroid() {
 }
 
 export function isDesktop() {
-    return platform() === 'macos' || platform() === 'windows' || platform() === 'linux';
+    try {
+       return platform() === 'macos' || platform() === 'windows' || platform() === 'linux';
+    } catch (error) {
+        return false
+    }
 }
 
 export function isInTauri() {
