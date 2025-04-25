@@ -636,5 +636,8 @@
   "blinko-endpoint": "Blinko Endpoint",
   "enter-blinko-endpoint": "Your Blinko deployment URL",
   "login-failed": "Login failed",
-  "verification-failed": "Authentication failed"
+  "verification-failed": "Authentication failed",
+  "download-success": "Download successful",
+  "download-failed": "Download failed",
+  "downloading": "Downloading"
 }

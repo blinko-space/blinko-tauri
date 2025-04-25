@@ -13,8 +13,9 @@ import { Breadcrumbs, BreadcrumbItem, Button } from "@heroui/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { LoadingAndEmpty } from "@/components/Common/LoadingAndEmpty";
 import { PhotoProvider } from "react-photo-view";
-
+import { useNavigate } from "react-router-dom";
 const Page = observer(() => {
+  const navigate = useNavigate();
   const resourceStore = RootStore.Get(ResourceStore);
   const { t } = useTranslation();
   const resources = useMemo(() =>
@@ -71,14 +72,14 @@ const Page = observer(() => {
                           key={folder}
                           onPress={() => {
                             if (index === 0) {
-                              resourceStore.navigateBack();
+                              resourceStore.navigateBack(navigate);
                             } else {
                               const currentPathSegments = resourceStore.currentFolder?.split('/') || [];
                               const clickedPathLevel = index;
                               const stepsToGoBack = currentPathSegments.length - clickedPathLevel;
 
                               for (let i = 0; i < stepsToGoBack; i++) {
-                                resourceStore.navigateBack();
+                                resourceStore.navigateBack(navigate);
                               }
                             }
                           }}
@@ -192,7 +193,7 @@ const Page = observer(() => {
                         index={index}
                         isSelected={selectedItems.has(item.id!)}
                         onSelect={resourceStore.toggleSelect}
-                        onFolderClick={(folder) => resourceStore.navigateToFolder(folder)}
+                        onFolderClick={(folder) => resourceStore.navigateToFolder(folder, navigate)}
                       />
                     ))}
                     {provided.placeholder}

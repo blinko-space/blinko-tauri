@@ -7,13 +7,10 @@ import cors from 'cors';
 const router = express.Router();
 
 router.options('/', cors({
-  origin: function(origin, callback) {
-    callback(null, origin);
-  },
+  origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: '*',
-  maxAge: 86400,
-  credentials: true
+  maxAge: 86400
 }));
 
 /**

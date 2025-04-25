@@ -629,5 +629,8 @@
   "blinko-endpoint": "Blinkoエンドポイント",
   "enter-blinko-endpoint": "あなたのBlinkoデプロイメントのURL",
   "login-failed": "ログインに失敗しました",
-  "verification-failed": "認証失敗"
+  "verification-failed": "認証失敗",
+  "download-success": "ダウンロード成功",
+  "download-failed": "ダウンロード失敗",
+  "downloading": "ダウンロード中"
 }

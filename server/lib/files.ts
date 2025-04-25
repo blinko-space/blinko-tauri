@@ -218,7 +218,7 @@ export class FileService {
         nodeReadable.pipe(passThrough);
 
         const upload = new Upload({
-          client: s3ClientInstance,
+          client: s3ClientInstance as any,
           params: {
             Bucket: config.s3Bucket,
             Key: s3Key,

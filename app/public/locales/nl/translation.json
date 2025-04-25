@@ -635,5 +635,8 @@
   "blinko-endpoint": "Blinko-eindpunt",
   "enter-blinko-endpoint": "De URL van je Blinko-implementatie",
   "login-failed": "Aanmelden mislukt",
-  "verification-failed": "Authenticatiefout"
+  "verification-failed": "Authenticatiefout",
+  "download-success": "Download geslaagd",
+  "download-failed": "Download mislukt",
+  "downloading": "Aan het downloaden"
 }

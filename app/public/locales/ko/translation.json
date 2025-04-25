@@ -624,5 +624,8 @@
   "blinko-endpoint": "Blinko 엔드포인트",
   "enter-blinko-endpoint": "당신의 Blinko 배포 URL",
   "login-failed": "로그인 실패",
-  "verification-failed": "인증 실패"
+  "verification-failed": "인증 실패",
+  "download-success": "다운로드 성공",
+  "download-failed": "다운로드 실패",
+  "downloading": "다운로드 중"
 }

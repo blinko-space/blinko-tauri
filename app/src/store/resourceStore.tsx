@@ -106,8 +106,7 @@ export class ResourceStore implements Store {
     this.clearSelection();
   };
 
-  navigateToFolder = async (folderName: string) => {
-    const navigate = useNavigate();
+  navigateToFolder = async (folderName: string, navigate: any) => {
     const newPath = this.currentFolder
       ? `${this.currentFolder}/${folderName}`
       : folderName;
@@ -118,8 +117,7 @@ export class ResourceStore implements Store {
     await navigate(`/resources?folder=${encodeURIComponent(newPath)}`);
   }
 
-  navigateBack = async () => {
-    const navigate = useNavigate();
+  navigateBack = async (navigate: any) => {
     if (!this.currentFolder) return;
 
     const folders = this.currentFolder.split('/');
@@ -150,7 +148,7 @@ export class ResourceStore implements Store {
 
   use() {
     const [searchParams] = useSearchParams();
-    
+
     useEffect(() => {
       const folder = searchParams.get('folder');
       if (folder !== this.currentFolder) {

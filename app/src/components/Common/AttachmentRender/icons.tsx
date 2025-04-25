@@ -13,6 +13,7 @@ import { Tooltip } from '@heroui/react';
 import { eventBus } from '@/lib/event';
 import { getBlinkoEndpoint } from '@/lib/blinkoEndpoint';
 import axiosInstance from '@/lib/axios';
+import { downloadFromLink } from '@/lib/tauriHelper';
 export const DeleteIcon = observer(({ className, file, files, size = 20 }: { className: string, file: FileType, files: FileType[], size?: number }) => {
   const store = RootStore.Local(() => ({
     deleteFile: new PromiseState({
@@ -62,7 +63,7 @@ export const InsertConextButton = observer(({ className, file, files, size = 20 
 export const DownloadIcon = observer(({ className, file, size = 20 }: { className?: string, file: FileType, size?: number }) => {
   return <div className={`hidden p-1 group-hover:block !transition-all absolute z-10 right-[5px] top-[5px] !text-background opacity-70 hover:opacity-100 !bg-foreground cursor-pointer rounded-sm !transition-all ${className}`}>
     <Icon onClick={() => {
-      helper.download.downloadByLink(file.uploadPromise.value)
+      downloadFromLink(getBlinkoEndpoint(file.uploadPromise.value));
     }} icon="tabler:download" width="15" height="15" />
   </div>
 })

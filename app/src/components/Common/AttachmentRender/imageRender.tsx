@@ -9,6 +9,8 @@ import { useMediaQuery } from 'usehooks-ts';
 import { DraggableFileGrid } from './DraggableFileGrid';
 import axiosInstance from '@/lib/axios';
 import { getBlinkoEndpoint } from '@/lib/blinkoEndpoint';
+import { RootStore } from '@/store';
+import { UserStore } from '@/store/user';
 
 type IProps = {
   files: FileType[]
@@ -118,7 +120,7 @@ const ImageRender = observer((props: IProps) => {
         </div>
       )}
       <div className='w-full'>
-        <PhotoView src={file.preview}>
+        <PhotoView src={getBlinkoEndpoint(`${file.preview}?token=${RootStore.Get(UserStore).tokenData.value?.token}`)}>
           <div>
             <ImageThumbnailRender
               src={file.preview}

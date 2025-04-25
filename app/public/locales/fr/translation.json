@@ -629,5 +629,8 @@
   "blinko-endpoint": "Point terminal Blinko",
   "enter-blinko-endpoint": "l'URL de votre déploiement Blinko",
   "login-failed": "Échec de connexion",
-  "verification-failed": "Échec de l'authentification"
+  "verification-failed": "Échec de l'authentification",
+  "download-success": "Téléchargement réussi",
+  "download-failed": "Échec du téléchargement",
+  "downloading": "En téléchargement"
 }

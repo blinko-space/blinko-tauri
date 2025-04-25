@@ -17,6 +17,8 @@ import { ConvertTypeButton } from '../BlinkoCard/cardFooter';
 import { LoadingAndEmpty } from '../Common/LoadingAndEmpty';
 import { helper } from '@/lib/helper';
 import { useNavigate } from 'react-router-dom';
+import { getBlinkoEndpoint } from '@/lib/blinkoEndpoint';
+import { downloadFromLink } from '@/lib/tauriHelper';
 
 interface GlobalSearchProps {
   isOpen: boolean;
@@ -220,7 +222,7 @@ export const GlobalSearch = observer(({ isOpen, onOpenChange }: GlobalSearchProp
 
   const navigateToResource = (resource: ResourceType) => {
     //download
-    helper.download.downloadByLink(resource.path);
+    downloadFromLink(getBlinkoEndpoint(resource.path));
     onOpenChange(false);
   };
 

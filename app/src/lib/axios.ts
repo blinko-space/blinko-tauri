@@ -6,7 +6,6 @@ import { UserStore } from '@/store/user';
 const axiosInstance = axios.create({
   baseURL: '', // Base URL can be set as needed
   timeout: 30000,
-  withCredentials: true,
 });
 
 // Request interceptor

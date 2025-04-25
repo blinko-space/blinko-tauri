@@ -14,6 +14,29 @@
     "core:window:allow-maximize",
     "core:window:allow-unmaximize",
     "core:window:allow-close",
-    "core:app:default"
+    "core:app:default",
+    "fs:default",
+    "dialog:default",
+    "fs:allow-app-write",
+    {
+      "identifier": "fs:scope",
+      "allow": [
+        {
+          "path": "$DOWNLOAD"
+        },
+        {
+          "path": "$DOWNLOAD/**"
+        }
+      ]
+    },
+    {
+      "identifier": "fs:allow-write",
+      "allow": [
+        {
+          "path": "$DOWNLOAD"
+        }
+      ]
+    },
+    "upload:default"
   ]
 }

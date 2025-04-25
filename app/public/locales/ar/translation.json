@@ -628,5 +628,8 @@
   "blinko-endpoint": "نقطة النهاية بلينكو",
   "enter-blinko-endpoint": "رابط تثبيت Blinko الخاص بك",
   "login-failed": "فشل تسجيل الدخول",
-  "verification-failed": "فشل التحقق"
+  "verification-failed": "فشل التحقق",
+  "download-success": "تم التنزيل بنجاح",
+  "download-failed": "تحميل فاشل",
+  "downloading": "جاري التحميل"
 }

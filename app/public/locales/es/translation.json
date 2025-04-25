@@ -629,5 +629,8 @@
   "blinko-endpoint": "Punto final de Blinko",
   "enter-blinko-endpoint": "La URL de tu despliegue de Blinko",
   "login-failed": "Inicio de sesión fallido",
-  "verification-failed": "Certificación fallida"
+  "verification-failed": "Certificación fallida",
+  "download-success": "Descarga exitosa",
+  "download-failed": "Descarga fallida",
+  "downloading": "Descargando"
 }

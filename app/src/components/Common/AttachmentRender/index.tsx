@@ -13,6 +13,8 @@ import { BlinkoCard } from '@/components/BlinkoCard';
 import { EditorStore } from '../Editor/editorStore';
 import { DraggableFileGrid } from './DraggableFileGrid';
 import { AudioRender } from './audioRender';
+import { downloadFromLink } from '@/lib/tauriHelper';
+import { getBlinkoEndpoint } from '@/lib/blinkoEndpoint';
 
 //https://www.npmjs.com/package/browser-thumbnail-generator
 
@@ -75,7 +77,7 @@ const AttachmentsRender = observer((props: IProps) => {
               ${!preview ? 'min-w-[200px] flex-shrink-0' : 'w-full'}`}
             onClick={() => {
               if (preview) {
-                helper.download.downloadByLink(file.uploadPromise.value)
+                downloadFromLink(getBlinkoEndpoint(file.uploadPromise.value))
               }
             }}
           >

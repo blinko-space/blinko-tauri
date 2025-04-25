@@ -623,5 +623,8 @@
   "blinko-endpoint": "Ponto final do Blinko",
   "enter-blinko-endpoint": "O URL do seu Blinko implantado",
   "login-failed": "Falha no login",
-  "verification-failed": "Falha na autenticação"
+  "verification-failed": "Falha na autenticação",
+  "download-success": "Download bem sucedido",
+  "download-failed": "Falha no download",
+  "downloading": "Baixando"
 }

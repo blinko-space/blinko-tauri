@@ -177,6 +177,12 @@ export const getTokenFromRequest = async (req: ExpressRequest) => {
       }
     }
 
+    if (req.query && req.query.token) {
+      const token = req.query.token as string;
+      const tokenData = await verifyToken(token);
+      if (tokenData) return { ...tokenData, id: tokenData.sub };
+    }
+
     return null;
   } catch (error) {
     console.error('Token retrieval error:', error);
@@ -289,4 +295,11 @@ export const getUserFromRequest = async (req: any) => {
 
   return await getTokenFromRequest(req);
 };
+
+// 生成带token的URL
+export const generateUrlWithToken = async (url: string, user: any) => {
+  const token = await generateToken(user);
+  const separator = url.includes('?') ? '&' : '?';
+  return `${url}${separator}token=${token}`;
+}
 

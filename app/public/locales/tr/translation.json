@@ -629,5 +629,8 @@
   "blinko-endpoint": "Blinko uç noktası",
   "enter-blinko-endpoint": "Blinko'nun dağıtıldığı URL'niz",
   "login-failed": "Oturum açma başarısız oldu",
-  "verification-failed": "Kimlik Doğrulama Başarısız"
+  "verification-failed": "Kimlik Doğrulama Başarısız",
+  "download-success": "İndirme başarılı",
+  "download-failed": "İndirme başarısız oldu",
+  "downloading": "İndiriliyor"
 }

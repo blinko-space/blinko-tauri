@@ -620,5 +620,8 @@
   "blinko-endpoint": "Blinko punkt końcowy",
   "enter-blinko-endpoint": "URL Twojego wdrożenia Blinko",
   "login-failed": "Nieudane logowanie",
-  "verification-failed": "uwierzytelnianie nie powiodło się"
+  "verification-failed": "uwierzytelnianie nie powiodło się",
+  "download-success": "Pobieranie udane",
+  "download-failed": "Pobieranie nie powiodło się",
+  "downloading": "Pobieranie"
 }

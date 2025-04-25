@@ -628,5 +628,8 @@
   "please-set-the-embedding-model": "Bitte das eingebettete Modell einstellen",
   "enter-blinko-endpoint": "Deine URL für die Bereitstellung von Blinko",
   "login-failed": "Anmeldefehler",
-  "verification-failed": "Authentifizierung fehlgeschlagen"
+  "verification-failed": "Authentifizierung fehlgeschlagen",
+  "download-success": "Download erfolgreich",
+  "download-failed": "Download fehlgeschlagen",
+  "downloading": "Herunterladen"
 }

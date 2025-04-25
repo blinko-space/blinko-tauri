@@ -588,5 +588,8 @@
   "blinko-endpoint": "Blinko წერტილი",
   "enter-blinko-endpoint": "შენი Blinko დანერგვიա URL",
   "login-failed": "შესვლა ჩაიშოლა",
-  "verification-failed": "დამოწმების ჩაშორებа"
+  "verification-failed": "დამოწმების ჩაშორებа",
+  "download-success": "ჩამოტვირთვა წარმოი.",
+  "download-failed": "ჩამოტვირთვი  წარ",
+  "downloading": "ჩამოტვირთვა"
 }

@@ -652,5 +652,8 @@
   "blinko-endpoint": "Blinko端点",
   "enter-blinko-endpoint": "你的Blinko部署的URL",
   "login-failed": "登录失败",
-  "verification-failed": "认证失败"
+  "verification-failed": "认证失败",
+  "download-success": "下载成功",
+  "download-failed": "下载失败",
+  "downloading": "下载中"
 }

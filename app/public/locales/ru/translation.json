@@ -624,5 +624,7 @@
   "blinko-endpoint": "Blinko конечная точка",
   "enter-blinko-endpoint": "URL вашего развертывания Blinko",
   "login-failed": "Ошибка входа",
-  "verification-failed": "Аутентификация не удалась"
+  "verification-failed": "Аутентификация не удалась",
+  "download-success": "Успешно загружено",
+  "download-failed": "Загрузка не удалась"
 }

@@ -7,11 +7,12 @@ import { ResourceStore } from "@/store/resourceStore";
 import { api } from "@/lib/trpc";
 import { DialogStore } from "@/store/module/Dialog";
 import { useState } from "react";
-import { helper } from "@/lib/helper";
 import { showTipsDialog } from "../Common/TipsDialog";
 import { PromiseCall } from "@/store/standard/PromiseState";
 import { ToastPlugin } from "@/store/module/Toast/Toast";
 import { DialogStandaloneStore } from "@/store/module/DialogStandalone";
+import { downloadFromLink } from "@/lib/tauriHelper";
+import { getBlinkoEndpoint} from "@/lib/blinkoEndpoint";
 
 const MenuItem = ({ icon, label, className = '' }: { icon: string; label: string; className?: string }) => (
   <div className={`flex items-center gap-2 ${className} `}>
@@ -32,7 +33,7 @@ export const ResourceContextMenu = observer(({ onTrigger }: ResourceContextMenuP
   const handleDownload = (() => {
     if (!resource) return;
     if (!resource.path) return;
-    helper.download.downloadByLink(resource.path);
+    downloadFromLink(getBlinkoEndpoint(resource.path));
   });
 
   const handleRename = async () => {

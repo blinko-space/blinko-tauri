@@ -114,6 +114,7 @@ async function generateThumbnail(s3ClientInstance: any, config: any, fullPath: s
 router.get(/.*/, async (req: Request, res: Response) => {
   try {
     const { s3ClientInstance, config } = await FileService.getS3Client();
+    console.log(req.path)
     const fullPath = decodeURIComponent(req.path.substring(1));
     console.log('fullPath', fullPath);
     const needThumbnail = req.query.thumbnail === 'true';
@@ -141,8 +142,7 @@ router.get(/.*/, async (req: Request, res: Response) => {
 
         console.log('Bucket:', config.s3Bucket);
         console.log('Key:', decodeURIComponent(fullPath));
-
-        const signedUrl = await getSignedUrl(s3ClientInstance, command, {
+        const signedUrl = await getSignedUrl(s3ClientInstance as any, command as any, {
           expiresIn: MAX_PRESIGNED_URL_EXPIRY,
         });
 
@@ -151,15 +151,16 @@ router.get(/.*/, async (req: Request, res: Response) => {
         return res.redirect(signedUrl);
       }
     }
-
+    console.log('fullPath!!', decodeURIComponent(fullPath));
+    //@important if @aws-sdk/client-s3 is not 3.693.0, has 403 error
     const command = new GetObjectCommand({
       Bucket: config.s3Bucket,
       Key: decodeURIComponent(fullPath),
-      ResponseCacheControl: `public, max-age=${CACHE_DURATION}, immutable`,
+      ResponseCacheControl: `public, max-age=${CACHE_DURATION}, immutable`
     });
 
-    const signedUrl = await getSignedUrl(s3ClientInstance, command, {
-      expiresIn: MAX_PRESIGNED_URL_EXPIRY,
+    const signedUrl = await getSignedUrl(s3ClientInstance as any, command as any, {
+      expiresIn: MAX_PRESIGNED_URL_EXPIRY
     });
 
     res.set({
@@ -178,3 +179,4 @@ router.get(/.*/, async (req: Request, res: Response) => {
 });
 
 export default router;
+

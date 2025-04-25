@@ -13,6 +13,8 @@ import { helper } from "@/lib/helper";
 import { ToastPlugin } from "@/store/module/Toast/Toast";
 import { Icon } from '@/components/Common/Iconify/icons';
 import { CollapsibleCard } from "@/components/Common/CollapsibleCard";
+import { getBlinkoEndpoint } from "@/lib/blinkoEndpoint";
+import { downloadFromLink } from "@/lib/tauriHelper";
 
 export const ExportSetting = observer(() => {
   const { t } = useTranslation();
@@ -51,7 +53,7 @@ export const ExportSetting = observer(() => {
       const res = await PromiseCall(api.task.exportMarkdown.mutate(exportParams));
       RootStore.Get(ToastPlugin).dismiss('exporting')
       if (res?.downloadUrl) {
-        helper.download.downloadByLink(res.downloadUrl);
+        downloadFromLink(getBlinkoEndpoint(res.downloadUrl));
       }
     } catch (error) {
       RootStore.Get(ToastPlugin).error(error.message)
