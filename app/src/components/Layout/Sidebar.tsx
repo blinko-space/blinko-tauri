@@ -45,8 +45,7 @@ export const Sidebar = observer(({ onItemClick }: SidebarProps) => {
     >
       {!base.isSidebarCollapsed && (
         <div
-          className={`absolute right-0 top-0 h-full w-2 cursor-col-resize 
-            hover:bg-primary/20 active:bg-primary/40 z-50
+          className={`absolute right-0 top-0 h-full w-2 cursor-col-resize z-49
             ${base.isResizing ? 'bg-primary/40' : ''}`}
           onMouseDown={base.startResizing}
           onClick={(e) => e.stopPropagation()}
