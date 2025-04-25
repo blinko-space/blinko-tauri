@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "cd ../server && bun run dev",
     "build": "bun run build:web",
+    "icon": "bun run tauri icon",
     "build:web": "vite build",
     "tauri:dev": "tauri dev",
     "tauri:android:dev": "tauri android dev --host",
