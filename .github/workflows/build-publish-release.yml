@@ -209,6 +209,7 @@ jobs:
             echo "TAG_VERSION=${{ env.VERSION }}" >> $GITHUB_ENV
           fi
           echo "Trigger app version release: ${{ env.TAG_VERSION }}"
+          echo "Version value: ${{ env.VERSION }}"
 
       - name: Update package.json Version
         run: |
@@ -244,10 +245,16 @@ jobs:
             echo "TAG_VERSION=${{ env.VERSION }}" >> $GITHUB_ENV
           fi
           echo "Trigger app version release: ${{ env.TAG_VERSION }}"
+          echo "Version value: ${{ env.VERSION }}"
 
       - name: Trigger App Release Workflow
         uses: peter-evans/repository-dispatch@v2
         with:
           token: ${{ secrets.WORKFLOW_PAT }}
           event-type: trigger-app-release
-          client-payload: '{"tag": "${{ env.TAG_VERSION }}", "sha": "${{ github.sha }}"}'
+          client-payload: |
+            {
+              "tag": "${{ env.TAG_VERSION }}",
+              "version": "${{ env.VERSION }}",
+              "sha": "${{ github.sha }}"
+            }

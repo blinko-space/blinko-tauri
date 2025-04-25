@@ -49,17 +49,38 @@ jobs:
       - name: Set Version Variable
         id: set_version
         run: |
+          # Print debug info
+          echo "Event name: ${{ github.event_name }}"
+          if [[ "${{ github.event_name }}" == "repository_dispatch" ]]; then
+            echo "Client payload tag: ${{ github.event.client_payload.tag }}"
+            echo "Client payload version: ${{ github.event.client_payload.version }}"
+          fi
+
           if [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ github.event.inputs.tag }}" != "" ]]; then
             TAG="${{ github.event.inputs.tag }}"
           elif [[ "${{ github.event_name }}" == "repository_dispatch" ]]; then
-            TAG="${{ github.event.client_payload.tag }}"
+            # Prioritize using version directly from payload, no need to trim prefix
+            if [[ "${{ github.event.client_payload.version }}" != "" ]]; then
+              VERSION="${{ github.event.client_payload.version }}"
+              echo "Using direct version from payload: $VERSION"
+              echo "VERSION=$VERSION" >> $GITHUB_ENV
+              echo "version=$VERSION" >> $GITHUB_OUTPUT
+              echo "Set version: $VERSION"
+              return 0
+            else
+              TAG="${{ github.event.client_payload.tag }}"
+            fi
           else
             TAG="${GITHUB_REF_NAME}"
           fi
+          
+          # If using tag, need to remove v prefix
+          echo "Processing tag: $TAG"
           # Remove 'v' prefix from version
           VERSION="${TAG#v}"
           # Ensure VERSION is not empty, default to 1.0.0
           if [ -z "$VERSION" ]; then
+            echo "WARNING: Empty version, using default 1.0.0"
             VERSION="1.0.0"
           fi
           echo "VERSION=$VERSION" >> $GITHUB_ENV
@@ -69,11 +90,24 @@ jobs:
       - name: Generate Changelog
         id: changelog
         run: |
+          echo "Previous tag: ${{ env.PREVIOUS_TAG }}"
+          echo "Current tag: ${{ env.CURRENT_TAG }}"
+          
+          # Check if current tag exists in Git
+          if ! git show-ref --quiet --verify -- "refs/tags/${{ env.CURRENT_TAG }}"; then
+            echo "WARNING: Current tag ${{ env.CURRENT_TAG }} does not exist in Git, using HEAD instead"
+            echo "CHANGELOG_RANGE=${{ env.PREVIOUS_TAG }}..HEAD" >> $GITHUB_ENV
+          else
+            echo "CHANGELOG_RANGE=${{ env.PREVIOUS_TAG }}..${{ env.CURRENT_TAG }}" >> $GITHUB_ENV
+          fi
+          
           # Generate all commit logs since last release
-          CHANGELOG=$(git log --pretty=format:"- %s (%h) by %an" ${{ env.PREVIOUS_TAG }}..${{ env.CURRENT_TAG }} | sort)
+          echo "Generating changelog from range: ${{ env.CHANGELOG_RANGE }}"
+          CHANGELOG=$(git log --pretty=format:"- %s (%h) by %an" ${{ env.CHANGELOG_RANGE }} | sort)
           
           # If no commit records, use default message
           if [ -z "$CHANGELOG" ]; then
+            echo "No commits found in range, using default message"
             CHANGELOG="- First release or no new commits"
           fi
           
