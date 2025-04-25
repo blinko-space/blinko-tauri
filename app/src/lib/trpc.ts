@@ -4,44 +4,64 @@ import superjson from 'superjson';
 import { getBlinkoEndpoint } from './blinkoEndpoint';
 import { RootStore } from '@/store';
 import { UserStore } from '@/store/user';
+const headers = () => {
+  const userStore = RootStore.Get(UserStore);
+  const token = userStore.token;
+  const baseHeaders: Record<string, string> = {};
 
-const getLinks = (useStream = false) => {
-  const headers = () => {
-    const userStore = RootStore.Get(UserStore);
-    const token = userStore.token;
-    const baseHeaders: Record<string, string> = {};
-    
-    if (token) {
-      baseHeaders['Authorization'] = `Bearer ${token}`;
-    }
-    
-    return baseHeaders;
-  };
-
-  if (useStream) {
-    return httpBatchStreamLink({
-      url: getBlinkoEndpoint('/api/trpc'),
-      transformer: superjson,
-      headers
-    });
+  if (token) {
+    baseHeaders['Authorization'] = `Bearer ${token}`;
   }
 
-  return splitLink({
-    condition(op) {
-      return op.context.skipBatch === true;
-    },
-    true: httpLink({
-      url: getBlinkoEndpoint('/api/trpc'),
-      transformer: superjson,
-      headers
-    }),
-    // when condition is false, use batching
-    false: httpBatchLink({
-      url: getBlinkoEndpoint('/api/trpc'),
-      transformer: superjson,
-      headers
-    }),
-  });
+  return baseHeaders;
+};
+
+
+const getLinks = (useStream = false) => {
+  try {
+    if (useStream) {
+      return httpBatchStreamLink({
+        url: getBlinkoEndpoint('/api/trpc'),
+        transformer: superjson,
+        headers
+      });
+    }
+
+    return splitLink({
+      condition(op) {
+        return op.context.skipBatch === true;
+      },
+      true: httpLink({
+        url: getBlinkoEndpoint('/api/trpc'),
+        transformer: superjson,
+        headers
+      }),
+      // when condition is false, use batching
+      false: httpBatchLink({
+        url: getBlinkoEndpoint('/api/trpc'),
+        transformer: superjson,
+        headers
+      }),
+    });
+  } catch (error) {
+    console.error(error, 'trpc get links error');
+    return splitLink({
+      condition(op) {
+        return op.context.skipBatch === true;
+      },
+      true: httpLink({
+        url: ('/api/trpc'),
+        transformer: superjson,
+        headers
+      }),
+      // when condition is false, use batching
+      false: httpBatchLink({
+        url: ('/api/trpc'),
+        transformer: superjson,
+        headers
+      }),
+    });;
+  }
 };
 
 //@ts-ignore
