@@ -27,4 +27,4 @@ tauri-plugin-fs = "2"
 tauri-plugin-dialog = "2"
 tauri-plugin-http = "2"
 tauri-plugin-upload = "2"
-
+tauri-plugin-blinko = { path = "../tauri-plugin-blinko/" }

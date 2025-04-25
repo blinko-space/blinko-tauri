@@ -18,6 +18,7 @@
     "fs:default",
     "dialog:default",
     "fs:allow-app-write",
+    "blinko:default",
     {
       "identifier": "fs:scope",
       "allow": [
