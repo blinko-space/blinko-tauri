@@ -245,25 +245,9 @@ jobs:
           fi
           echo "Trigger app version release: ${{ env.TAG_VERSION }}"
 
-      - name: Create Version Tag
-        uses: actions/github-script@v7
+      - name: Trigger App Release Workflow
+        uses: peter-evans/repository-dispatch@v2
         with:
-          github-token: ${{ secrets.WORKFLOW_PAT }}
-          script: |
-            try {
-              // Try to create tag
-              await github.rest.git.createRef({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                ref: `refs/tags/${{ env.TAG_VERSION }}`,
-                sha: context.sha
-              });
-              console.log(`Successfully created tag ${{ env.TAG_VERSION }}`);
-            } catch (error) {
-              // If tag already exists, print message
-              if (error.status === 422) {
-                console.log(`Tag ${{ env.TAG_VERSION }} already exists, continue release process`);
-              } else {
-                throw error;
-              }
-            }
+          token: ${{ secrets.WORKFLOW_PAT }}
+          event-type: trigger-app-release
+          client-payload: '{"tag": "${{ env.TAG_VERSION }}", "sha": "${{ github.sha }}"}'
