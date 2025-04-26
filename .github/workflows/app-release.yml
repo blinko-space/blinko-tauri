@@ -178,6 +178,26 @@ jobs:
           name: tauri-config
           path: app/src-tauri/
 
+      - name: Fix version format for Windows MSI
+        if: matrix.platform == 'windows-latest'
+        run: |
+          $versionJson = Get-Content -Path app/src-tauri/tauri.conf.json | ConvertFrom-Json
+          $currentVersion = $versionJson.version
+          
+          if ($currentVersion -match '-(.+)$') {
+            $newVersion = $currentVersion -replace '-(.+)$', ''
+            
+            $versionJson.version = $newVersion
+            
+            $jsonContent = Get-Content -Path app/src-tauri/tauri.conf.json -Raw
+            $jsonContent = $jsonContent -replace '"version": "([^"]+)"', "`"version`": `"$newVersion`""
+            $jsonContent | Set-Content -Path app/src-tauri/tauri.conf.json -NoNewline
+            
+            echo "Windows version $currentVersion changed to $newVersion"
+          } else {
+            echo "Version $currentVersion does not need to be modified"
+          }
+
       - name: Install Ubuntu Dependencies
         if: matrix.platform == 'ubuntu-22.04'
         run: |
