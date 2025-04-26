@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "dotenv -e ../.env -- bun --watch index.ts",
     "build:web": "tsup index.ts --external=@node-rs/crc32 --external=lightningcss --external=zod-openapi --format=esm --target=node16 --clean --outDir=../dist",
-    "start": "NODE_ENV=production dotenv -e ../.env -- bun ../dist/index.js"
+    "start": "cp ../dist/public ./public && NODE_ENV=production dotenv -e ../.env -- bun ../dist/index.js"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^1.2.10",

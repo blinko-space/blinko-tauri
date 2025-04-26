@@ -17,6 +17,7 @@ export default defineConfig({
       manifest: false,
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+        maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
@@ -45,6 +46,32 @@ export default defineConfig({
   build: {
     outDir: "../dist/public",
     emptyOutDir: true,
+    chunkSizeWarningLimit: 2000,
+    rollupOptions: {
+      output: {
+        manualChunks: (id) => {
+          if (id.includes('node_modules/react') || 
+              id.includes('node_modules/react-dom') || 
+              id.includes('node_modules/react-router-dom')) {
+            return 'react-vendor';
+          }
+          
+          if (id.includes('node_modules/@react-') || 
+              id.includes('node_modules/react-') || 
+              id.includes('node_modules/@ui-') || 
+              id.includes('node_modules/@headlessui') || 
+              id.includes('node_modules/headlessui')) {
+            return 'ui-components';
+          }
+          
+          if (id.includes('node_modules/lodash') || 
+              id.includes('node_modules/axios') || 
+              id.includes('node_modules/date-fns')) {
+            return 'utils';
+          }
+        }
+      }
+    }
   },
   clearScreen: false,
   server: {
