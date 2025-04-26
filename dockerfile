@@ -66,12 +66,8 @@ COPY --from=builder /app/server/package.json ./package.json
 COPY --from=builder /app/server/lute.min.js ./server/lute.min.js
 COPY --from=builder /app/prisma ./prisma
 
-# Create directories and copy Sharp cache
+# Prepare Sharp cache directory
 RUN mkdir -p /tmp/sharp-cache
-COPY --from=builder /tmp/sharp-cache /tmp/sharp-cache || true
-
-# Try to copy Sharp modules if they exist
-COPY --from=builder /app/node_modules/sharp /app/node_modules/sharp || true
 
 # Configure Mirror Based on USE_MIRROR Parameter
 RUN if [ "$USE_MIRROR" = "true" ]; then \
