@@ -72,7 +72,7 @@ export const CollapsibleCard = ({
   };
 
   return (
-    <Card shadow="none" className={`flex flex-col p-4 bg-background relative ${className}`}>
+    <Card shadow="none" className={`flex flex-col p-2 md:p-4 bg-background relative ${className}`}>
       <div className="absolute inset-0 overflow-hidden opacity-[0.03] pointer-events-none">
         <RandomIcon className="right-[10%] bottom-[20%]" />
         <RandomIcon className="left-[15%] top-[25%]" />

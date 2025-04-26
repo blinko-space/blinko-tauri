@@ -189,12 +189,12 @@ const Page = observer(() => {
   return (
     <div className="h-full flex flex-col">
       <div className="sticky top-0 z-10 w-full">
-        <div className="md:max-w-[980px] md:-translate-x-[3px] mx-3 md:mx-auto backdrop-blur-md bg-background rounded-2xl">
+        <div className="md:max-w-[980px] md:-translate-x-[3px] mx-1 md:mx-3 md:mx-auto backdrop-blur-md bg-background rounded-2xl">
           <ScrollableTabs items={tabItems} selectedKey={selected} onSelectionChange={setSelected} color="primary" />
         </div>
       </div>
       <ScrollArea onBottom={() => {}} className="flex-1">
-        <div className="max-w-[1024px] mx-auto flex flex-col gap-6 px-4 md:px-6 py-4">{getCurrentComponent()}</div>
+        <div className="max-w-[1024px] mx-auto flex flex-col gap-6 px-2 md:px-6 py-4">{getCurrentComponent()}</div>
       </ScrollArea>
     </div>
   );

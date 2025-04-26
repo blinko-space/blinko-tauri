@@ -10,7 +10,8 @@ import { UserAvatarDropdown } from '../Common/UserAvatarDropdown';
 import { TagListPanel } from '../Common/TagListPanel';
 import { useEffect } from 'react';
 import { BlinkoStore } from '@/store/blinkoStore';
-import { useLocation, useSearchParams, Link } from 'react-router-dom';
+import { useLocation, useSearchParams, Link, useNavigate } from 'react-router-dom';
+import { eventBus } from '@/lib/event';
 
 interface SidebarProps {
   onItemClick?: () => void;
@@ -20,6 +21,7 @@ export const Sidebar = observer(({ onItemClick }: SidebarProps) => {
   const isPc = useMediaQuery('(min-width: 768px)');
   const { t } = useTranslation();
   const base = RootStore.Get(BaseStore);
+  const navigate = useNavigate();
   const blinkoStore = RootStore.Get(BlinkoStore);
   const location = useLocation();
   const [searchParams] = useSearchParams();
@@ -61,7 +63,7 @@ export const Sidebar = observer(({ onItemClick }: SidebarProps) => {
           </div>
 
           {/* Toggle sidebar button for PC */}
-          {isPc && (
+          {isPc ? (
             <Button
               isIconOnly
               variant="light"
@@ -69,6 +71,18 @@ export const Sidebar = observer(({ onItemClick }: SidebarProps) => {
               onPress={base.toggleSidebar}
             >
               <Icon icon={base.isSidebarCollapsed ? 'mdi:chevron-right' : 'mdi:chevron-left'} width="20" height="20" />
+            </Button>
+          ) : (
+            <Button
+              isIconOnly
+              variant="light"
+              className="ml-auto"
+              onPress={() => {
+                navigate('/settings')
+                eventBus.emit('close-sidebar')
+              }}
+            >
+              <Icon icon="hugeicons:settings-01" width="20" height="20" />
             </Button>
           )}
         </div>

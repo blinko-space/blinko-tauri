@@ -46,7 +46,7 @@ const AttachmentsRender = observer((props: IProps) => {
           >
             <video
               onDoubleClick={(e) => e.stopPropagation()}
-              src={file.preview}
+              src={getBlinkoEndpoint(file.preview)}
               id="player"
               playsInline
               controls
