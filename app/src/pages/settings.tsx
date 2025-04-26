@@ -65,7 +65,7 @@ export const allSettings: SettingItem[] = [
   {
     key: 'ai',
     title: 'AI',
-    icon: 'mingcute:ai-line',
+    icon: 'hugeicons:ai-magic',
     component: <AiSetting />,
     requireAdmin: true,
     keywords: ['ai', 'artificial intelligence', '人工智能'],

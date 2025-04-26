@@ -37,7 +37,7 @@ export default function Component() {
   useEffect(() => {
     const checkTauriEnv = async () => {
       try {
-        const isTauri = !!(window as any).__TAURI__ ;
+        const isTauri = !!(window as any).__TAURI__;
         setIsTauriEnv(isTauri);
       } catch (error) {
         setIsTauriEnv(false);
@@ -56,16 +56,15 @@ export default function Component() {
   const SignIn = new PromiseState({
     function: async () => {
       try {
+        if (isTauriEnv) {
+          reinitializeTrpcApi();
+        }
         const res = await signIn('credentials', {
           username: user ?? userStorage.value,
           password: password ?? passwordStorage.value,
           callbackUrl: '/',
           redirect: false,
         });
-
-        if (isTauriEnv) {
-          reinitializeTrpcApi();
-        }
 
         if (res?.requiresTwoFactor) {
           return res;
@@ -170,7 +169,7 @@ export default function Component() {
                 placeholder={t('enter-blinko-endpoint')}
                 type="text"
                 variant="bordered"
-                value={endpoint.replace(/"/g, '') }
+                value={endpoint.replace(/"/g, '')}
                 onChange={e => {
                   setEndpoint(e.target.value?.trim().replace(/"/g, ''))
                   endpointStorage.save(e.target.value?.trim().replace(/"/g, ''))

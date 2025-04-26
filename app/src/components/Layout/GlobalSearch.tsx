@@ -345,7 +345,7 @@ export const GlobalSearch = observer(({ isOpen, onOpenChange }: GlobalSearchProp
                   className="" 
                   icon={
                     store.isAiQuestion 
-                      ? 'mingcute:ai-line' 
+                      ? 'hugeicons:ai-magic' 
                       : store.isTagSearch 
                         ? 'mingcute:hashtag-line' 
                         : 'lets-icons:search'
@@ -374,7 +374,7 @@ export const GlobalSearch = observer(({ isOpen, onOpenChange }: GlobalSearchProp
                     onPress={() => store.toggleAiQuestion()} 
                     className={cn('hover:text-primary transition-colors', store.isAiQuestion && 'text-primary')}
                   >
-                    <Icon icon={store.isAiQuestion ? 'lets-icons:search' : 'mingcute:ai-line'} width="20" height="20" />
+                    <Icon icon={store.isAiQuestion ? 'lets-icons:search' : 'hugeicons:ai-magic'} width="20" height="20" />
                   </Button>
                 </div>
               }
@@ -403,7 +403,7 @@ export const GlobalSearch = observer(({ isOpen, onOpenChange }: GlobalSearchProp
                         <div className="flex flex-col">
                           <div className="flex gap-2 items-center p-2 hover:bg-default-100 rounded-md cursor-pointer transition-colors" onClick={() => handleAiQuestion()}>
                             <div className="p-2 rounded-md bg-primary-50">
-                              <Icon icon="mingcute:ai-line" className="text-primary" />
+                              <Icon icon="hugeicons:ai-magic" className="text-primary" />
                             </div>
                             <div className="flex-1 overflow-hidden">
                               <div className="font-medium text-sm truncate">

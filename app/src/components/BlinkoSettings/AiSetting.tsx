@@ -184,7 +184,7 @@ export const AiSetting = observer(() => {
 
   return (
     <>
-      <CollapsibleCard icon="mingcute:ai-line" title="AI">
+      <CollapsibleCard icon="hugeicons:ai-magic" title="AI">
         <Item
           leftContent={
             <ItemWithTooltip

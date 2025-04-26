@@ -7,6 +7,7 @@ import { UserStore } from '@/store/user';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { signOut, navigate } from '../Auth/auth-client';
+import { getBlinkoEndpoint } from '@/lib/blinkoEndpoint';
 
 interface UserAvatarDropdownProps {
   onItemClick?: () => void;
@@ -27,7 +28,7 @@ export const UserAvatarDropdown = observer(({ onItemClick, collapsed = false }: 
       <DropdownTrigger>
         <div className={`cursor-pointer hover:opacity-80 transition-opacity ${collapsed ? 'flex justify-center' : 'flex items-center gap-2'}`}>
           {user.image ? (
-            <img src={user.image} alt="avatar" className={`${collapsed ? 'w-10 h-10' : 'w-8 h-8'} rounded-full object-cover`} />
+            <img src={getBlinkoEndpoint(user.image)} alt="avatar" className={`${collapsed ? 'w-10 h-10' : 'w-8 h-8'} rounded-full object-cover`} />
           ) : (
             <Image src="/icons/icon-128x128.png" width={30} />
           )}

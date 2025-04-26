@@ -2,9 +2,9 @@
  * Simplified icon build script
  * Scans the project for used icons and extracts them from the Iconify library
  */
-const fs = require('fs');
-const path = require('path');
-const utils = require('@iconify/utils');
+import fs from 'fs';
+import path from 'path';
+import { iconToSVG } from '@iconify/utils';
 
 // Always include these icons even if they're not detected by scanning
 const ALWAYS_INCLUDE_ICONS = [

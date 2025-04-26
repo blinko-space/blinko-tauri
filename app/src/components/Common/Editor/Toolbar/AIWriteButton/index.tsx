@@ -76,7 +76,7 @@ export const AIWriteButton = observer(() => {
                   localStore.handleSubmit();
                 }
               }}
-              startContent={<Icon className='text-primary' icon="mingcute:ai-line" width="16" height="16" />}
+              startContent={<Icon className='text-primary' icon="hugeicons:ai-magic" width="16" height="16" />}
               endContent={
                 ai.isLoading ?
                   <Icon icon="mingcute:loading-line" width="16" height="16" /> :

@@ -81,7 +81,7 @@ const RightContent = ({ blinkoItem, t }: { blinkoItem: Note; t: any }) => {
       {<CommentCount blinkoItem={blinkoItem} />}
       {blinkoItem?.metadata?.isIndexed && (
         <Tooltip content={'Indexed'} delay={1000}>
-          <Icon className="!text-ignore opacity-50" icon="mingcute:ai-line" width="16" height="16" />
+          <Icon className="!text-ignore opacity-50" icon="hugeicons:ai-magic" width="16" height="16" />
         </Tooltip>
       )}
     </div>

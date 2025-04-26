@@ -1,6 +1,7 @@
 import { makeAutoObservable } from 'mobx';
 import { Store } from './standard/base';
 import { FileType } from '@/components/Common/Editor/type';
+import { getBlinkoEndpoint } from '@/lib/blinkoEndpoint';
 
 export interface AudioMetadata {
   coverUrl?: string;
@@ -219,7 +220,7 @@ export class MusicManagerStore implements Store {
     
     if (track.file.preview) {
       try {
-        this.audioElement.src = track.file.preview;
+        this.audioElement.src = getBlinkoEndpoint(track.file.preview);
         
         try {
           await new Promise<void>((resolve, reject) => {

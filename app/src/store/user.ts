@@ -223,7 +223,7 @@ export class UserStore implements Store {
     handleFeatureRoute('ai', 'useAI', {
       title: "AI",
       href: '/ai',
-      icon: 'mingcute:ai-line'
+      icon: 'hugeicons:ai-magic'
     }, 'isUseAIInitialized');
 
     handleFeatureRoute('hub', 'hubEnabled', {
