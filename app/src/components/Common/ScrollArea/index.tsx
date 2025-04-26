@@ -67,30 +67,12 @@ export const ScrollArea = observer(forwardRef<ScrollAreaHandles, IProps>(({ styl
   }, [isAtTop, isAtBottom]);
 
   return (
-    <motion.div
+    <div
       ref={scrollRef}
       style={style}
-      className={`${className} overflow-y-scroll overflow-x-hidden  ${isPc ? '' : 'scrollbar-hide'}`}
-      animate={disableAnimation ? undefined : controls}
+      className={`${className} overflow-y-scroll overflow-x-hidden  ${isPc ? '' : 'scrollbar-hide'} scroll-smooth`}
     >
       {children}
-    </motion.div>
+    </div>
   );
 }))
-
-// const styles = `
-//   .scrollbar-hide {
-//     -ms-overflow-style: none;  /* IE and Edge */
-//     scrollbar-width: none;     /* Firefox */
-//   }
-  
-//   .scrollbar-hide::-webkit-scrollbar {
-//     display: none;  /* Chrome, Safari and Opera */
-//   }
-// `;
-
-// if (typeof document !== 'undefined') {
-//   const styleSheet = document.createElement('style');
-//   styleSheet.textContent = styles;
-//   document.head.appendChild(styleSheet);
-// }

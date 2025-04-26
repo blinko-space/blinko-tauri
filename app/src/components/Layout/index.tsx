@@ -25,6 +25,7 @@ import { BlinkoNotification } from '@/components/BlinkoNotification';
 import { AiStore } from '@/store/aiStore';
 import { useLocation, useSearchParams, Link } from 'react-router-dom';
 import { isDesktop } from '@/lib/tauriHelper';
+import { useSwipeable } from 'react-swipeable';
 
 export const SideBarItem = 'p-2 flex flex-row items-center cursor-pointer gap-2 hover:bg-hover rounded-xl !transition-all';
 
@@ -54,6 +55,22 @@ export const CommonLayout = observer(({ children, header }: { children?: React.R
     });
   }, []);
 
+  const swipeHandlers = useSwipeable({
+    onSwipedRight: () => {
+      if (!isPc) {
+        setisOpen(true);
+      }
+    },
+    onSwipedLeft: () => {
+      if (!isPc) {
+        setisOpen(false);
+      }
+    },
+    trackMouse: false,
+    swipeDuration: 500,
+    delta: 50,
+  });
+
   if (!isClient) return <></>;
 
   if (
@@ -71,13 +88,18 @@ export const CommonLayout = observer(({ children, header }: { children?: React.R
     <div className={`flex w-full h-mobile-full overflow-x-hidden`} id="outer-container">
       <AiWritePop />
 
-      <Menu disableAutoFocus onClose={() => setisOpen(false)} onOpen={setisOpen} isOpen={isOpen} pageWrapId={'page-wrap'} outerContainerId={'outer-container'}>
+      <Menu style={{
+        bmMenuWrap: {
+          transition: 'all .3s'
+        }
+      }} disableAutoFocus onClose={() => setisOpen(false)} onOpen={setisOpen} isOpen={isOpen} pageWrapId={'page-wrap'} outerContainerId={'outer-container'}>
         <Sidebar onItemClick={() => setisOpen(false)} />
       </Menu>
 
       {isPc && <Sidebar />}
 
       <main
+        {...swipeHandlers}
         id="page-wrap"
         style={{ width: isPc ? `calc(100% - ${base.sideBarWidth}px)` : '100%' }}
         className={`${isDesktop() ? 'mt-[35px]' : ''} flex !transition-all duration-300 overflow-y-hidden w-full flex-col gap-y-1 bg-sencondbackground`}

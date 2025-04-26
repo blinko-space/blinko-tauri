@@ -353,7 +353,7 @@ export const CommentButton = observer(({ blinkoItem, alwaysShow = false }: { bli
           width="15"
           height="15"
           className={`cursor-pointer ml-2 ${isIOSDevice
-            ? 'opacity-100'
+            ? 'opacity-60'
             : `${alwaysShow ? '!text-ignore' : '!text-desc opacity-0 group-hover/card:opacity-100 group-hover/card:translate-x-0 translate-x-1'}`
             }`}
           onClick={handleClick}
