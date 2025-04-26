@@ -29,32 +29,66 @@ jobs:
       - name: Get Latest Tag
         id: get_previous_tag
         run: |
-          # Get the second last tag (previous release version)
-          PREVIOUS_TAG=$(git tag --sort=-creatordate | head -n 2 | tail -n 1)
-          if [ -z "$PREVIOUS_TAG" ]; then
-            # If no previous tag found, use the first commit
-            PREVIOUS_TAG=$(git rev-list --max-parents=0 HEAD)
-          fi
-          echo "PREVIOUS_TAG=$PREVIOUS_TAG" >> $GITHUB_ENV
-          
-          # Set current tag based on trigger method
+          # Determine current tag
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            # From workflow_dispatch input, use version number directly without v prefix
-            echo "CURRENT_TAG=${{ github.event.inputs.tag }}" >> $GITHUB_ENV
+            # From workflow_dispatch input
+            CURRENT_TAG="${{ github.event.inputs.tag }}"
           elif [[ "${{ github.event_name }}" == "repository_dispatch" ]]; then
             # From repository_dispatch event
             if [[ "${{ github.event.client_payload.version }}" != "" ]]; then
-              # Use version if provided
-              echo "CURRENT_TAG=${{ github.event.client_payload.version }}" >> $GITHUB_ENV
+              CURRENT_TAG="${{ github.event.client_payload.version }}"
             else
-              # Otherwise use tag
-              echo "CURRENT_TAG=${{ github.event.client_payload.tag }}" >> $GITHUB_ENV
+              CURRENT_TAG="${{ github.event.client_payload.tag }}"
             fi
           else
-            # From pushed tag (remove v prefix if present)
-            TAG="${{ github.ref_name }}"
-            echo "CURRENT_TAG=${TAG#v}" >> $GITHUB_ENV
+            # From pushed tag
+            CURRENT_TAG="${{ github.ref_name }}"
+            # Remove possible v prefix
+            CURRENT_TAG="${CURRENT_TAG#v}"
           fi
+          
+          # Add possible v prefix version
+          CURRENT_TAG_WITH_V="v$CURRENT_TAG"
+          CURRENT_TAG_NO_V="${CURRENT_TAG#v}"
+          
+          echo "Current working tag: $CURRENT_TAG"
+          echo "CURRENT_TAG=$CURRENT_TAG" >> $GITHUB_ENV
+          
+          # Get all tags sorted by creation date
+          ALL_TAGS=$(git tag --sort=-creatordate)
+          
+          # Find the position of the current tag and get the previous one
+          FOUND_CURRENT=false
+          PREVIOUS_TAG=""
+          
+          for tag in $ALL_TAGS; do
+            # Check if the tag matches the current tag (considering with or without v prefix)
+            if [[ "$tag" == "$CURRENT_TAG" || "$tag" == "$CURRENT_TAG_WITH_V" ]]; then
+              FOUND_CURRENT=true
+              continue
+            fi
+            
+            # If we've already found the current tag, the next one is the previous release tag
+            if [[ "$FOUND_CURRENT" == "true" ]]; then
+              PREVIOUS_TAG="$tag"
+              break
+            fi
+          done
+          
+          # If no previous tag found, use the oldest tag
+          if [[ -z "$PREVIOUS_TAG" ]]; then
+            PREVIOUS_TAG=$(git tag --sort=creatordate | head -n 1)
+            echo "No previous tag found, using oldest tag: $PREVIOUS_TAG"
+          fi
+          
+          # If still no tag found, use the first commit
+          if [[ -z "$PREVIOUS_TAG" ]]; then
+            PREVIOUS_TAG=$(git rev-list --max-parents=0 HEAD)
+            echo "No tags found at all, using initial commit: $PREVIOUS_TAG"
+          fi
+          
+          echo "Previous tag: $PREVIOUS_TAG"
+          echo "PREVIOUS_TAG=$PREVIOUS_TAG" >> $GITHUB_ENV
       
       - name: Set Version Variable
         id: set_version
@@ -93,25 +127,42 @@ jobs:
           echo "Previous tag: ${{ env.PREVIOUS_TAG }}"
           echo "Current tag: ${{ env.CURRENT_TAG }}"
           
-          # Check if current tag exists in Git
+          # Normalize tags (handle v prefix)
+          CURRENT_TAG="${{ env.CURRENT_TAG }}"
           CURRENT_TAG_WITH_V="v${{ env.CURRENT_TAG }}"
-          if git show-ref --quiet --verify -- "refs/tags/${{ env.CURRENT_TAG }}"; then
-            TAG_TO_USE="${{ env.CURRENT_TAG }}"
+          CURRENT_TAG_NO_V="${CURRENT_TAG#v}"
+          
+          PREVIOUS_TAG="${{ env.PREVIOUS_TAG }}"
+          PREVIOUS_TAG_NO_V="${PREVIOUS_TAG#v}"
+          
+          # Check which tag format exists in Git
+          if git show-ref --quiet --verify -- "refs/tags/$CURRENT_TAG"; then
+            CURRENT_TAG_REF="$CURRENT_TAG"
           elif git show-ref --quiet --verify -- "refs/tags/$CURRENT_TAG_WITH_V"; then
-            TAG_TO_USE="$CURRENT_TAG_WITH_V"
+            CURRENT_TAG_REF="$CURRENT_TAG_WITH_V"
           else
-            echo "WARNING: Current tags ${{ env.CURRENT_TAG }} and $CURRENT_TAG_WITH_V don't exist in Git, using HEAD instead"
-            echo "CHANGELOG_RANGE=${{ env.PREVIOUS_TAG }}..HEAD" >> $GITHUB_ENV
-            TAG_TO_USE="HEAD"
+            echo "WARNING: Current tag formats $CURRENT_TAG and $CURRENT_TAG_WITH_V don't exist in Git, using HEAD"
+            CURRENT_TAG_REF="HEAD"
           fi
           
-          if [ "$TAG_TO_USE" != "HEAD" ]; then
-            echo "CHANGELOG_RANGE=${{ env.PREVIOUS_TAG }}..$TAG_TO_USE" >> $GITHUB_ENV
+          # Check which previous tag format exists
+          if git show-ref --quiet --verify -- "refs/tags/$PREVIOUS_TAG"; then
+            PREVIOUS_TAG_REF="$PREVIOUS_TAG"
+          elif [[ "$PREVIOUS_TAG" == "v$PREVIOUS_TAG_NO_V" ]] && git show-ref --quiet --verify -- "refs/tags/$PREVIOUS_TAG_NO_V"; then
+            PREVIOUS_TAG_REF="$PREVIOUS_TAG_NO_V"
+          elif git show-ref --quiet --verify -- "refs/tags/v$PREVIOUS_TAG"; then
+            PREVIOUS_TAG_REF="v$PREVIOUS_TAG"
+          else
+            # Try to use the tag as is, it might be a commit hash
+            PREVIOUS_TAG_REF="$PREVIOUS_TAG"
           fi
           
-          # Generate all commit logs since last release
-          echo "Generating changelog from range: ${{ env.CHANGELOG_RANGE }}"
-          CHANGELOG=$(git log --pretty=format:"- %s (%h) by %an" ${{ env.CHANGELOG_RANGE }} | sort)
+          # Set the changelog range
+          echo "CHANGELOG_RANGE=$PREVIOUS_TAG_REF..$CURRENT_TAG_REF" >> $GITHUB_ENV
+          echo "Generating changelog from range: $PREVIOUS_TAG_REF..$CURRENT_TAG_REF"
+          
+          # Generate the changelog
+          CHANGELOG=$(git log --pretty=format:"- %s (%h) by %an" $PREVIOUS_TAG_REF..$CURRENT_TAG_REF | sort)
           
           # If no commit records, use default message
           if [ -z "$CHANGELOG" ]; then
