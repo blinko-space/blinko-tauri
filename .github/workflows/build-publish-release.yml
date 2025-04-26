@@ -13,6 +13,10 @@ on:
         description: 'Trigger app release simultaneously'
         type: boolean
         default: true
+      set_latest:
+        description: 'Set Docker image as latest tag'
+        type: boolean
+        default: true
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -75,7 +79,7 @@ jobs:
           tags: |
             type=raw,value=${{ env.VERSION }}
           flavor: |
-            latest=true
+            latest=${{ github.event_name != 'workflow_dispatch' || github.event.inputs.set_latest == 'true' }}
           labels: |
             org.opencontainers.image.version=${{ env.VERSION }}
             org.opencontainers.image.created=${{ env.BUILD_DATE }}
@@ -161,7 +165,7 @@ jobs:
           tags: |
             type=raw,value=${{ env.VERSION }}
           flavor: |
-            latest=true
+            latest=${{ github.event_name != 'workflow_dispatch' || github.event.inputs.set_latest == 'true' }}
           labels: |
             org.opencontainers.image.version=${{ env.VERSION }}
 
