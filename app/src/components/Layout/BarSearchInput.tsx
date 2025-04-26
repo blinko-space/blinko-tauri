@@ -62,7 +62,7 @@ export const BarSearchInput = observer(({ isPc }: BarSearchInputProps) => {
       <GlobalSearch isOpen={isGlobalSearchOpen} onOpenChange={setIsGlobalSearchOpen} />
       {!isPc && !showSearchInput ? (
         <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.2 }}>
-          <Button isIconOnly className="ml-auto" size="sm" variant="light" onPress={() => handleGlobalSearch()}>
+          <Button isIconOnly className="ml-auto mt-[2px]" size="sm" variant="light" onPress={() => handleGlobalSearch()}>
             <Icon className="text-default-600" icon="lets-icons:search" width="24" height="24" />
           </Button>
         </motion.div>

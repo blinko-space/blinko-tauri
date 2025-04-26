@@ -43,8 +43,8 @@ const Hub = observer(({ className }: { className?: string }) => {
 
   return <ScrollArea className={'h-full bg-background'} onBottom={() => store.shareNoteList.callNextPage({})}>
     <GradientBackground className="flex flex-col gap-2 bg-background md:h-[300px] h-[150px]">
-      <div className="flex flex-col gap-2 h-full">
-        <div className=" border-2 border-hover w-full h-full md:h-fit md:max-w-screen-xl glass-effect mx-auto md:mt-[70px] md:rounded-2xl p-4 md:p-6">
+      <div className="flex flex-col gap-2 h-full md:px-6">
+        <div className="border-2 border-hover w-full h-full md:h-fit md:max-w-screen-xl glass-effect mx-auto md:mt-[70px] md:rounded-2xl p-4 md:p-6">
           <div className="flex items-start gap-2 md:gap-6">
             <UserAvatar
               account={{

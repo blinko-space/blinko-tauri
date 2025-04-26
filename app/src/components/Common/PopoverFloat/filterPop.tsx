@@ -73,7 +73,7 @@ export default function FilterPop() {
     <Popover placement="bottom-start" backdrop="blur">
       <PopoverTrigger>
         <Button isIconOnly size="sm" variant="light">
-          <Icon className="cursor-pointer" icon="tabler:filter-bolt" width="24" height="24" />
+          <Icon className="cursor-pointer text-default-600" icon="tabler:filter-bolt" width="24" height="24" />
         </Button>
       </PopoverTrigger>
       <PopoverContent>
