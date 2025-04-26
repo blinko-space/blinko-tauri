@@ -199,6 +199,21 @@ jobs:
         with:
           targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
 
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: app/src-tauri
+          cache-on-failure: true
+
+      - name: Cache Dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/node_modules
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/bun.lockb', '**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-
+
       - name: Install Dependencies
         run: |
           bun install
@@ -257,6 +272,21 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android
+
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: app/src-tauri
+          cache-on-failure: true
+
+      - name: Cache Dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/node_modules
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/bun.lockb', '**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-
 
       - name: Install bun
         uses: oven-sh/setup-bun@v1

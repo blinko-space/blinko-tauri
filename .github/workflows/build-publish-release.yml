@@ -88,6 +88,8 @@ jobs:
           context: ./
           file: dockerfile
           labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=${{ github.workflow }}-${{ matrix.platform }}
+          cache-to: type=gha,scope=${{ github.workflow }}-${{ matrix.platform }},mode=max
           outputs: type=image,name=dlhtx/blinko,push-by-digest=true,name-canonical=true,push=true
 
       - name: Export digest
