@@ -26,5 +26,4 @@ dist
 .turbo
 keystore.properties
 !**/lute.min.js
-.blinko/*
-server/.blinko/*
+.blinko

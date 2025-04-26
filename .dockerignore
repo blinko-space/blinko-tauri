@@ -12,7 +12,6 @@ build
 **/.next
 .cache
 **/.cache
-.blinko
 **/.blinko
 
 *.log
@@ -47,7 +46,7 @@ LICENSE
 CHANGELOG.md
 README.md
 CONTRIBUTING.md
-
+.blinko
 
 **/target
 
