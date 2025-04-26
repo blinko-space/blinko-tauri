@@ -18,6 +18,7 @@ RUN if [ "$USE_MIRROR" = "true" ]; then \
     fi
 
 # Install Dependencies and Build App
+RUN bun install sharp
 RUN bun install
 RUN bun run build:web
 RUN bun run build:seed
