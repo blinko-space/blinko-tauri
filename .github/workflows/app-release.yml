@@ -3,13 +3,13 @@ name: App Release
 on:
   push:
     tags:
-      - 'v*' # Match tags starting with v, e.g. v1.0.0, v1.2.3
+      - '*' # Match all tags, not limited to v prefix
   repository_dispatch:
     types: [trigger-app-release]
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Tag Version (e.g. v1.0.0)'
+        description: 'Tag Version (e.g. 1.0.0)'
         required: true
         type: string
 
@@ -39,11 +39,21 @@ jobs:
           
           # Set current tag based on trigger method
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            # From workflow_dispatch input, use version number directly without v prefix
             echo "CURRENT_TAG=${{ github.event.inputs.tag }}" >> $GITHUB_ENV
           elif [[ "${{ github.event_name }}" == "repository_dispatch" ]]; then
-            echo "CURRENT_TAG=${{ github.event.client_payload.tag }}" >> $GITHUB_ENV
+            # From repository_dispatch event
+            if [[ "${{ github.event.client_payload.version }}" != "" ]]; then
+              # Use version if provided
+              echo "CURRENT_TAG=${{ github.event.client_payload.version }}" >> $GITHUB_ENV
+            else
+              # Otherwise use tag
+              echo "CURRENT_TAG=${{ github.event.client_payload.tag }}" >> $GITHUB_ENV
+            fi
           else
-            echo "CURRENT_TAG=${{ github.ref_name }}" >> $GITHUB_ENV
+            # From pushed tag (remove v prefix if present)
+            TAG="${{ github.ref_name }}"
+            echo "CURRENT_TAG=${TAG#v}" >> $GITHUB_ENV
           fi
       
       - name: Set Version Variable
@@ -51,38 +61,28 @@ jobs:
         run: |
           # Print debug info
           echo "Event name: ${{ github.event_name }}"
-          if [[ "${{ github.event_name }}" == "repository_dispatch" ]]; then
-            echo "Client payload tag: ${{ github.event.client_payload.tag }}"
-            echo "Client payload version: ${{ github.event.client_payload.version }}"
-          fi
-
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ github.event.inputs.tag }}" != "" ]]; then
-            TAG="${{ github.event.inputs.tag }}"
+          
+          # Always use version number without v prefix
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            VERSION="${{ github.event.inputs.tag }}"
           elif [[ "${{ github.event_name }}" == "repository_dispatch" ]]; then
-            # Prioritize using version directly from payload, no need to trim prefix
             if [[ "${{ github.event.client_payload.version }}" != "" ]]; then
               VERSION="${{ github.event.client_payload.version }}"
-              echo "Using direct version from payload: $VERSION"
-              echo "VERSION=$VERSION" >> $GITHUB_ENV
-              echo "version=$VERSION" >> $GITHUB_OUTPUT
-              echo "Set version: $VERSION"
-              exit 0
             else
-              TAG="${{ github.event.client_payload.tag }}"
+              VERSION="${{ github.event.client_payload.tag }}"
             fi
           else
+            # Get version from tag (remove v prefix if present)
             TAG="${GITHUB_REF_NAME}"
+            VERSION="${TAG#v}"
           fi
           
-          # If using tag, need to remove v prefix
-          echo "Processing tag: $TAG"
-          # Remove 'v' prefix from version
-          VERSION="${TAG#v}"
           # Ensure VERSION is not empty, default to 1.0.0
           if [ -z "$VERSION" ]; then
             echo "WARNING: Empty version, using default 1.0.0"
             VERSION="1.0.0"
           fi
+          
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "Set version: $VERSION"
@@ -94,11 +94,19 @@ jobs:
           echo "Current tag: ${{ env.CURRENT_TAG }}"
           
           # Check if current tag exists in Git
-          if ! git show-ref --quiet --verify -- "refs/tags/${{ env.CURRENT_TAG }}"; then
-            echo "WARNING: Current tag ${{ env.CURRENT_TAG }} does not exist in Git, using HEAD instead"
-            echo "CHANGELOG_RANGE=${{ env.PREVIOUS_TAG }}..HEAD" >> $GITHUB_ENV
+          CURRENT_TAG_WITH_V="v${{ env.CURRENT_TAG }}"
+          if git show-ref --quiet --verify -- "refs/tags/${{ env.CURRENT_TAG }}"; then
+            TAG_TO_USE="${{ env.CURRENT_TAG }}"
+          elif git show-ref --quiet --verify -- "refs/tags/$CURRENT_TAG_WITH_V"; then
+            TAG_TO_USE="$CURRENT_TAG_WITH_V"
           else
-            echo "CHANGELOG_RANGE=${{ env.PREVIOUS_TAG }}..${{ env.CURRENT_TAG }}" >> $GITHUB_ENV
+            echo "WARNING: Current tags ${{ env.CURRENT_TAG }} and $CURRENT_TAG_WITH_V don't exist in Git, using HEAD instead"
+            echo "CHANGELOG_RANGE=${{ env.PREVIOUS_TAG }}..HEAD" >> $GITHUB_ENV
+            TAG_TO_USE="HEAD"
+          fi
+          
+          if [ "$TAG_TO_USE" != "HEAD" ]; then
+            echo "CHANGELOG_RANGE=${{ env.PREVIOUS_TAG }}..$TAG_TO_USE" >> $GITHUB_ENV
           fi
           
           # Generate all commit logs since last release
@@ -205,7 +213,7 @@ jobs:
           projectPath: 'app'
           tauriScript: '../node_modules/.bin/tauri'
           args: ${{ matrix.args }}
-          tagName: ${{ github.event.client_payload.tag || github.event.inputs.tag || github.ref_name }}
+          tagName: ${{ needs.generate-changelog.outputs.version }}
           releaseName: Blinko ${{ needs.generate-changelog.outputs.version }}
           releaseBody: ${{ needs.generate-changelog.outputs.changelog }}
           releaseDraft: false
@@ -312,7 +320,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: app/src-tauri/gen/android/app/build/outputs/apk/universal/release/Blinko_${{ needs.generate-changelog.outputs.version }}_universal.apk
-          tag_name: ${{ github.event.client_payload.tag || github.event.inputs.tag || github.ref_name }}
+          tag_name: ${{ needs.generate-changelog.outputs.version }}
           body: ${{ needs.generate-changelog.outputs.changelog }}
           draft: false
           prerelease: false

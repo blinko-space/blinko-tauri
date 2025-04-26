@@ -202,13 +202,7 @@ jobs:
           else
             echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
           fi
-          # Ensure version starts with 'v' (if not present)
-          if [[ ! "${{ env.VERSION }}" =~ ^v ]]; then
-            echo "TAG_VERSION=v${{ env.VERSION }}" >> $GITHUB_ENV
-          else
-            echo "TAG_VERSION=${{ env.VERSION }}" >> $GITHUB_ENV
-          fi
-          echo "Trigger app version release: ${{ env.TAG_VERSION }}"
+          echo "Trigger app version release: ${{ env.VERSION }}"
           echo "Version value: ${{ env.VERSION }}"
 
       - name: Update package.json Version
@@ -238,14 +232,7 @@ jobs:
           else
             echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
           fi
-          # Ensure version starts with 'v' (if not present)
-          if [[ ! "${{ env.VERSION }}" =~ ^v ]]; then
-            echo "TAG_VERSION=v${{ env.VERSION }}" >> $GITHUB_ENV
-          else
-            echo "TAG_VERSION=${{ env.VERSION }}" >> $GITHUB_ENV
-          fi
-          echo "Trigger app version release: ${{ env.TAG_VERSION }}"
-          echo "Version value: ${{ env.VERSION }}"
+          echo "Trigger app version release: ${{ env.VERSION }}"
 
       - name: Trigger App Release Workflow
         uses: peter-evans/repository-dispatch@v2
@@ -254,7 +241,7 @@ jobs:
           event-type: trigger-app-release
           client-payload: |
             {
-              "tag": "${{ env.TAG_VERSION }}",
+              "tag": "${{ env.VERSION }}",
               "version": "${{ env.VERSION }}",
               "sha": "${{ github.sha }}"
             }
