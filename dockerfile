@@ -65,9 +65,13 @@ COPY --from=builder /app/dist ./server
 COPY --from=builder /app/server/package.json ./package.json
 COPY --from=builder /app/server/lute.min.js ./server/lute.min.js
 COPY --from=builder /app/prisma ./prisma
-# Copy Sharp cache from builder (if exists)
-COPY --from=builder /tmp/sharp-cache /tmp/sharp-cache 2>/dev/null || true
-COPY --from=builder /app/node_modules/sharp /app/node_modules/sharp 2>/dev/null || true
+
+# Create directories and copy Sharp cache
+RUN mkdir -p /tmp/sharp-cache
+COPY --from=builder /tmp/sharp-cache /tmp/sharp-cache || true
+
+# Try to copy Sharp modules if they exist
+COPY --from=builder /app/node_modules/sharp /app/node_modules/sharp || true
 
 # Configure Mirror Based on USE_MIRROR Parameter
 RUN if [ "$USE_MIRROR" = "true" ]; then \
@@ -92,7 +96,7 @@ RUN bun install prisma@5.21.1
 RUN ./node_modules/.bin/prisma generate
 
 # Remove onnxruntime-node
-RUN find / -type d -name "onnxruntime-*" -exec rm -rf {} +
+RUN find / -type d -name "onnxruntime-*" -exec rm -rf {} + || true
 
 # Expose Port (Adjust According to Actual Application)
 EXPOSE 1111
